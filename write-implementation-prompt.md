@@ -1,0 +1,408 @@
+# Write Implementation Prompt Skill
+
+> Access: Public entrypoint.
+> 사용자 직접 호출 가능: 승인된 작업 기준서를 구현 지시서로 바꿀 때 사용한다.
+> Public entrypoint는 작업 흐름을 여는 문서이며, 단독으로 구현, 삭제, 기준 문서 변경, 완료 권한을 만들지는 않는다.
+
+## 핵심 용어
+
+- 제품 기준 준비 상태: 무엇을 왜 만들 것인지에 대한 기획 준비도.
+- 기술 설계 준비 상태: 제품 판단을 저장 구조, 상태, API, 코드 구조로 표현할 기준이 정해졌는지에 대한 설계 준비도.
+- 구현 시작 가능 여부: 에이전트가 구현을 시작해도 되는지에 대한 실행 준비도.
+- 이번 작업 기준 묶음: 이번 작업에서 따라야 할 승인된 기준 문서 묶음.
+- 작업 기준서: 구현 전 작업 범위, 금지 범위, 검증 기준을 고정하는 작업 계약.
+- 상호작용 방식 확인: 사용자 또는 운영자가 접하는 기능의 입력, 출력, 흐름, 실패와 피드백을 먼저 확인하는 절차.
+- 운영/품질 기준 확인: 성능, 보안, 권한, 조회, 재시도, 로그/감사, 운영 기준을 구현 전에 확인하는 절차.
+
+이 skill은 승인된 작업 기준서를 구현 에이전트용 prompt로 변환한다.
+
+V2에서는 implementation-prompt를 "구현 지시서"로 사용자-facing 표현한다. Prompt artifact는 `_artifact-metadata.md`의 metadata, `_artifact-templates.md`의 `Prompt Artifact Template`, `_status-machine.md`의 status, `_approval-reference.md`의 approval reference를 따른다.
+
+prompt 관련 차단 사유를 사용자에게 말할 때는 내부 용어를 나열하지 않고 "이 구현 지시서는 지금 기준으로 바로 사용할 수 없습니다"처럼 행동 중심으로 설명한다.
+
+구현 지시서에는 Project Context 요약이 포함되어야 한다. 구현 Agent는 프로젝트가 테스트 베드인지, 실제 서비스인지, 데이터 정합성이나 추적 가능성이 중요한지, 어떤 단순화가 허용/금지되는지 알아야 한다.
+
+구현 지시서를 만들 수 없을 때는 Action-first, diagnostics-later를 따른다. prompt metadata나 approval reference 문제는 기본 응답에서 뒤로 미루고, 무엇을 먼저 선행해야 하는지로 안내한다.
+
+구현 지시서는 `_sot-packet.md`의 작업 기준 묶음을 포함해야 한다. 작업 기준 묶음이 없거나 approvedSotDocuments, allowedScope, forbiddenScope, verificationCommands, userApprovalRequiredFor가 불명확하면 구현 지시서를 만들지 말고 아직 필요한 결정을 질문한다.
+
+구현 지시서는 `_readiness-gates.md`의 준비 상태 확인 결과를 포함해야 한다. 제품 기준 준비 상태 또는 기술 설계 준비 상태가 `NOT READY`이면 구현 지시서를 만들지 말고 아직 필요한 결정을 질문한다.
+
+구현 지시서가 DB table, column, migration, repository, API DTO 작업을 열려면 Storage Intent Check가 `DB_DESIGN_ALLOWED`여야 한다. API path나 request/response shape 작업을 열려면 Behavior Contract Check가 `API_DESIGN_ALLOWED`여야 한다. status enum이나 state transition 작업을 열려면 State Meaning Check가 `STATE_MODEL_ALLOWED`여야 한다.
+
+구현 지시서가 사용자 또는 운영자가 접하는 기능을 열려면 상호작용 방식 확인 결론이 `상호작용 설계 가능`이어야 한다. 성능, 보안, 조회, 권한, 실패 처리, 재시도, 로그/감사 판단을 포함하면 운영/품질 기준 확인 결론이 `설계 가능`이어야 한다.
+
+작업 모드가 `ANALYSIS_ONLY` 또는 `PROPOSAL_ONLY`이면 구현 지시서 파일을 생성하거나 수정하지 않는다. prompt draft 생성 후보를 제안할 수는 있지만 실제 prompt artifact 작성은 `PATCH_AUTHORIZED`, `APPLY_AUTHORIZED`, 또는 허용된 write-implementation-prompt 단계의 명시 승인 후에만 가능하다.
+
+## 시작 조건
+
+다음이 모두 충족되어야 한다.
+
+- 작업 기준서가 존재한다.
+- Project Context가 존재한다.
+- Task status가 APPROVED다.
+- `documentCoverage.status`가 READY다.
+- 모든 `dependsOn` Task가 COMPLETE 상태다.
+- source of truth가 VALIDATED 상태다.
+- known source of truth conflict가 없다.
+- 아직 결정되지 않은 항목이 없다.
+- 기존 prompt가 있다면 legitimacy check를 통과했다.
+- `requiredDocuments`가 비어 있지 않거나, Task가 도메인/아키텍처/행위/정책 판단을 전혀 요구하지 않는 단순 기술 작업이다.
+- 작업 기준서에서 작업 기준 묶음을 만들 수 있다.
+- 작업 기준서에 제품 기준 준비 상태와 기술 설계 준비 상태가 `READY`로 기록되어 있다.
+- 작업에 필요한 Storage Intent Check, Behavior Contract Check, State Meaning Check가 각각 허용 결론으로 기록되어 있다.
+- 작업에 필요한 상호작용 방식 확인과 운영/품질 기준 확인이 허용 결론으로 기록되어 있다.
+- 사용자가 prompt 생성을 승인했거나 prompt 검토 단계로 진행하라고 지시했다.
+- prompt draft 생성 승인이 `PROMPT_DRAFT_APPROVAL` 또는 현재 workflow상 허용된 write-implementation-prompt 단계로 확인된다.
+
+## 금지 조건
+
+- 사용자 요청이 `ANALYSIS_ONLY`이면 prompt 파일을 생성하거나 수정하지 마라.
+- 사용자 요청이 `PROPOSAL_ONLY`이면 prompt 변경안을 제안만 하고 저장하지 마라.
+- 작업 기준서가 APPROVED가 아니면 프롬프트를 만들지 마라.
+- documentCoverage가 READY가 아니면 프롬프트를 만들지 마라.
+- 제품 기준 준비 상태 또는 기술 설계 준비 상태가 `NOT READY`이면 프롬프트를 만들지 마라.
+- 상호작용 방식 확인이 없거나 `상호작용 설계 보류`이면 사용자/운영자 인터페이스, 화면, CLI 명령, API surface, 배치 실행 방식을 포함하는 프롬프트를 만들지 마라.
+- Storage Intent Check가 없거나 `DB_DESIGN_BLOCKED`이면 DB table, column, migration, repository, API DTO를 포함하는 프롬프트를 만들지 마라.
+- Behavior Contract Check가 없거나 `API_DESIGN_BLOCKED`이면 API path, method, route, controller, request/response shape를 포함하는 프롬프트를 만들지 마라.
+- State Meaning Check가 없거나 `STATE_MODEL_BLOCKED`이면 status enum, status column, state transition을 포함하는 프롬프트를 만들지 마라.
+- 운영/품질 기준 확인이 없거나 `설계 보류`이면 performance, security, operation, sorting, search, pagination, permission, retry, logging, audit 정책을 포함하는 프롬프트를 만들지 마라.
+- requiredDocuments가 비어 있는데 도메인/아키텍처 작업이면 멈춰라.
+- Task 없이 구현 prompt를 만들지 마라.
+- 미확정 결정이 해결되지 않았으면 구현 prompt 또는 revision prompt를 만들지 마라.
+- testRequirements 축소, DB integration test 대체, 테스트 이연을 prompt에서 임의로 지시하지 마라.
+- source of truth 변경이 필요하면 prompt를 만들지 말고 Source of Truth Change Request로 넘겨라.
+- source of truth 변경을 구현 prompt에 섞지 마라.
+- partial source of truth update나 known conflict가 남은 source of truth 묶음을 근거로 prompt를 만들지 마라.
+- 작업 기준서가 변경된 source of truth와 정합하지 않으면 prompt를 만들지 말고 planning으로 되돌려라.
+- 선행 Task가 COMPLETE가 아니면 후속 Task prompt를 만들지 마라.
+- 현재 Task 또는 선행 Task의 미확정 결정을 "나중에"로 미루고 prompt를 만들지 마라.
+- 기존 prompt file이 존재한다는 이유만으로 정상 baseline으로 사용하지 마라.
+- 기존 prompt가 legitimacy check를 통과하지 못하면 보강/수정하지 말고 멈춰라.
+- invalid prompt를 최신 harness 기준으로 보강해서 계속 사용하지 마라.
+
+Prompt 생성은 단순 문서 작성이 아니라 후속 구현을 여는 확인 지점이다.
+
+Prompt draft 생성 또는 수정도 확인 지점이 필요한 행동이다.
+
+Prompt draft를 생성/수정하려면 다음이 모두 충족되어야 한다.
+
+1. Task status APPROVED
+2. `documentCoverage` READY
+3. 모든 `dependsOn` Task COMPLETE
+4. source of truth VALIDATED
+5. Known Conflicts 없음
+6. 미확정 결정 없음
+7. 사용자 Prompt Draft 생성 승인 또는 현재 workflow에서 명확히 허용된 write-implementation-prompt 단계
+8. 기존 prompt가 있다면 legitimacy check 통과
+
+위 조건이 없으면 기존 prompt가 있더라도 보강/수정하지 말고 멈춘다.
+
+Prompt draft approval은 `PROMPT_DRAFT_APPROVAL`이고, 실제 구현 시작 승인은 `PROMPT_EXECUTION_APPROVAL`이다. 초안 승인만으로 구현을 시작하지 않는다.
+
+다음 상태의 선행 Task가 하나라도 있으면 후속 Task prompt 생성 금지다.
+
+- DRAFT
+- APPROVED but not started
+- IN_PROGRESS
+- PENDING_USER_APPROVAL
+- BLOCKED_BY_MISSING_CONTEXT
+- BLOCKED_BY_POLICY_CONFLICT
+- NEEDS_SOURCE_OF_TRUTH_CHANGE
+- NEEDS_REVISION
+- VERIFIED but not reviewed/complete
+
+예외는 사용자가 Plan/Task dependency 변경을 명시 승인하고 Source of Truth Manager가 변경된 Plan/Task 정합성을 VALIDATED한 경우뿐이다.
+
+## 구현 prompt에 포함할 내용
+
+- `_artifact-templates.md`의 `Prompt Artifact Template`
+- artifact metadata
+- approvalRefs
+- status
+- Task ID, title, type
+- Goal
+- projectContextRef
+- projectContextSummary
+- requiredDocuments 목록
+- documentCoverage 상태
+- 준비 상태 확인 결과
+- Storage Intent Check, Behavior Contract Check, State Meaning Check 결과
+- 상호작용 방식 확인 결과
+- 운영/품질 기준 확인 결과
+- implementationConstraints
+- forbiddenApproaches
+- acceptanceCriteria
+- testRequirements
+- source of truth 변경 금지
+- source of truth 변경 필요 시 중단하고 `_source-of-truth-manager.md`로 라우팅하라는 지시
+- known source of truth conflict가 발견되면 구현하지 말고 중단하라는 지시
+- 선행 Task 미완료 또는 미확정 결정이 남은 상태에서는 구현하지 말고 중단하라는 지시
+- 문서 밖 판단 금지
+- 충돌 발견 시 중단/보고 규칙
+- suggestions 분리 규칙
+- 완료 보고 형식
+- 작업 기준 묶음
+- 제품 기준 문서와 기술 설계 기준 문서 모두에 대한 준수 지시
+- 작업 시작 선언 형식: 작업 방식, 이번 작업 기준, 가능한 작업, 금지된 작업, 진행 전 필요한 승인, 검증 방법
+- identifier type, DB key strategy, API-visible id representation, datetime format, error format, delete behavior, state transition behavior를 구현 세부사항으로 취급하지 말라는 지시
+- 저장 의미, 동작 계약, 상태 의미가 없으면 table, column, API path, status enum을 만들지 말라는 지시
+- 상호작용 방식이 없으면 화면, CLI 명령, API surface, 배치 실행 방식을 만들지 말라는 지시
+- 운영/품질 기준이 없으면 성능, 보안, 권한, 조회, 재시도, 로그/감사 정책을 임의로 정하지 말라는 지시
+- H2, Testcontainers, test profiles, test-specific migrations, mock/fake/stub strategies, alternative database dialects를 승인 문서 없이 도입하지 말라는 지시
+- 테스트를 통과시키기 위해 승인되지 않은 dependency, profile, test DB, test migration, mock/fake/stub 전략을 추가하지 말라는 지시
+- 새 dependency, Gradle plugin, annotation processor, code generation tool, runtime-exposed library를 승인 문서 없이 추가하지 말라는 지시
+- 승인 문서가 없으면 기존 스택 안에서 구현하라는 지시
+
+## 구현 prompt 준비 상태 확인 예시
+
+구현 prompt에는 다음 블록을 포함한다.
+
+```text
+준비 상태 확인
+제품 기준 준비: READY / NOT READY
+- 근거:
+- 부족한 결정:
+상호작용 방식 확인:
+- 결론: 상호작용 설계 가능 / 상호작용 설계 보류 / 해당 없음
+- 부족한 결정:
+기술 설계 준비: READY / NOT READY
+- 근거:
+- 부족한 결정:
+운영/품질 기준 확인:
+- 결론: 설계 가능 / 설계 보류 / 해당 없음
+- 부족한 결정:
+구현 시작 가능 여부: READY / NOT READY
+- 근거:
+- 부족한 결정:
+결론:
+- 구현 가능 / 구현 보류
+- 필요한 다음 행동:
+```
+
+내부 결론이 `IMPLEMENTATION_BLOCKED`이면 코드, 테스트, 설정, migration, dependency 변경을 금지한다. 내부 결론이 `IMPLEMENTATION_ALLOWED`인 경우에만 작업 기준 묶음의 allowedScope 안에서 구현한다. 구현 prompt에는 작업 기준 묶음, allowedScope, forbiddenScope, verificationCommands를 함께 포함한다.
+
+`projectContextSummary` 예:
+
+```yaml
+projectContextSummary:
+  projectType:
+    - PRACTICE_PROJECT
+    - LOCAL_EXPERIMENT
+    - HIGH_CONSISTENCY_DOMAIN
+  primaryPurpose: "complex domain design and implementation practice"
+  productionIntent: false
+  dataConsistencyCriticality: "VERY_HIGH"
+  allowedSimplifications:
+    - "No production external integration"
+    - "No high traffic optimization"
+  forbiddenSimplifications:
+    - "No undocumented state transition"
+    - "No silent consistency downgrade"
+    - "No ignoring duplicated external events"
+```
+
+## 구현 에이전트 지시
+
+prompt에는 반드시 다음 의미가 들어가야 한다.
+
+- 승인된 requiredDocuments 기준으로만 구현하라.
+- 제품 기준 준비 상태, 기술 설계 준비 상태, 구현 시작 가능 여부 중 하나라도 `NOT READY`이면 구현하지 말고 아직 필요한 결정으로 보고하라.
+- 승인된 작업 기준 묶음 밖 작업을 하지 마라.
+- IMPLEMENTATION인데 작업 기준 묶음이 없으면 구현하지 말고 아직 필요한 결정으로 보고하라.
+- 문서에 없는 도메인/아키텍처/행위/정책 판단을 하지 마라.
+- 구현 세부사항은 판단할 수 있지만 정책 판단은 할 수 없다.
+- Identifier type, DB key strategy, API-visible id representation, datetime format, error format, delete behavior, state transition behavior are not implementation details. If they are not defined in the approved documents, stop and report 아직 필요한 결정 instead of choosing a default.
+- 상호작용 방식 확인이 `상호작용 설계 가능`이 아니면 화면, CLI 명령, API surface, batch 실행 방식, 저장 구조를 만들거나 제안하지 마라.
+- Storage Intent Check가 `DB_DESIGN_ALLOWED`가 아니면 table, column, migration, repository, API DTO를 만들거나 제안하지 마라.
+- Behavior Contract Check가 `API_DESIGN_ALLOWED`가 아니면 API path, method, route, controller, request/response shape를 만들거나 제안하지 마라.
+- State Meaning Check가 `STATE_MODEL_ALLOWED`가 아니면 status enum, status column, state transition을 만들거나 제안하지 마라.
+- 운영/품질 기준 확인이 `설계 가능`이 아니면 성능, 보안, 권한, 데이터 양, 조회 방식, 실패 처리, 재시도, 로그/감사 기준을 임의로 정하지 마라.
+- Do not introduce H2, Testcontainers, test profiles, test-specific migrations, mock/fake/stub strategies, or alternative database dialects unless they are explicitly approved in source-of-truth documents.
+- H2, Testcontainers, 테스트 profile, 테스트 전용 migration, mock/fake/stub 전략, 운영 DB와 다른 테스트 DB dialect를 승인 문서 없이 도입하지 마라.
+- 테스트를 통과시키기 위해 승인되지 않은 dependency, profile, test DB, test migration, mock/fake/stub 전략을 추가하지 마라. 필요하면 아직 필요한 결정으로 중단하라.
+- 새 dependency, Gradle plugin, annotation processor, code generation tool, runtime-exposed library를 승인 문서 없이 추가하지 마라.
+- "단순 편의", "흔한 조합", "표준 라이브러리", "나중에 필요"라는 이유로 dependency를 추가하지 마라.
+- 승인 문서가 없으면 기존 스택 안에서 구현하라.
+- 문서와 충돌하는 요구를 발견하면 구현하지 말고 중단/보고하라.
+- 새 제안은 suggestions로 기록하고 현재 Task에 섞지 마라.
+- production code 변경 시 관련 test code도 작성/수정하라.
+- 커밋하지 마라.
+- source of truth, document registry, Plan, Task, prompt, verification result를 수정하지 마라.
+- 문서 변경이 필요하면 구현하지 말고 Source of Truth Change Request가 필요하다고 보고하라.
+- partial source of truth update를 제안하거나 수행하지 마라.
+- 기존 prompt가 legitimacy check를 통과하지 못하면 실행하지 마라.
+- "A로 하자", "그 방향으로 가자", "좋아", "진행해", "추천대로", "나중에 보자", "일단 해" 같은 표현을 prompt execution approval로 해석하지 마라.
+- Prompt Draft Approval과 Prompt Execution Approval을 분리하라.
+
+## 구현 에이전트가 임의로 정하면 안 되는 항목
+
+- id 타입
+- 사용자/운영자 인터페이스
+- 입력/출력 방식
+- 실패/빈 상태/권한 없음/처리 중 피드백
+- table 이름
+- column 이름
+- primary key 생성 전략
+- repository 구조
+- API path
+- API DTO 필드 타입
+- status enum 값
+- 정렬/검색/페이지 처리 기준
+- 응답 속도 기대치
+- 로그/감사 기록 기준
+- 날짜/시간 포맷
+- 오류 code
+- 상태 변경 방식
+- 삭제 방식
+- H2 또는 embedded DB 도입
+- Testcontainers 도입
+- application-test.yml 또는 test profile 도입
+- 테스트 전용 migration 도입
+- 운영 DB와 다른 테스트 dialect 사용
+- mock/fake/stub 전략 선택
+- dependency 추가
+- Gradle plugin 추가
+- annotation processor 추가
+- code generation tool 추가
+- runtime-exposed library 추가
+
+## 테스트 전략 coverage 확인
+
+Repository/Flyway/DB migration 관련 Task에서 TEST_STRATEGY 또는 동등한 승인 문서가 없으면 구현 prompt 생성을 중단하고 아직 필요한 결정으로 돌려야 한다.
+
+External integration, batch, infra/config Task도 대응하는 INTEGRATION_POLICY, BATCH_OPERATION_POLICY, OPERATION/INFRA_POLICY 문서가 없으면 구현 prompt를 만들지 않는다.
+
+Mock, fake, stub, slice test, `@WebMvcTest`, `@DataJpaTest`, mocked service, mocked repository는 모두 TEST_STRATEGY 판단이다. 승인된 TEST_STRATEGY 없이 AI가 임의로 선택할 수 없다.
+
+Bad:
+
+```text
+TEST_STRATEGY가 없으니 @WebMvcTest + mock으로 POST API 테스트를 작성한다.
+```
+
+Correct:
+
+```text
+TEST_STRATEGY가 없으므로 API 테스트 전략을 아직 필요한 결정으로 질문한다.
+```
+
+## Artifact Legitimacy Check
+
+Prompt file이 디스크에 존재해도 자동 사용하지 않는다.
+
+사용 전 다음을 확인한다.
+
+- prompt가 어떤 workflow 단계에서 생성되었는가?
+- 생성 당시 Prompt Draft Approval 또는 허용된 write-implementation-prompt 단계였는가?
+- 생성 당시 Task status가 APPROVED였는가?
+- 생성 당시 `documentCoverage`가 READY였는가?
+- 생성 당시 모든 `dependsOn` Task가 COMPLETE였는가?
+- 생성 당시 source of truth가 VALIDATED였는가?
+- 미확정 결정 또는 Policy Conflict가 unresolved 상태였는데 생성된 것은 아닌가?
+- 이후 source of truth 변경, Task 변경, verification 결과로 superseded 되었는가?
+- 현재 harness 기준으로도 prompt 생성 조건을 만족하는가?
+- artifact metadata에 approvalRefs, sourceOfTruthVersion, dependsOnSnapshot, generatedFrom이 기록되어 있는가?
+
+하나라도 확인할 수 없거나 위반이 있으면 정상 prompt baseline으로 사용하지 않는다. 해당 prompt는 `INVALID`, `QUARANTINED`, `SUPERSEDED` 후보로 보고하고, gate를 통과한 뒤 새 prompt를 생성해야 한다.
+
+## Prompt Metadata 예시
+
+```yaml
+artifact:
+  id: PROMPT-TASK-002-001
+  type: implementation-prompt
+  status: DRAFT
+  createdAt: "2026-06-08T00:00:00Z"
+  createdByRole: write-implementation-prompt
+  taskId: TASK-002
+  projectId: example-project
+  sourceOfTruthSnapshot: SOT-SNAPSHOT-001
+  requiredDocuments:
+    - PRODUCT-SOT-001
+  dependsOnSnapshot:
+    - taskId: TASK-001
+      requiredStatus: COMPLETE
+      actualStatus: COMPLETE
+  approvalRefs:
+    - APPROVAL-PROMPT-TASK-002-DRAFT
+  generatedFrom:
+    - tasks/TASK-002.yml
+  knownConflicts: []
+  supersedes: []
+  supersededBy: null
+```
+
+사용자-facing 보고에서는 "prompt"보다 "구현 지시서"를 우선 사용한다.
+
+차단 상황에서는 다음 형식을 우선 사용한다.
+
+```text
+확인한 기준:
+- ...
+
+현재 판단:
+- 아직 결정 필요
+
+이유:
+- 지금은 구현 지시서를 만들 수 없습니다.
+
+먼저 정할 것:
+1. 선행 작업을 마무리할지, 작업 순서를 바꿀지 결정해 주세요.
+2. 필요한 테스트 방식이나 기준 문서 결정을 정해 주세요.
+3. 새 구현 지시서를 만들어도 되는지 승인해 주세요.
+
+내 추천:
+- 먼저 남은 결정을 정리한 뒤 구현 지시서를 새로 작성합니다.
+
+다음에 할 일:
+아직 직접 진행하면 안 됩니다. 먼저 아래 중 하나를 선택해야 합니다.
+
+선택지:
+1. 선행 작업을 먼저 마무리한다.
+2. 작업 순서를 바꾸도록 기준 문서와 작업 기준서를 정리한다.
+3. 구현 지시서 작성을 보류한다.
+
+제 추천:
+- 먼저 선행 작업과 테스트 방식을 정리한 뒤 구현 지시서를 새로 작성합니다.
+
+바로 답할 수 있는 문장:
+"추천안대로 선행 작업과 테스트 방식을 정리할 질문을 먼저 만들어라."
+```
+
+기본 응답에서는 metadata, approvalRefs, legitimacy check, dependsOn gate, `Product Readiness`, `Engineering Readiness`, `Implementation Readiness`, `READY`, `NOT READY`, `Storage Intent Check`, `Behavior Contract Check`, `State Meaning Check` 같은 내부 진단표를 먼저 보여주지 않는다. 사용자가 "자세히" 또는 "내부 판정도 보여줘"라고 요청하면 그때 상세 표를 제공한다.
+
+사용자 개입 없이 진행 가능한 경우에는 다음 형식으로 말한 뒤 실제로 구현 지시서 작성과 검증까지 수행한다.
+
+```text
+다음에 할 일:
+사용자 선택이 필요한 부분은 없습니다.
+현재 기준으로 안전하게 진행할 수 있으므로, 요청 범위 안에서 다음 작업까지 진행합니다.
+
+진행할 작업:
+- 구현 지시서 작성
+- 작업 기준 묶음과 문서 coverage 확인
+- 구현 시작 가능 여부 보고
+
+진행하지 않을 작업:
+- 사용자 승인 없는 구현 실행
+- 기준 문서에 없는 정책 결정
+```
+
+## 미확정 결정 정지 규칙
+
+아직 필요한 결정이 있으면 허용 행동은 사용자 질문으로 되돌리는 것뿐이다.
+
+- 코드를 수정하지 않는다.
+- source of truth 문서 또는 registry를 수정하지 않는다.
+- revision을 실행하지 않는다.
+- 테스트 전략을 변경하지 않는다.
+- 작업 기준서를 수정하지 않는다.
+- prompt 또는 verification result를 수정하지 않는다.
+- complete로 진행하지 않는다.
+
+현재 Task 또는 선행 Task의 미확정 결정은 "나중에"로 미룰 수 없다. 미확정 결정이 남아 있으면 후속 Task prompt 생성, 후속 Task implementation, complete, verification 통과 모두 금지다.
+
+## 사용자 승인
+
+구현 prompt를 만든 뒤 즉시 구현하지 않는다. 사용자가 prompt를 검토하고 승인해야 `_implementation-rules.md`로 넘어간다.

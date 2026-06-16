@@ -1,0 +1,303 @@
+# Readiness Gates
+
+> Access: Internal chain module.
+> 내부용 chain module이다. task entrypoint로 직접 호출하지 마라.
+> 이 module만으로는 implementation, SOT changes, cleanup/delete, completion을 승인할 수 없다.
+
+CDD 구현은 다음 세 확인 지점이 모두 `READY`일 때만 가능하다.
+
+1. 제품 기준 준비 상태
+2. 기술 설계 준비 상태
+3. 구현 시작 가능 여부
+
+하나라도 `NOT READY`이면 구현하지 말고 `_missing-context.md`로 돌아간다. 이 문서는 Markdown 규칙과 판정 형식만 정의한다. CLI, 스크립트, 자동 수정 도구를 구현하지 않는다.
+
+## 제품 기준 준비 상태
+
+제품 기준 준비 상태는 "무엇을 왜 만들 것인가"에 대한 기획자 관점의 준비도다. 내부명은 `Product Readiness`다.
+
+최소 확인 항목:
+
+- 사용자 문제
+- 대상 사용자
+- 사용 시나리오
+- 기능 범위
+- 하지 않을 것
+- 성공 기준
+- 실패/예외 UX
+- 이번 vertical slice의 제품 경계
+- 저장, API, 상태가 필요한 경우 그 제품 의미와 사용자가 다시 읽는 방식
+- 사용자 또는 운영자가 접하는 기능인 경우 상호작용 방식
+- 입력과 출력, 실패와 피드백, 빈 상태, 권한 없음, 처리 중 상태에서의 사용자/운영자 경험
+- 사용자가 반드시 이해해야 하는 주요 문구와 결과
+
+`NOT READY` 예:
+
+- 사용자가 왜 이 기능을 쓰는지 불명확하다.
+- 기능 범위가 너무 넓거나 무한 확장된다.
+- 하지 않을 것이 정의되지 않았다.
+- 성공 기준이 테스트 가능하지 않다.
+- 현재 작업이 제품 목표에 왜 필요한지 설명되지 않는다.
+- 저장하려는 대상과 저장 이유가 제품 관점에서 설명되지 않았다.
+- 사용자가 나중에 저장된 정보를 어떻게 다시 읽거나 활용하는지 설명되지 않았다.
+- 사용자 또는 운영자가 어디서 기능을 발견하거나 실행하는지 설명되지 않았다.
+- 입력, 출력, 실패, 빈 상태, 권한 없음, 처리 중 피드백이 정해지지 않았다.
+- 상호작용 방식이 비어 있는데 저장 구조, API, 화면, CLI 명령, 배치 실행 방식을 먼저 정해야 한다.
+
+## 상호작용 방식 확인
+
+사용자나 운영자가 직접 접하는 기능에서는 입력, 출력, 흐름, 오류, 빈 상태, 권한 없음, 처리 중 피드백, 주요 문구가 제품 판단이다.
+
+이런 판단이 없으면 제품 기준 준비 상태를 `READY`로 표현하지 않는다. 인터페이스는 나중에 붙이는 부가 요소가 아니다. 사용자가 실제로 어떻게 쓰고, 실패 시 무엇을 알게 되는지가 정해지지 않았으면 먼저 질문한다.
+
+상호작용 방식 확인:
+
+```text
+상호작용 방식 확인:
+- 이 기능을 사용하는 사람은 누구인가?
+- 사용자는 어디서 이 기능을 발견하거나 실행하는가?
+- 사용자는 무엇을 보고 시작하는가?
+- 사용자는 무엇을 입력하는가?
+- 사용자는 어떤 행동을 하는가?
+- 성공하면 무엇을 보여주거나 반환하는가?
+- 실패하면 무엇을 보여주거나 반환하는가?
+- 데이터가 없을 때 무엇을 보여주거나 반환하는가?
+- 권한이 없거나 접근할 수 없을 때 어떻게 반응하는가?
+- 처리 중이거나 대기 중일 때 어떤 피드백을 주는가?
+- 사용자가 반드시 이해해야 하는 문구나 결과는 무엇인가?
+- 아직 정하지 못한 상호작용 결정:
+- 결론: 상호작용 설계 가능 / 상호작용 설계 보류
+```
+
+플랫폼별 예시는 범용 예시로만 사용한다.
+
+- 웹/모바일: 화면, 버튼, 폼, 목록, 빈 상태, 오류 메시지
+- CLI: 명령어, 옵션, stdout/stderr, exit code, 실패 메시지
+- API: request/response, validation error, permission failure, error code
+- 배치/운영 도구: 실행 파라미터, dry-run, 실패 리포트, 재시도 기준, 운영자가 보는 summary/log
+
+`상호작용 설계 보류`이면 화면, CLI 명령, API path, 배치 실행 방식, 저장 구조를 먼저 제안하지 않는다. Product Missing Context 질문으로 돌아간다.
+
+## 기술 설계 준비 상태
+
+기술 설계 준비 상태는 "그 제품 판단을 어떤 아키텍처, 저장 구조, 상태, API, 운영/품질 기준, 코드 구조로 안전하게 표현할 것인가"에 대한 코드 설계자 관점의 준비도다. 내부명은 `Engineering Readiness`다.
+
+기술 설계 준비 상태는 기술 기반이 있거나 기존 코드가 있다는 뜻이 아니다. 제품 판단을 아키텍처, table, column, API path, status enum, 성능/보안/운영 기준으로 바꿔도 되는 기준이 문서상 정해졌다는 뜻이다.
+
+최소 확인 항목:
+
+- 도메인 모델
+- 아키텍처 경계
+- 데이터 흐름
+- API 계약
+- DB/저장 정책
+- 상태 전이
+- 저장 의미 확인 결과
+- 동작 계약 확인 결과
+- 상태 의미 확인 결과
+- 권한/보안 영향
+- 운영/품질 기준
+- 데이터 양, 조회 방식, 정렬/검색/페이지 처리, 응답 속도 기대치
+- 민감 정보 노출, 로그/감사, 재시도, 멱등성, 중복 실행 방지
+- 외부 연동/의존성
+- 테스트 전략
+- 실패/예외 처리 정책
+- migration/data compatibility 영향이 있는지 여부
+
+`NOT READY` 예:
+
+- 아키텍처 경계가 정의되지 않았다.
+- DB/API/상태 흐름이 정의되지 않았다.
+- 저장 의미가 정의되지 않았는데 table, column, migration, repository, API DTO를 정해야 한다.
+- 동작 계약이 정의되지 않았는데 API path, method, controller, route, request/response shape를 정해야 한다.
+- 상태 의미가 정의되지 않았는데 status enum, status column, state transition을 정해야 한다.
+- 성능, 보안, 운영 기준이 비어 있는데 안전하거나 충분하다고 가정해야 한다.
+- 데이터 양, 조회 방식, 정렬/검색/페이지 처리, 응답 속도 기대치가 필요한데 정의되지 않았다.
+- 권한 검증, 민감 정보 노출, 실패 처리, 로그/감사 필요 여부가 정의되지 않았다.
+- 도메인 용어가 코드 모델로 매핑되지 않았다.
+- 테스트 전략이 없다.
+- 외부 연동 실패 정책이 없다.
+- migration 영향이 있는데 별도 판단이 없다.
+- 보안/권한 영향이 있는데 정의되지 않았다.
+
+## 구조 제안 전 의미 확인
+
+table, column, API path, status enum은 제품 판단의 결과다. 이것들이 제품 판단을 대신할 수 없다.
+
+Codex는 다음 구조를 제안하기 전에 대응하는 확인을 먼저 수행한다.
+
+- 화면, CLI 명령, 배치 실행 방식, 사용자/운영자 인터페이스 제안 전: 상호작용 방식 확인
+- DB table, column, migration, repository, API DTO 제안 전: Storage Intent Check
+- API path, method, route, controller, request/response shape 제안 전: Behavior Contract Check
+- status enum, status column, state transition 제안 전: State Meaning Check
+
+Storage Intent Check:
+
+```text
+Storage Intent Check:
+- 저장하려는 것:
+- 저장하는 이유:
+- 나중에 읽는 방식:
+- 저장하지 않을 것:
+- 구조화할 것:
+- 자유 텍스트로 둘 것:
+- 수정/삭제/보존 정책:
+- 소유권/범위:
+- 부족한 결정:
+- 결론: DB_DESIGN_ALLOWED / DB_DESIGN_BLOCKED
+```
+
+`DB_DESIGN_ALLOWED`는 저장 의미와 저장 이유가 approved source of truth에 충분히 문서화되어 있을 때만 가능하다.
+
+`DB_DESIGN_BLOCKED`이면 table, column, migration, repository, API DTO를 제안하지 않는다. 이 경우 Product Missing Context 또는 Engineering Missing Context 질문으로 돌아간다.
+
+Behavior Contract Check:
+
+```text
+Behavior Contract Check:
+- 사용자가 기대하는 동작:
+- 호출자가 제공하는 입력:
+- 성공 결과:
+- 실패/예외 결과:
+- 권한/범위:
+- 멱등성/재시도:
+- 외부에 노출할 표현:
+- 부족한 결정:
+- 결론: API_DESIGN_ALLOWED / API_DESIGN_BLOCKED
+```
+
+`API_DESIGN_BLOCKED`이면 API path, method, route, controller, request/response shape를 제안하지 않는다. 먼저 동작 계약을 Product Missing Context 또는 Engineering Missing Context로 질문한다.
+
+State Meaning Check:
+
+```text
+State Meaning Check:
+- 상태가 표현하는 의미:
+- 상태를 바꾸는 사건:
+- 각 상태에서 허용되는 행동:
+- 종료/실패/취소 의미:
+- 저장할지 계산할지:
+- 외부에 노출할지:
+- 부족한 결정:
+- 결론: STATE_MODEL_ALLOWED / STATE_MODEL_BLOCKED
+```
+
+`STATE_MODEL_BLOCKED`이면 status enum, status column, state transition 이름을 제안하지 않는다. 먼저 상태 의미를 Product Missing Context 또는 Engineering Missing Context로 질문한다.
+
+부분적으로 준비된 영역이 있어도 해당 check가 `*_BLOCKED`이면 구조 설계와 구현은 금지다. "부분 READY"라는 표현은 구현이나 DB 설계 제안 권한이 아니다.
+
+## 운영/품질 기준 확인
+
+성능, 보안, 운영 기준도 설계 판단이다. 단순히 코드 구조를 만들 수 있다고 설계가 준비된 것은 아니다.
+
+작고 개인용인 기능은 가볍게 판단할 수 있지만, 판단 자체를 생략해도 된다는 뜻은 아니다. 기준이 비어 있으면 에이전트가 임의로 정하지 말고 사용자에게 선택지를 제시한다.
+
+운영/품질 기준 확인:
+
+```text
+운영/품질 기준 확인:
+- 예상 데이터 양은 어느 정도인가?
+- 목록이나 조회가 있다면 정렬, 검색, 페이지 처리가 필요한가?
+- 사용자가 기대하는 응답 속도는 어느 정도인가?
+- 권한 검증은 어디에서 필요한가?
+- 민감 정보나 외부 연동 정보가 노출될 위험이 있는가?
+- 실패 시 사용자는 무엇을 알 수 있어야 하는가?
+- 서버/클라이언트/작업 실행 환경 중 어디에서 검증해야 하는가?
+- 재시도, 중복 실행 방지, 멱등성이 필요한가?
+- 로그나 감사 기록이 필요한가?
+- 아직 정하지 못한 운영/품질 결정:
+- 결론: 설계 가능 / 설계 보류
+```
+
+`설계 보류`이면 안전하다고 가정하지 않는다. performance, security, operation, retry, logging, audit, pagination, search, sorting, permission, validation 정책을 임의로 정하지 않고 Engineering Missing Context 질문으로 돌아간다.
+
+## 구현 시작 가능 여부
+
+구현 시작 가능 여부는 "이제 에이전트가 구현해도 되는가"에 대한 실행 준비도다. 내부명은 `Implementation Readiness`다.
+
+최소 확인 항목:
+
+- 제품 기준 준비 상태 = `READY`
+- 기술 설계 준비 상태 = `READY`
+- approved 작업 기준 묶음 존재
+- 작업 기준서 존재
+- allowed scope / forbidden scope 명시
+- verification commands 명시
+- user approval gate 통과
+- 필요한 선행 Task complete
+- archive/superseded 문서를 active SOT로 사용하지 않음
+
+`NOT READY` 예:
+
+- 제품 기준 또는 기술 설계 기준 중 하나라도 `NOT READY`다.
+- 작업 기준 묶음이 없다.
+- 작업 기준서가 없다.
+- forbidden scope가 없다.
+- 검증 명령이 없다.
+- 사용자 승인이 없다.
+- 아직 필요한 결정이 남아 있다.
+
+## 판정 출력 형식
+
+Codex는 구현 전에 다음 형식으로 보고한다.
+
+```text
+준비 상태 확인
+제품 기준 준비: READY / NOT READY
+- 근거:
+- 부족한 결정:
+상호작용 방식 확인:
+- 결론: 상호작용 설계 가능 / 상호작용 설계 보류 / 해당 없음
+- 부족한 결정:
+기술 설계 준비: READY / NOT READY
+- 근거:
+- 부족한 결정:
+운영/품질 기준 확인:
+- 결론: 설계 가능 / 설계 보류 / 해당 없음
+- 부족한 결정:
+구현 시작 가능 여부: READY / NOT READY
+- 근거:
+- 구현 가능 여부:
+결론:
+- 구현 가능 / 구현 보류
+- 필요한 다음 행동:
+```
+
+내부 status인 `IMPLEMENTATION_ALLOWED`는 제품 기준 준비 상태, 기술 설계 준비 상태, 구현 시작 가능 여부가 모두 `READY`일 때만 사용한다.
+
+내부 status가 `IMPLEMENTATION_BLOCKED`이면 코드, 테스트, 설정, migration, dependency 변경을 수행하지 않는다.
+
+## 미확정 결정 연결
+
+준비 상태가 `NOT READY`이면 질문을 다음처럼 분리한다.
+
+- 제품 관련 미확정 결정: 제품 목표, 사용자, 시나리오, 범위, 하지 않을 것, 성공 기준, 상호작용 방식, 입력/출력, 실패와 피드백, 빈 상태, 권한 없음, 처리 중 피드백, vertical slice 경계 질문.
+- 기술 설계 관련 미확정 결정: 아키텍처, 도메인 모델, 데이터 흐름, API, 저장 정책, 상태 전이, 성능, 보안/권한, 운영/품질 기준, 외부 연동, 테스트 전략, 실패 처리, migration/data compatibility 질문.
+- 구현 시작 관련 미확정 결정: 작업 기준 묶음, 작업 기준서, allowed/forbidden scope, verification command, user approval, 선행 Task 완료 여부, archive/superseded 참조 여부 질문.
+
+예:
+
+- 제품 관련 질문: 이 기능의 사용자는 누구인가?
+- 기술 설계 관련 질문: 이 상태는 DB에 저장되는가, 계산되는가?
+- 제품 관련 질문: 실패했을 때 사용자는 어떤 메시지나 결과를 받아야 하는가?
+- 기술 설계 관련 질문: 목록이 많아졌을 때 정렬, 검색, 페이지 처리를 어떻게 할 것인가?
+- 구현 시작 관련 질문: 이번 Task에서 public API 변경이 허용되는가?
+
+## 금지되는 오해
+
+- 제품 기준 준비 상태는 화면 기획서만 있다는 뜻이 아니다.
+- 기술 설계 준비 상태는 코드가 이미 있다는 뜻이 아니다.
+- README가 있다고 제품 기준 문서가 준비된 것이 아니다.
+- 기존 구현이 있다고 기술 설계 기준 문서가 준비된 것이 아니다.
+- 테스트가 통과한다고 구현 시작 가능 여부가 `READY`인 것은 아니다.
+- 작업 기준서가 있다고 구현 가능한 것은 아니다.
+- 작업 기준 묶음이 있어도 제품/기술 기준 중 하나가 부족하면 구현 금지다.
+- 사용자의 "좋아"는 준비 상태 확인 통과나 구현 승인으로 자동 해석되지 않는다.
+
+## SOT 관계
+
+제품 기준 문서와 기술 설계 기준 문서는 같은 파일에 함께 있을 수 있지만, 준비 상태 판정에서는 각각 필요한 결정을 별도로 확인한다.
+
+제품 기준 문서만 있거나 기술 설계 기준 문서만 있으면 구현하지 않는다.
+
+README, generated/index docs, memory/recall notes, previous reports, archive/superseded documents는 명시적으로 작업 기준 묶음에 포함되지 않으면 준비 상태 근거가 아니라 보조 자료다.
