@@ -156,13 +156,14 @@ Internal module direct mention:
 27. 제품 기준 준비 상태와 기술 설계 준비 상태가 모두 `READY`일 때만 `plan-task.md` 절차로 Plan/Task를 만든다.
 28. Task가 cleanup/delete 작업이면 `cleanup-delete.md`의 keep list, delete list, 의존성 확인, 사람 확인 지점을 Task와 prompt에 반영한다.
 29. Task가 승인되고 `documentCoverage.status`가 READY일 때만 `write-implementation-prompt.md` 절차로 구현 prompt를 만든다.
-30. prompt 승인 후 `_implementation-rules.md` 실행 전 구현 시작 가능 여부를 판단한다.
-31. 제품 기준 준비 상태, 기술 설계 준비 상태, 구현 시작 가능 여부가 모두 `READY`이고 사용자가 prompt를 승인하면 `_implementation-rules.md` 절차로 구현한다.
-32. 구현 후 check를 수행한다.
-33. `verify-work.md` 절차로 구현 결과를 제품 기준 문서, 기술 설계 기준 문서, 작업 기준서, requiredDocuments, rules, 기준 문서, prompt, result와 대조한다.
-34. 문제가 있으면 `revise-work.md` 절차로 수정 prompt를 만들고 사용자 승인 후 수정 루프를 수행한다.
-35. verification이 VERIFIED이고 사용자가 review를 승인한 뒤에만 `complete-work.md` 절차로 완료한다.
-36. 모든 사용자-facing 보고는 "다음에 할 일" 종료 형식으로 끝낸다.
+30. 구현 prompt 작성 후 새 미확정 결정, 정책 충돌, 위험 변경, 범위 확대가 있는지 판단한다.
+31. 사용자가 실제 구현까지 명확히 요청했고 초안 작성 후 실행 연계 조건을 모두 만족하면 별도 실행 승인 요청을 반복하지 않고 `_implementation-rules.md` 절차로 구현한다.
+32. 사용자가 초안 검토를 요청했거나 실행 연계 조건을 만족하지 않으면 구현하지 말고 선택지, 추천, 바로 답할 수 있는 문장을 제공한다.
+33. 구현 후 check를 수행한다.
+34. `verify-work.md` 절차로 구현 결과를 제품 기준 문서, 기술 설계 기준 문서, 작업 기준서, requiredDocuments, rules, 기준 문서, prompt, result와 대조한다.
+35. 문제가 있으면 `revise-work.md` 절차로 수정 prompt를 만들고 사용자 승인 후 수정 루프를 수행한다.
+36. verification이 VERIFIED이고 사용자가 review를 승인한 뒤에만 `complete-work.md` 절차로 완료한다.
+37. 모든 사용자-facing 보고는 "다음에 할 일" 종료 형식으로 끝낸다.
 
 ## Source of Truth 권위 순서
 
@@ -193,9 +194,9 @@ Archive/superseded documents는 historical record다. 검색에 걸렸다는 이
 - 미확정 결정 답변을 source of truth 문서로 확정하기 전
 - source of truth 변경 방향을 확정하기 전
 - source of truth 변경안을 실제 파일에 적용하기 전
-- prompt 초안을 생성하기 전
+- 사용자 검토용 prompt 초안을 생성하기 전
 - Plan/Task를 승인 상태로 전환하기 전
-- 구현 prompt를 implementation에 전달하기 전
+- 구현 prompt를 implementation에 전달하기 전. 단, 사용자가 실제 구현까지 명확히 요청했고 prompt 작성이 내부 실행 기준을 만드는 절차이며 초안 작성 후 실행 연계 조건을 모두 만족하면 같은 요청 범위 안에서 이어갈 수 있다.
 - revision prompt를 실행하기 전
 - 완료 전 IDE diff review 또는 동등한 review 승인 전
 - cleanup/delete에서 archive 보존 방식이 불명확하거나 대량 삭제, DB drop/migration, public API 제거, dependency 대량 제거, keep list 충돌, 폐기와 비노출 선택, 데이터 손실 가능성이 있는 경우

@@ -135,9 +135,10 @@ legitimacyReport:
       reason: "not superseded"
   allowedActions:
     - "ask user for execution approval"
+    - "continue execution if draft-to-execution continuation conditions are satisfied"
   blockedActions:
     - "implementation"
-  userFacingSummary: "지시서 파일은 있지만 아직 실행 승인 기록이 없어 바로 구현할 수 없습니다."
+  userFacingSummary: "지시서 파일은 있지만 실행 승인 기록이나 초안 작성 후 실행 연계 조건을 확인해야 바로 구현할 수 있습니다."
 ```
 
 목적:
@@ -371,7 +372,7 @@ prompt:
 목적:
 
 - 구현 Agent가 실행 전에 requiredDocuments, approvalRefs, dependsOn, documentCoverage를 한 번에 확인하게 한다.
-- prompt 초안 승인과 실행 승인을 분리한다.
+- prompt 초안 승인과 실행 승인을 분리하되, 사용자가 실제 실행까지 명확히 요청했고 새 결정이나 위험 변경이 없으면 초안 작성 후 실행 연계 조건으로 이어갈 수 있게 한다.
 - `readinessCheck.conclusion`이 `IMPLEMENTATION_BLOCKED`이면 구현 prompt를 실행하지 않는다.
 
 ## Task Contract Template

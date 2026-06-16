@@ -6,7 +6,7 @@
 
 이 skill은 승인된 구현 prompt를 기준으로 코드와 테스트를 작성하는 구현 에이전트용 절차다.
 
-사용자-facing 응답에서는 "prompt"보다 "구현 지시서"를 우선 사용한다. 실행 전에는 `_artifact-metadata.md`와 `_approval-reference.md` 기준으로 지시서 metadata와 `PROMPT_EXECUTION_APPROVAL`을 확인한다.
+사용자-facing 응답에서는 "prompt"보다 "구현 지시서"를 우선 사용한다. 실행 전에는 `_artifact-metadata.md`와 `_approval-reference.md` 기준으로 지시서 metadata와 `PROMPT_EXECUTION_APPROVAL` 또는 초안 작성 후 실행 연계 조건을 확인한다.
 
 사용자 요청이 실제 코드 수정을 원하는지 애매하면 구현하지 않는다. 애매한 요청을 구현 요청으로 승격하지 않는다. "좋아", "진행해", "다음", "반영해" 같은 표현만으로 구현을 시작하지 않는다.
 
@@ -52,7 +52,7 @@
 구현을 자동 진행 가능한 경우:
 
 - 현재 작업 모드가 구현 또는 승인된 패치를 허용한다.
-- 구현 지시서가 있고 실행 승인이 확인된다.
+- 구현 지시서가 있고 실행 승인 또는 초안 작성 후 실행 연계 조건이 확인된다.
 - 제품 방향과 설계 준비 상태가 충분하다.
 - 저장, 동작, 상태, 상호작용, 운영 기준이 충분하다.
 - 작업 범위가 작고 명확하다.
@@ -105,7 +105,7 @@
 - 승인된 SOT Packet이 존재한다.
 - 사용자 요청에 `ANALYSIS_ONLY` 또는 `PROPOSAL_ONLY` 금지 조건이 없다.
 - 구현 prompt가 존재한다.
-- 사용자가 Prompt Execution Approval을 명시했다.
+- 사용자가 Prompt Execution Approval을 명시했거나, `_approval-reference.md`의 초안 작성 후 실행 연계 조건을 모두 만족한다.
 - 구현 prompt artifact에 metadata와 approvalRefs가 확인된다.
 - Task Contract가 APPROVED다.
 - `documentCoverage.status`가 READY다.
@@ -167,6 +167,8 @@
 - Known Conflicts After Apply가 남아 있으면 구현하지 않는다.
 - dependsOn Task가 COMPLETE가 아니면 구현하지 않는다.
 - 사용하려는 prompt, Task Contract, verification result가 `INVALID`, `QUARANTINED`, `SUPERSEDED` 후보이면 구현하지 않는다.
+- 작업 지시서 초안 작성 뒤 새로 결정할 사항이 없고 초안 작성 후 실행 연계 조건을 모두 만족하면, 별도의 실행 승인 요청을 반복하지 않고 같은 요청 범위 안에서 구현으로 이어간다.
+- 초안 작성 중 새 제품 판단, 설계 판단, 기준 문서 충돌, 위험 변경, 범위 확대가 발견되면 구현하지 않고 사용자에게 선택지를 묻는다.
 - cleanup/delete Task는 `cleanup-delete.md`를 따른다. 새 기능 구현으로 확장하거나 폐기된 기능을 이름만 바꿔 core path에 남기지 않는다.
 - `DOCUMENT_ONLY` 작업이면 코드, 테스트, 설정 파일을 수정하지 않는다.
 - `IMPLEMENTATION`인데 SOT Packet이 없으면 구현하지 않고 Missing Context로 돌아간다.

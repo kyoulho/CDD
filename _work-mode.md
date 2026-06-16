@@ -198,6 +198,16 @@ APPLY_AUTHORIZED는 변경 방향 승인과 다르다. "A로 하자", "좋아", 
 
 IMPLEMENTATION은 별도의 source of truth, Task Contract, prompt, approval gate를 통과해야 한다. 단순히 "구현해줘"라고 했다는 이유로 ANALYSIS_ONLY, PROPOSAL_ONLY, PATCH_AUTHORIZED를 무시하지 않는다.
 
+사용자가 실제 구현까지 명확히 요청했고, 구현 지시서 작성은 내부 실행 기준을 만드는 절차일 뿐이라면 초안 작성 후 실행 승인 요청을 반복하지 않을 수 있다. 이 경우에도 source of truth, Task Contract, readiness gate, prompt legitimacy, 위험 변경 확인은 모두 통과해야 한다.
+
+자동 실행 연계 금지:
+
+- 사용자가 "초안만", "계획만", "먼저 보여줘", "검토 후 진행"을 요청했다.
+- 구현 지시서 작성 중 새 제품 판단이나 설계 판단이 발견됐다.
+- migration, 데이터 삭제, public API 제거, dependency 대량 변경, 되돌리기 어려운 cleanup/delete가 있다.
+- 실행 범위가 원래 사용자 요청보다 넓어진다.
+- 작업 성격이나 파일 수정 권한이 애매하다.
+
 ### DOCUMENT_ONLY
 
 사용자가 문서 작성이나 문서 수정만 요청한 상태다.
