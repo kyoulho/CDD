@@ -60,6 +60,14 @@ V2.1의 실제 YAML 골격은 `_artifact-templates.md`의 `Approval Record Templ
 - 완료 기록을 남겨도 된다는 승인
 - review approval과 별개로 요구될 수 있다.
 
+### FOLLOW_UP_CONTINUATION_APPROVAL
+
+- 검증 완료된 선행 작업 뒤에 사용자가 후속 Task 작성, 후속 구현, 다음 단계 진행을 명확히 요청한 경우의 제한적 연계 승인
+- 현재 사용자의 후속 작업 요청이 선행 작업 결과를 전제로 하는 것이 명확하면, 조건 충족 시 review/completion intent의 보조 근거로 기록할 수 있다.
+- 선행 작업의 완료 기록, status, 실행 전 문구 정리처럼 artifact 정합성 보정에만 사용할 수 있다.
+- 새 코드 수정, source of truth 변경, 정책 결정, 위험 변경, 검증되지 않은 결과 완료에는 사용할 수 없다.
+- 아래 "후속 작업 전환 연계" 조건을 모두 만족할 때만 completion approval 보조 근거로 기록할 수 있다.
+
 ### DEPENDENCY_CHANGE_APPROVAL
 
 - 새 dependency, Gradle plugin, annotation processor, code generation tool, runtime-exposed library 변경 승인
@@ -136,4 +144,37 @@ approval:
 
 ```text
 이번 요청은 초안 검토까지만으로 이해했습니다. 이 지시서로 실제 구현을 시작하려면 별도 실행 승인이 필요합니다.
+```
+
+## 후속 작업 전환 연계
+
+선행 Task가 완료 기록만 뒤처져 있고 사용자가 후속 Task 작성이나 구현을 명확히 요청한 경우, CDD Agent는 승인 문구를 다시 요구하기 전에 후속 작업 전환 연계 조건을 먼저 확인한다. 조건을 모두 만족하면 선행 Task 완료 정합성 정리를 수행하고 같은 요청 범위 안에서 후속 작업으로 이어간다.
+
+연계 조건:
+
+- 사용자가 후속 Task 작성, 후속 구현, 다음 단계 진행 중 하나를 명확히 요청했다.
+- 선행 Task의 구현 결과가 이미 사용자에게 보고되었고, 현재 후속 요청이 그 결과를 전제로 한다.
+- 선행 Task의 verification status가 `VERIFIED`이고 check 결과가 통과했다.
+- 선행 Task의 실제 변경 범위와 작업 기준 묶음이 일치한다.
+- 선행 Task에 남은 미확정 제품 판단, 설계 판단, 정책 충돌, source of truth 변경 요청이 없다.
+- 남은 작업이 completion record 생성, status 전환, 실행 전 문구 제거, predecessor snapshot 갱신 같은 artifact 정합성 정리에 한정된다.
+- artifact legitimacy check가 통과하고 invalid/quarantined/superseded 충돌이 없다.
+- 후속 작업으로 넘어가는 것이 사용자의 원래 요청 범위를 넘지 않는다.
+
+연계하면 안 되는 경우:
+
+- 선행 Task 검증이 없거나 `VERIFIED`가 아니다.
+- 사용자가 선행 작업 결과를 보류하거나 검토만 하겠다고 했다.
+- 변경 결과가 사용자에게 보고되지 않았거나, 현재 후속 요청이 그 결과를 전제로 한다고 볼 근거가 없다.
+- 완료 정리 과정에서 source of truth 변경, 정책 결정, 위험 변경, 데이터 삭제, public API 제거, migration, dependency 대량 변경이 필요하다.
+- 선행 Task artifact의 DRAFT 상태가 실제 미실행을 의미하는지 단순 문구 누락인지 판별할 수 없다.
+- 후속 작업을 시작하려면 새로운 제품 판단이나 설계 판단을 정해야 한다.
+
+사용자-facing 보고에서는 이렇게 말한다.
+
+```text
+다음에 할 일:
+사용자 선택이 필요한 부분은 없습니다.
+선행 작업은 검증이 끝났고 남은 것은 완료 기록 정합성 정리뿐입니다.
+먼저 완료 기록과 문서 상태를 맞춘 뒤, 같은 요청 범위 안에서 다음 작업으로 이어갑니다.
 ```

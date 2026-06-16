@@ -123,6 +123,7 @@ Internal module direct mention:
 - 작업 중간마다 사용자 개입이 필요한지 먼저 판정하라.
 - 사용자 개입이 필요한 판단: 제품 판단, 설계 판단, 삭제/보존 선택, 데이터 삭제, public API 제거, migration, 큰 dependency 변경, 실제 파일 수정 권한 불명확, 애매한 요청, 수정 금지 지시.
 - 사용자 개입이 필요 없고 요청이 명확하며 기준, 범위, 검증 방법이 충분하면 다시 묻지 말고 문서 보강, 계획 작성, 구현 지시서 작성, 구현, 검증, 완료 보고 중 현재 요청이 허용한 다음 단계까지 진행하라.
+- 검증 완료된 선행 작업 뒤에 사용자가 후속 작업을 명확히 요청했고 남은 일이 완료 기록 또는 문서 상태 정합성 정리뿐이면, 승인 문구를 다시 요구하지 말고 선행 작업을 complete 처리한 뒤 후속 작업으로 이어가라.
 - 정책이나 설계가 비어 있으면 자동 진행하지 말고 사용자에게 선택을 요구하라.
 
 ## 전체 지휘 흐름
@@ -163,7 +164,8 @@ Internal module direct mention:
 34. `verify-work.md` 절차로 구현 결과를 제품 기준 문서, 기술 설계 기준 문서, 작업 기준서, requiredDocuments, rules, 기준 문서, prompt, result와 대조한다.
 35. 문제가 있으면 `revise-work.md` 절차로 수정 prompt를 만들고 사용자 승인 후 수정 루프를 수행한다.
 36. verification이 VERIFIED이고 사용자가 review를 승인한 뒤에만 `complete-work.md` 절차로 완료한다.
-37. 모든 사용자-facing 보고는 "다음에 할 일" 종료 형식으로 끝낸다.
+37. 단, 검증 완료된 선행 작업 뒤에 사용자가 후속 작업을 명확히 요청했고 후속 작업 전환 연계 조건을 모두 만족하면 완료 기록 정합성 정리를 먼저 수행한 뒤 후속 작업으로 이어간다.
+38. 모든 사용자-facing 보고는 "다음에 할 일" 종료 형식으로 끝낸다.
 
 ## Source of Truth 권위 순서
 
@@ -198,7 +200,7 @@ Archive/superseded documents는 historical record다. 검색에 걸렸다는 이
 - Plan/Task를 승인 상태로 전환하기 전
 - 구현 prompt를 implementation에 전달하기 전. 단, 사용자가 실제 구현까지 명확히 요청했고 prompt 작성이 내부 실행 기준을 만드는 절차이며 초안 작성 후 실행 연계 조건을 모두 만족하면 같은 요청 범위 안에서 이어갈 수 있다.
 - revision prompt를 실행하기 전
-- 완료 전 IDE diff review 또는 동등한 review 승인 전
+- 완료 전 IDE diff review 또는 동등한 review 승인 전. 단, 검증 완료된 선행 작업의 완료 기록 또는 문서 상태 정합성 정리만 남았고 후속 작업 전환 연계 조건을 모두 만족하면 같은 요청 범위 안에서 이어갈 수 있다.
 - cleanup/delete에서 archive 보존 방식이 불명확하거나 대량 삭제, DB drop/migration, public API 제거, dependency 대량 제거, keep list 충돌, 폐기와 비노출 선택, 데이터 손실 가능성이 있는 경우
 
 ## Source of Truth 변경 라우팅
