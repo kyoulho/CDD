@@ -30,6 +30,7 @@ CDD 구현은 다음 세 확인 지점이 모두 `READY`일 때만 가능하다.
 - 사용자 또는 운영자가 접하는 기능인 경우 상호작용 방식
 - 입력과 출력, 실패와 피드백, 빈 상태, 권한 없음, 처리 중 상태에서의 사용자/운영자 경험
 - 사용자가 반드시 이해해야 하는 주요 문구와 결과
+- 웹/모바일 UI인 경우 화면 상태, 정보 우선순위, 주요 행동, 반응형 기준, 접근성, 텍스트 overflow, 시각 검증 방법
 
 `NOT READY` 예:
 
@@ -42,6 +43,7 @@ CDD 구현은 다음 세 확인 지점이 모두 `READY`일 때만 가능하다.
 - 사용자가 나중에 저장된 정보를 어떻게 다시 읽거나 활용하는지 설명되지 않았다.
 - 사용자 또는 운영자가 어디서 기능을 발견하거나 실행하는지 설명되지 않았다.
 - 입력, 출력, 실패, 빈 상태, 권한 없음, 처리 중 피드백이 정해지지 않았다.
+- 웹/모바일 UI인데 화면 상태, 정보 구조, 반응형 동작, 접근성, 시각 검증 기준이 정해지지 않았다.
 - 상호작용 방식이 비어 있는데 저장 구조, API, 화면, CLI 명령, 배치 실행 방식을 먼저 정해야 한다.
 
 ## 상호작용 방식 확인
@@ -78,6 +80,28 @@ CDD 구현은 다음 세 확인 지점이 모두 `READY`일 때만 가능하다.
 
 `상호작용 설계 보류`이면 화면, CLI 명령, API path, 배치 실행 방식, 저장 구조를 먼저 제안하지 않는다. Product Missing Context 질문으로 돌아간다.
 
+## 프론트엔드 UX 확인
+
+웹/모바일 UI 작업에서는 상호작용 방식 확인과 별도로 프론트엔드 UX 확인을 수행한다. 버튼이나 화면 이름만 정해졌다고 UI/UX 기준이 준비된 것은 아니다.
+
+프론트엔드 UX 확인:
+
+```text
+프론트엔드 UX 확인:
+- 대상 화면과 사용자 목표:
+- 기존 디자인 시스템 또는 따라야 할 화면 패턴:
+- 정보 우선순위와 주요 행동:
+- 기본/로딩/빈 상태/오류/권한 없음/성공 상태:
+- 반응형 기준과 최소 지원 viewport:
+- 접근성, keyboard/focus, label 기준:
+- 텍스트 overflow, 긴 문구, CJK 표시 기준:
+- 시각 검증 방법:
+- 아직 정하지 못한 UI/UX 결정:
+- 결론: FRONTEND_UX_ALLOWED / FRONTEND_UX_BLOCKED / 해당 없음
+```
+
+`FRONTEND_UX_BLOCKED`이면 route, page, component, layout, styling, motion, visual QA acceptance criteria를 먼저 제안하지 않는다. Product Missing Context 또는 Engineering Missing Context 질문으로 돌아간다.
+
 ## 기술 설계 준비 상태
 
 기술 설계 준비 상태는 "그 제품 판단을 어떤 아키텍처, 저장 구조, 상태, API, 운영/품질 기준, 코드 구조로 안전하게 표현할 것인가"에 대한 코드 설계자 관점의 준비도다. 내부명은 `Engineering Readiness`다.
@@ -98,6 +122,7 @@ CDD 구현은 다음 세 확인 지점이 모두 `READY`일 때만 가능하다.
 - 권한/보안 영향
 - 운영/품질 기준
 - 데이터 양, 조회 방식, 정렬/검색/페이지 처리, 응답 속도 기대치
+- 성능 위험을 찾거나 고칠 작업이라면 성능 위험 조사 범위, 근거 기준, 허용된 수정 범위
 - 민감 정보 노출, 로그/감사, 재시도, 멱등성, 중복 실행 방지
 - 외부 연동/의존성
 - 테스트 전략
@@ -113,6 +138,7 @@ CDD 구현은 다음 세 확인 지점이 모두 `READY`일 때만 가능하다.
 - 상태 의미가 정의되지 않았는데 status enum, status column, state transition을 정해야 한다.
 - 성능, 보안, 운영 기준이 비어 있는데 안전하거나 충분하다고 가정해야 한다.
 - 데이터 양, 조회 방식, 정렬/검색/페이지 처리, 응답 속도 기대치가 필요한데 정의되지 않았다.
+- 구현 중 보이는 성능 위험 후보를 승인된 작업 범위 없이 개선 대상으로 승격해야 한다.
 - 권한 검증, 민감 정보 노출, 실패 처리, 로그/감사 필요 여부가 정의되지 않았다.
 - 도메인 용어가 코드 모델로 매핑되지 않았다.
 - 테스트 전략이 없다.
@@ -127,6 +153,7 @@ table, column, API path, status enum은 제품 판단의 결과다. 이것들이
 Codex는 다음 구조를 제안하기 전에 대응하는 확인을 먼저 수행한다.
 
 - 화면, CLI 명령, 배치 실행 방식, 사용자/운영자 인터페이스 제안 전: 상호작용 방식 확인
+- route, page, component, layout, styling, motion, visual QA 기준 제안 전: 프론트엔드 UX 확인
 - DB table, column, migration, repository, API DTO 제안 전: Storage Intent Check
 - API path, method, route, controller, request/response shape 제안 전: Behavior Contract Check
 - status enum, status column, state transition 제안 전: State Meaning Check
@@ -205,11 +232,14 @@ State Meaning Check:
 - 서버/클라이언트/작업 실행 환경 중 어디에서 검증해야 하는가?
 - 재시도, 중복 실행 방지, 멱등성이 필요한가?
 - 로그나 감사 기록이 필요한가?
+- 성능 위험 후보를 찾는 작업이 승인된 범위인가, 아니면 구현 중 발견한 제안으로만 남겨야 하는가?
+- 성능 위험 판단에 사용할 근거는 profiling, query plan, benchmark, production metric, 테스트 재현 중 무엇인가?
+- 성능 개선으로 바꿔도 되는 범위는 local implementation, query shape, index/schema, caching, async/batch, dependency 중 어디까지인가?
 - 아직 정하지 못한 운영/품질 결정:
 - 결론: 설계 가능 / 설계 보류
 ```
 
-`설계 보류`이면 안전하다고 가정하지 않는다. performance, security, operation, retry, logging, audit, pagination, search, sorting, permission, validation 정책을 임의로 정하지 않고 Engineering Missing Context 질문으로 돌아간다.
+`설계 보류`이면 안전하다고 가정하지 않는다. performance, security, operation, retry, logging, audit, pagination, search, sorting, permission, validation 정책을 임의로 정하지 않고 Engineering Missing Context 질문으로 돌아간다. 구현 중 성능 위험 후보가 보여도 승인된 범위와 근거 기준 없이 cache, pagination, indexing, async, batching, query 변경, dependency 추가를 수행하지 않는다.
 
 ## 구현 시작 가능 여부
 
@@ -248,6 +278,9 @@ Codex는 구현 전에 다음 형식으로 보고한다.
 - 부족한 결정:
 상호작용 방식 확인:
 - 결론: 상호작용 설계 가능 / 상호작용 설계 보류 / 해당 없음
+- 부족한 결정:
+프론트엔드 UX 확인:
+- 결론: FRONTEND_UX_ALLOWED / FRONTEND_UX_BLOCKED / 해당 없음
 - 부족한 결정:
 기술 설계 준비: READY / NOT READY
 - 근거:

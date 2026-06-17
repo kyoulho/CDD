@@ -55,6 +55,8 @@
 - 구현 지시서가 있고 실행 승인 또는 초안 작성 후 실행 연계 조건이 확인된다.
 - 제품 방향과 설계 준비 상태가 충분하다.
 - 저장, 동작, 상태, 상호작용, 운영 기준이 충분하다.
+- 웹/모바일 UI 작업이면 프론트엔드 UX 기준이 충분하다.
+- 성능 위험 후보를 다룰 작업이면 조사 범위, 판단 근거, 허용된 수정 범위가 충분하다.
 - 작업 범위가 작고 명확하다.
 - forbiddenScope에 닿지 않는다.
 - 데이터 손실, public API 제거, migration 위험, dependency 대량 변경이 없다.
@@ -64,10 +66,12 @@
 
 - 제품 방향이 비어 있다.
 - 사용자/운영자 상호작용 방식이 비어 있다.
+- 웹/모바일 UI인데 화면 상태, 정보 구조, 접근성, 반응형 동작, 시각 검증 기준이 비어 있다.
 - 무엇을 왜 저장할지 비어 있다.
 - 어떤 행동과 결과를 제공할지 비어 있다.
 - 상태값 의미가 비어 있다.
 - 성능/보안/운영 기준이 비어 있다.
+- 성능 위험 후보를 찾거나 고치려는데 승인된 조사 범위와 판단 근거가 비어 있다.
 - 삭제와 보존 중 선택이 필요하다.
 - migration, 데이터 삭제, public API 제거가 있다.
 - dependency 변경 영향이 크다.
@@ -151,10 +155,12 @@
 - 문서에 없는 도메인/아키텍처/행위 판단을 하지 않는다.
 - 구현 세부사항은 문서와 Task 범위 안에서만 판단한다.
 - 상호작용 방식 확인이 `상호작용 설계 가능`이 아니면 화면, CLI 명령, API surface, batch 실행 방식, 저장 구조를 만들거나 제안하지 않는다.
+- 프론트엔드 UX 확인이 `FRONTEND_UX_ALLOWED`가 아니면 route, page, component, layout, styling, motion, visual QA 기준을 만들거나 제안하지 않는다.
 - Storage Intent Check가 `DB_DESIGN_ALLOWED`가 아니면 table, column, migration, repository, API DTO를 만들거나 제안하지 않는다.
 - Behavior Contract Check가 `API_DESIGN_ALLOWED`가 아니면 API path, method, route, controller, request/response shape를 만들거나 제안하지 않는다.
 - State Meaning Check가 `STATE_MODEL_ALLOWED`가 아니면 status enum, status column, state transition을 만들거나 제안하지 않는다.
 - 운영/품질 기준 확인이 `설계 가능`이 아니면 성능, 보안, 권한, 데이터 양, 조회 방식, 실패 처리, 재시도, 로그/감사 기준을 임의로 정하지 않는다.
+- 승인된 성능 위험 조사 범위가 없으면 구현 중 발견한 성능 위험 후보를 구현 범위로 승격하지 않는다. 근거, 영향 가능성, 필요한 승인만 suggestions로 남긴다.
 - forbiddenApproaches를 위반하지 않는다.
 - acceptanceCriteria를 충족하는 최소 범위로 구현한다.
 - testRequirements를 충족한다.
@@ -178,7 +184,33 @@ Identifier type, DB key strategy, API-visible id representation, datetime format
 
 Storage Intent Check, Behavior Contract Check, State Meaning Check are not implementation details. If the approved documents do not allow the corresponding design, stop and report Missing Context instead of choosing table names, columns, API paths, DTOs, repositories, status values, or state transitions.
 
-상호작용 방식 확인과 운영/품질 기준 확인은 구현 세부사항이 아니다. 사용자/운영자 상호작용, 입력, 출력, 실패, 빈 상태, 권한 없음, 처리 중 피드백, 성능, 보안, 운영 기준이 승인 문서에 없으면 구현을 중단하고 Missing Context로 보고한다.
+상호작용 방식 확인, 프론트엔드 UX 확인, 운영/품질 기준 확인은 구현 세부사항이 아니다. 사용자/운영자 상호작용, 입력, 출력, 실패, 빈 상태, 권한 없음, 처리 중 피드백, 웹/모바일 UI 상태, 정보 구조, 반응형 동작, 접근성, 시각 검증 기준, 성능, 보안, 운영 기준이 승인 문서에 없으면 구현을 중단하고 Missing Context로 보고한다.
+
+## 성능 위험 후보 처리
+
+Implementation Agent는 승인된 작업 범위 밖에서 성능 위험 후보를 발견할 수 있지만, 그것을 자동으로 수정 범위로 바꿀 수 없다.
+
+성능 위험 후보를 코드 변경으로 다루려면 다음 조건이 모두 필요하다.
+
+1. 작업 기준서 allowedScope가 성능 조사 또는 해당 변경 파일을 포함한다.
+2. 운영/품질 기준 확인이 `설계 가능`이다.
+3. 예상 데이터 양, 조회 방식, 응답 속도 기대치 또는 성능 판단 근거가 문서에 있다.
+4. 변경이 허용된 수정 범위 안에 있다.
+5. 변경이 API 계약, DB schema, 도메인 행위, 테스트 전략, dependency 정책을 바꾸지 않는다.
+
+위 조건 중 하나라도 없으면 코드를 고치지 않는다. completion report 또는 suggestions에 "성능 위험 후보"로 남기고, 필요한 근거와 후속 승인 질문을 적는다.
+
+금지 예:
+
+```text
+목록 조회가 느릴 수 있으니 pagination, cache, index, debounce, background job을 추가한다.
+```
+
+허용 예:
+
+```text
+작업 기준서가 허용한 컴포넌트 내부에서 동일한 렌더링 결과를 유지하며 불필요한 반복 계산을 줄인다.
+```
 
 테스트를 통과시키기 위해 승인되지 않은 테스트 인프라를 추가하지 마라.
 
@@ -194,6 +226,8 @@ Implementation Agent는 다음 항목을 임의로 정할 수 없다.
 - 사용자/운영자 인터페이스
 - 입력/출력 방식
 - 실패/빈 상태/권한 없음/처리 중 피드백
+- route/page/component/layout/styling/motion/visual QA 기준
+- 반응형 기준, 접근성 기준, text overflow 처리
 - table 이름
 - column 이름
 - primary key 생성 전략
@@ -203,6 +237,7 @@ Implementation Agent는 다음 항목을 임의로 정할 수 없다.
 - status enum 값
 - 정렬/검색/페이지 처리 기준
 - 응답 속도 기대치
+- 성능 위험 조사 범위와 수정 범위
 - 권한 검증 위치
 - 민감 정보 노출 정책
 - 재시도/멱등성/중복 실행 방지 기준

@@ -1,6 +1,6 @@
 ---
 name: cdd
-description: CDD 작업 하네스. 요청이 애매하거나 구현/인터페이스/DB/API/status 설계 전에 제품 기준, 상호작용 방식, 저장 의미, 동작 계약, 상태 의미, 운영/품질 기준, 작업 기준서, 검증 흐름을 확인해야 할 때 사용한다.
+description: CDD 작업 하네스. 요청이 애매하거나 구현/프론트엔드 UI/UX/인터페이스/DB/API/status/성능 설계 전에 제품 기준, 상호작용 방식, 사용자 경험 기준, 저장 의미, 동작 계약, 상태 의미, 운영/품질 기준, 작업 기준서, 검증 흐름을 확인해야 할 때 사용한다.
 ---
 # CDD Skill
 
@@ -14,6 +14,7 @@ CDD는 승인된 기준 문서와 사용자 승인 지점이 준비된 작업만
 - 이번 작업 기준 묶음: 이번 작업에서 따라야 할 승인된 기준 문서 묶음.
 - 작업 기준서: 구현 전 작업 범위, 금지 범위, 검증 기준을 고정하는 작업 계약.
 - 상호작용 방식 확인: 사용자 또는 운영자가 접하는 기능의 입력, 출력, 흐름, 실패와 피드백을 먼저 확인하는 절차.
+- 프론트엔드 UX 확인: 웹/모바일 UI 작업에서 화면 상태, 정보 구조, 접근성, 반응형 동작, 시각 검증 기준을 먼저 확인하는 절차.
 - 저장 의미 확인: table, column, migration, repository, API DTO를 말하기 전에 무엇을 왜 저장하는지 확인하는 절차.
 - 운영/품질 기준 확인: 성능, 보안, 권한, 조회, 재시도, 로그/감사, 운영 기준을 구현 전에 확인하는 절차.
 
@@ -67,9 +68,11 @@ Internal module을 task entrypoint로 직접 실행하지 마라. Internal modul
 
 사용자 또는 운영자가 접하는 기능은 상호작용 방식이 정해져야 한다. 입력, 출력, 실패, 빈 상태, 권한 없음, 처리 중 피드백이 비어 있으면 화면, CLI 명령, API surface, 배치 실행 방식, 저장 구조를 먼저 제안하지 않는다.
 
+웹/모바일 UI 작업은 상호작용 방식만으로 충분하지 않다. 화면 상태, 정보 우선순위, 주요 행동, 반응형 기준, 접근성, 텍스트 overflow, 디자인 시스템 일관성, 시각 검증 방법이 비어 있으면 화면 구조, 컴포넌트, 스타일, 애니메이션, visual QA 기준을 먼저 제안하지 않는다.
+
 DB table, column, migration, repository, API DTO는 Storage Intent Check가 `DB_DESIGN_ALLOWED`일 때만 제안한다. API path와 request/response shape는 Behavior Contract Check가 `API_DESIGN_ALLOWED`일 때만 제안한다. status enum과 state transition은 State Meaning Check가 `STATE_MODEL_ALLOWED`일 때만 제안한다.
 
-성능, 보안, 권한, 데이터 양, 조회 방식, 실패 처리, 재시도, 로그/감사 같은 운영/품질 기준이 비어 있으면 안전하다고 가정하지 않고 먼저 질문한다.
+성능, 보안, 권한, 데이터 양, 조회 방식, 실패 처리, 재시도, 로그/감사 같은 운영/품질 기준이 비어 있으면 안전하다고 가정하지 않고 먼저 질문한다. 구현 중 성능 위험 후보가 보이더라도 승인된 작업 범위와 운영/품질 기준이 없으면 에이전트가 임의로 성능 개선 범위로 승격하지 않고 근거 있는 제안으로만 남긴다.
 
 사용자에게 보여주는 기본 보고에서는 내부 판정 용어를 그대로 노출하지 않는다. `SOT`는 "확인한 기준 문서" 또는 "현재 기준", `Product Readiness`는 "제품 방향", `Engineering Readiness`는 "설계 준비 상태", `Implementation Readiness`는 "지금 바로 만들 수 있는지", `READY` / `NOT READY`는 "바로 진행 가능" / "아직 결정 필요"로 바꿔 말한다. `Storage Intent Check`, `Behavior Contract Check`, `State Meaning Check`도 각각 "무엇을 왜 저장할지", "사용자가 어떤 행동을 하고 어떤 결과를 받는지", "상태값이 무엇을 의미하는지"로 바꿔 말한다.
 

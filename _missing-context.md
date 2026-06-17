@@ -130,6 +130,8 @@ BLOCKED_BY_MISSING_CONTEXT
 - "이 Task에서 새 dependency를 승인하나요, 아니면 기존 스택 안에서 구현할까요?"
 - "이 프로젝트는 실제 서비스 출시용인가요, 연습용인가요?"
 - "데이터 정합성이나 추적 가능성이 중요한 작업인가요?"
+- "이 화면의 주요 사용자 행동, 빈 상태, 오류 상태, 반응형 기준, 접근성 기준은 무엇인가요?"
+- "성능 위험 후보는 이번 Task에서 조사/수정 범위인가요, 아니면 후속 제안으로만 남길까요?"
 
 나쁜 질문:
 
@@ -249,4 +251,34 @@ Good:
   - C. dependency가 필요한 기능을 후속 Task로 이연한다.
 - 추천: B. 승인 문서가 없으면 기존 스택 안에서 구현한다.
 - 질문: 새 dependency를 승인할까요, 아니면 기존 스택 안에서 구현할까요?
+```
+
+## Frontend UX Missing Context 예시
+
+```markdown
+### 1. Frontend UX criteria
+- 필요한 이유: 웹/모바일 UI는 버튼과 화면 이름만으로 구현 기준이 충분하지 않다. 화면 상태, 정보 우선순위, 반응형, 접근성, visual QA 기준이 있어야 구현과 검증이 가능하다.
+- 관련 영역: PRODUCT_REQUIREMENT / USER_SCENARIO / FRONTEND_ARCHITECTURE
+- 막고 있는 작업: route/page/component/layout/styling/visual QA가 포함된 Task와 구현 지시서 생성
+- 선택지:
+  - A. 기존 디자인 시스템과 화면 패턴을 따르고, 기본/로딩/빈 상태/오류/권한 없음 상태를 모두 정의한다.
+  - B. 최소 UI만 만들되 반응형, 접근성, overflow, visual QA 기준은 명시한다.
+  - C. 이번 Task에서는 UI 구현을 제외하고 API/도메인 작업만 진행한다.
+- 추천: B. 디자인 세부안을 크게 늘리지 않으면서도 구현 에이전트가 임의로 화면을 만들지 않게 막는다.
+- 질문: 이번 UI의 주요 행동, 화면 상태, 반응형/접근성/visual QA 기준은 어느 수준으로 승인할까요?
+```
+
+## Performance Risk Scope Missing Context 예시
+
+```markdown
+### 1. Performance risk scope
+- 필요한 이유: 구현 에이전트가 "느릴 수 있음"을 이유로 pagination, cache, index, async, dependency를 임의로 추가하면 성능 정책과 아키텍처 판단을 대신하게 된다.
+- 관련 영역: OPERATION / ARCHITECTURE_POLICY / TEST_STRATEGY
+- 막고 있는 작업: 성능 위험 후보 탐지 또는 성능 개선을 포함한 Task와 구현 지시서 생성
+- 선택지:
+  - A. 이번 Task에서 성능 위험 후보는 발견해도 suggestions로만 남긴다.
+  - B. profiling, benchmark, query plan, 테스트 재현 같은 근거가 있는 후보만 같은 allowedScope 안에서 수정한다.
+  - C. 별도 성능 조사 Task를 만들고 데이터 양, 응답 속도, 허용 변경 범위를 먼저 승인한다.
+- 추천: A. 기준이 아직 없다면 구현 범위를 넓히지 않고 후속 판단으로 남기는 것이 안전하다.
+- 질문: 성능 위험 후보는 이번 Task에서 어디까지 다룰까요?
 ```

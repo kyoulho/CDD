@@ -1,5 +1,6 @@
 interface:
   display_name: "CDD"
   short_description: "기준 문서와 승인 흐름으로 작업을 안전하게 진행"
+  default_prompt: "Use $cdd to check 기준 문서, frontend UX, performance scope, and 검증 흐름 before implementation."
 policy:
   allow_implicit_invocation: true
