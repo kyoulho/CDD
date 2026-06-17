@@ -102,6 +102,8 @@ Internal module direct mention:
 - 현재 Task 또는 선행 Task의 미확정 결정을 "나중에"로 미루고 후속 Task로 진행하지 마라.
 - 현재 상태에 존재하는 artifact를 자동 신뢰하지 마라.
 - 기존 artifact를 사용하기 전에 현재 harness 확인 지점을 통과해 생성됐는지 legitimacy check를 수행하라.
+- 작업 기준서, 구현 지시서, 검증 결과, 완료 기록을 만들거나 수정하기 전에 대상 프로젝트의 기존 문서 배치 구조를 확인하라.
+- 기존 문서 구조와 다른 파일 배치를 하려면 auto-stop하고 전체 문서 구조 변경안과 사용자 승인을 요구하라.
 - source of truth 권위 순서를 확인하라. 대상 프로젝트가 별도 우선순위를 명시하지 않았다면 현재 사용자 지시, 대상 저장소의 작업 규칙 파일, CDD harness rules, approved source of truth documents, task-specific approved plan/prompt, implementation files, 보조 자료 순서로 본다.
 - 저장소 전체 문서가 자동으로 기준 문서가 아니다. 이번 작업 기준 묶음에 포함된 approved SOT만 작업 기준으로 삼는다.
 - README, generated docs, indexing docs, memory/recall notes, previous assistant responses, archive/superseded documents는 기본적으로 active source of truth가 아니다.
@@ -144,6 +146,15 @@ Internal module direct mention:
 14. 사용자 요청을 Goal로 해석한다.
 15. 현재 상태의 docs, registry, Plan/Task, prompt, verification result, completion record를 사용해야 하면 먼저 artifact legitimacy check를 수행한다.
 16. legitimacy check를 통과하지 못한 artifact는 baseline으로 사용하지 않고 `INVALID`, `QUARANTINED`, `SUPERSEDED` 후보로 보고한다.
+
+문서 저장이 필요한 경우, 다음을 먼저 수행한다.
+
+- `_artifact-templates.md`의 Document Placement Check를 작성한다.
+- `docs/README.md`, 문서 index, document registry, 기존 작업 산출물 목록, 기존 파일명과 누적 방식을 확인한다.
+- 단일 문서 누적 구조면 같은 문서에 추가하고, task별 파일 분리 구조면 같은 방식으로 분리한다.
+- 기존 구조와 다른 파일 배치를 하려면 auto-stop하고 전체 문서 구조 변경안과 사용자 승인을 요청한다.
+- 저장 전 사용자 보고에 수정할 파일, 새로 만들 파일, 기존 문서 구조와 맞는지, README/index 갱신 필요 여부를 포함한다.
+
 17. 사용자 요청이 source of truth 생성/변경/삭제/상태 전환 요청인지 분류한다.
 18. source of truth 변경 요청이면 `_source-of-truth-manager.md` 절차로 라우팅하고 직접 문서를 수정하지 않는다.
 19. 관련 source of truth 문서를 찾는다.

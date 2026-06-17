@@ -35,6 +35,18 @@ artifact:
   approvalRefs: []
   generatedFrom:
     - path/to/input.yml
+  placement:
+    checkedProjectStructure:
+      - docs/README.md
+      - document-registry.yml
+      - existing task artifacts
+    existingPattern: task-per-file
+    targetFiles:
+      - path/to/existing-or-target.md
+    newFiles: []
+    indexUpdatesRequired: []
+    newFileReason: null
+    structureChangeRequired: false
   knownConflicts: []
   supersedes: []
   supersededBy: null
@@ -44,8 +56,46 @@ artifact:
 목적:
 
 - 파일 존재 여부가 아니라 생성 조건, 승인, 기준 문서, 선행 작업 상태를 기록한다.
+- 대상 프로젝트의 기존 문서 배치 구조와 저장 위치 결정 근거를 함께 기록한다.
 - legitimacy check의 입력으로 사용한다.
 - `projectContextRef`는 프로젝트 자체의 목적과 운영 전제를 참조한다. 하네스 평가 목적을 Project Context에 섞는 용도로 사용하지 않는다.
+
+## Document Placement Check Template
+
+작업 기준서, 구현 지시서, 검증 결과, 완료 기록을 만들거나 수정하기 전에 사용한다. 이 확인은 산출물 내부 형식보다 먼저 수행한다.
+
+```yaml
+documentPlacementCheck:
+  checkedAt: "2026-06-08T00:00:00Z"
+  checkedByRole: plan-task
+  checkedProjectStructure:
+    - docs/README.md
+    - document-registry.yml
+    - existing task artifacts
+  existingPattern: single-accumulated-document
+  existingPatternEvidence:
+    - "docs/tasks.md contains multiple task entries"
+  targetFilesToModify:
+    - docs/tasks.md
+  newFilesToCreate: []
+  newFileReason: null
+  readmeOrIndexUpdatesRequired:
+    - docs/README.md
+  matchesExistingStructure: true
+  structureChangeRequired: false
+  userApprovalRequired: false
+  userFacingSummary: "기존 작업 기준서가 단일 문서에 누적되는 구조이므로 같은 문서에 추가합니다."
+```
+
+규칙:
+
+- `docs/README.md`, 문서 index, document registry, 기존 작업 산출물 목록, 기존 파일명과 누적 방식을 먼저 확인한다.
+- 기존 구조가 단일 작업 기준서에 task를 누적하는 방식이면 후속 phase/task도 같은 문서에 추가한다.
+- 기존 구조가 task별 파일 분리 방식이면 후속 task도 같은 방식으로 분리한다.
+- 새 문서 파일을 만들기 전에는 왜 기존 문서에 추가하지 않고 새 파일이 필요한지 사용자에게 보고한다.
+- 기존 구조와 다른 파일 배치를 하려면 일부 파일만 다르게 만들지 말고 전체 문서 구조 변경안으로 제안하고 사용자 승인을 받는다.
+- `matchesExistingStructure: false` 또는 `structureChangeRequired: true`이면 auto-stop하고 사용자 확인 전에는 저장하지 않는다.
+- 저장 전 사용자 보고에는 수정할 파일, 새로 만들 파일, 기존 문서 구조와 맞는지, README/index 갱신 필요 여부를 포함한다.
 
 ## Harness Operation Artifact Types
 

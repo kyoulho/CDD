@@ -55,6 +55,19 @@ artifact:
   generatedFrom:
     - tasks/TASK-002.yml
     - docs/architecture/api-contract.md
+  placement:
+    checkedProjectStructure:
+      - docs/README.md
+      - document-registry.yml
+      - existing task artifacts
+    existingPattern: task-per-file
+    targetFiles:
+      - docs/tasks/TASK-002.md
+    newFiles: []
+    indexUpdatesRequired:
+      - docs/README.md
+    newFileReason: null
+    structureChangeRequired: false
   knownConflicts: []
   supersedes: []
   supersededBy: null
@@ -76,6 +89,7 @@ artifact:
 - `artifact.dependsOnSnapshot`: 생성 당시 선행 Task 상태
 - `artifact.approvalRefs`: 관련 승인 기록
 - `artifact.generatedFrom`: 생성 입력 파일
+- `artifact.placement`: 대상 프로젝트의 기존 문서 배치 구조 확인과 저장 위치 결정 근거
 - `artifact.knownConflicts`: 생성 시점에 알려진 충돌
 - `artifact.supersedes`: 이 artifact가 대체한 artifact
 - `artifact.supersededBy`: 이 artifact를 대체한 artifact
@@ -88,6 +102,9 @@ artifact:
 - 새 artifact는 가능한 한 metadata를 포함한다.
 - 새 artifact의 metadata는 가능한 한 `_artifact-templates.md`의 템플릿 형식을 따른다.
 - metadata는 "파일 존재"가 아니라 "생성 조건"을 설명해야 한다.
+- 작업 기준서, 구현 지시서, 검증 결과, 완료 기록을 만들거나 수정할 때는 `placement`에 기존 문서 구조 확인 결과를 남긴다.
+- 새 파일을 만들면 `placement.newFileReason`에 기존 문서에 추가하지 않는 이유를 남긴다.
+- 기존 구조와 다른 배치를 하려면 `placement.structureChangeRequired: true`로 보고하고 사용자 승인 전에는 저장하지 않는다.
 - metadata는 artifact legitimacy check의 입력이지, 단독 승인 근거가 아니다.
 - projectContextRef는 프로젝트 현실을 가리키는 참조다. 하네스 검증 목적을 projectContext에 강제로 넣는 근거가 아니다.
 
