@@ -148,6 +148,143 @@ Frontend UI/UX 초안에는 다음을 포함한다.
 - route/page/component/layout/styling/testRequirements에 반영할 항목
 - 아직 미결인 UI/UX 결정
 
+Frontend UI/UX 답변은 하나의 큰 문서에 모두 섞지 말고, 판단 소유 영역에 따라 다음 초안 후보로 나눈다. 사용자 답변이 일부 영역만 다루면 해당 영역의 초안만 제안하고, 비어 있는 영역은 Missing Context 질문으로 남긴다.
+
+`USER_FLOW` 또는 `INTERACTION_SPEC` 초안은 사용자가 실제로 기능을 어떻게 쓰는지 소유한다.
+
+```markdown
+# User Flow / Interaction Spec Draft
+
+## Purpose
+
+## Owned Decisions
+- actor:
+- entryPoint:
+- startingContext:
+- inputs:
+- userActions:
+- successOutput:
+- failureOutput:
+- emptyStateOutput:
+- permissionDeniedOutput:
+- pendingFeedback:
+- requiredCopy:
+- outOfScope:
+
+## Implementation Constraints
+- 인터페이스, 화면, CLI 명령, API surface, 배치 실행 방식은 이 흐름 밖에서 임의로 만들지 않는다.
+
+## Test Requirements
+
+## Open Questions
+```
+
+`FRONTEND_UX_CRITERIA` 초안은 화면 경험과 검증 가능한 UI 상태를 소유한다.
+
+```markdown
+# Frontend UX Criteria Draft
+
+## Purpose
+
+## Owned Decisions
+- targetScreens:
+- userGoals:
+- informationHierarchy:
+- primaryActions:
+- secondaryActions:
+- defaultState:
+- loadingState:
+- emptyState:
+- errorState:
+- permissionDeniedState:
+- successState:
+- responsiveRules:
+- minimumViewports:
+- accessibilityRules:
+- keyboardFocusRules:
+- labelRules:
+- textOverflowRules:
+- cjkAndLongTextRules:
+- visualQaMethod:
+- acceptanceCriteria:
+
+## Implementation Constraints
+- route/page/component/layout/styling/motion 기준은 이 문서와 관련 승인 문서에 기록된 범위를 넘지 않는다.
+
+## Test Requirements
+
+## Open Questions
+```
+
+`DESIGN_SYSTEM` 또는 `UI_PATTERN` 초안은 일관된 시각 규칙과 재사용 패턴을 소유한다.
+
+```markdown
+# Design System / UI Pattern Draft
+
+## Purpose
+
+## Owned Decisions
+- existingPatternsToFollow:
+- layoutPatterns:
+- componentPatterns:
+- spacingRules:
+- typographyRules:
+- colorRules:
+- iconRules:
+- motionRules:
+- feedbackPatterns:
+- densityRules:
+- responsivePattern:
+- accessibilityPattern:
+- forbiddenOneOffStyles:
+
+## Implementation Constraints
+- 승인되지 않은 새 visual language, component variant, motion pattern을 만들지 않는다.
+
+## Test Requirements
+
+## Open Questions
+```
+
+`FRONTEND_ARCHITECTURE` 초안은 UI 구현 구조와 코드 경계를 소유한다. 이 문서는 제품 흐름이나 시각 정책을 대신 정하지 않고, 승인된 흐름과 UX 기준을 구현 구조로 옮기는 기준만 둔다.
+
+```markdown
+# Frontend Architecture Draft
+
+## Purpose
+
+## Owned Decisions
+- routeBoundary:
+- pageBoundary:
+- componentBoundary:
+- stateOwnership:
+- dataLoadingBoundary:
+- mutationBoundary:
+- validationBoundary:
+- errorHandlingBoundary:
+- loadingHandlingBoundary:
+- accessibilityImplementationBoundary:
+- visualQaBoundary:
+- testBoundary:
+- dependencyPolicy:
+
+## Implementation Constraints
+- 제품 흐름, 화면 상태, 디자인 시스템 결정이 비어 있으면 architecture가 이를 대신 채우지 않는다.
+- 승인 없는 dependency, styling framework, component library, code generation tool을 추가하지 않는다.
+
+## Test Requirements
+
+## Open Questions
+```
+
+문서 분리 기준:
+
+- 사용자 발견 경로, 입력, 행동, 결과, 실패 피드백은 `USER_FLOW` 또는 `INTERACTION_SPEC`에 둔다.
+- 화면 상태, 정보 우선순위, 반응형, 접근성, visual QA는 `FRONTEND_UX_CRITERIA`에 둔다.
+- 색상, 타이포그래피, 간격, component pattern, motion 같은 일관성 기준은 `DESIGN_SYSTEM` 또는 `UI_PATTERN`에 둔다.
+- route/page/component/state/data loading/test boundary 같은 구현 구조는 `FRONTEND_ARCHITECTURE`에 둔다.
+- 한 문서가 다른 문서의 결정을 대신 채우면 안 된다. 예를 들어 `FRONTEND_ARCHITECTURE`가 빈 화면 문구, primary action, 오류 메시지를 임의로 정하면 안 된다.
+
 Project Context 초안에는 하네스 검증 목적, 하네스 약점 발견 목적, skill validation 목적, prompt governance validation 목적을 넣지 않는다. 사용자가 별도로 하네스 평가 기록을 원하면 `harness-evaluation-note`, `harness-test-log`, `harness-experiment-plan` 같은 project source of truth 밖 artifact를 제안한다.
 
 Dependency 초안에는 다음을 포함한다.

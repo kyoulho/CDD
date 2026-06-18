@@ -327,6 +327,10 @@ Readiness 단계에서는 다음 정책이 필요한 작업인지 확인하고, 
 ### Frontend UI/UX 관련
 
 - 웹/모바일 UI 작업인가?
+- `USER_FLOW` 또는 `INTERACTION_SPEC`가 사용자 발견 경로, 시작 맥락, 입력, 행동, 성공/실패/빈 상태/권한 없음/처리 중 결과를 소유하는가?
+- `FRONTEND_UX_CRITERIA`가 화면 상태, 정보 우선순위, primary action, 반응형, 접근성, text overflow, visual QA 기준을 소유하는가?
+- `DESIGN_SYSTEM` 또는 `UI_PATTERN`이 색상, 타이포그래피, 간격, component pattern, motion 같은 시각 일관성 기준을 소유하는가?
+- `FRONTEND_ARCHITECTURE`가 route/page/component/state/data loading/test boundary 같은 구현 구조만 소유하고, 제품 흐름이나 시각 정책을 대신 정하지 않는가?
 - 기존 디자인 시스템 또는 따라야 할 화면 패턴이 정의되어 있는가?
 - 화면의 정보 우선순위와 primary action이 정의되어 있는가?
 - 기본, 로딩, 빈 상태, 오류, 권한 없음, 성공 상태가 정의되어 있는가?

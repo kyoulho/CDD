@@ -268,6 +268,8 @@ Good:
 - 질문: 이번 UI의 주요 행동, 화면 상태, 반응형/접근성/visual QA 기준은 어느 수준으로 승인할까요?
 
 위 답변을 받으면 `_document-supplement.md`는 필요한 범위에 따라 FRONTEND_UX_CRITERIA, USER_FLOW 또는 INTERACTION_SPEC, DESIGN_SYSTEM 또는 UI_PATTERN, FRONTEND_ARCHITECTURE 초안을 제안한다. 답변 전이나 APPLY 승인 전에는 route, page, component, layout, styling, motion, visual QA 기준을 Task나 구현 지시서에 넣지 않는다.
+
+사용자 답변이 일부만 채워졌다면 채워진 문서 초안만 제안한다. 예를 들어 사용자 흐름만 답했고 화면 상태나 디자인 시스템 기준이 비어 있으면 `USER_FLOW` 또는 `INTERACTION_SPEC` 초안만 제안하고, `FRONTEND_UX_CRITERIA`, `DESIGN_SYSTEM` 또는 `UI_PATTERN`, `FRONTEND_ARCHITECTURE`는 계속 질문으로 남긴다.
 ```
 
 ## Performance Risk Scope Missing Context 예시
