@@ -448,6 +448,8 @@ Change Request status는 `_status-machine.md`를 따른다. `APPLIED`는 아직 
 - `PROMPT_DRAFT_MODIFIED_BEFORE_GATE`: prompt draft gate가 충족되지 않았는데 prompt draft를 생성하거나 수정하는 행위
 - `UNAPPROVED_MOCK_STRATEGY_DECISION`: 승인된 TEST_STRATEGY 없이 mock을 테스트 전략으로 선택하는 행위
 - `UNAPPROVED_SLICE_TEST_STRATEGY_DECISION`: 승인된 TEST_STRATEGY 없이 `@WebMvcTest`, slice test, mocked service/controller test 등을 선택하는 행위
+- `UNAPPROVED_FRONTEND_UX_DOCUMENT_DRAFTING`: 사용자 답변 없이 FRONTEND_UX_CRITERIA / DESIGN_SYSTEM / UI_PATTERN / USER_FLOW / INTERACTION_SPEC / FRONTEND_ARCHITECTURE DRAFT를 생성하는 행위
+- `UNAPPROVED_FRONTEND_UX_DECISION`: 승인된 프론트엔드 UX 기준 문서 없이 route, page, component, layout, styling, motion, visual QA 기준을 결정하는 행위
 - `ARTIFACT_EXISTS_BUT_NOT_VALID`: 파일이 디스크에 존재한다는 이유만으로 유효한 artifact라고 판단하는 행위
 - `LEGITIMACY_CHECK_SKIPPED`: artifact 사용 전에 필요한 legitimacy check를 생략하는 행위
 - `PARTIAL_SOURCE_OF_TRUTH_UPDATE_ATTEMPT`: 사용자가 특정 파일만 수정하라고 했다는 이유로 영향받는 다른 source of truth 문서나 Task Contract를 수정하지 않고 일부 문서만 바꾸려는 시도

@@ -33,6 +33,10 @@ project-context.yml 또는 docs/project/context.md 초안
 rules.yml 초안
 docs/domain/*.md 초안
 docs/behavior/*.md 초안
+docs/user-flows/*.md 초안
+docs/ui-ux/*.md 초안
+docs/frontend/*.md 초안
+docs/design-system/*.md 초안
 docs/architecture/*.md 초안
 docs/testing/*.md 초안
 docs/operations/*.md 초안
@@ -96,6 +100,7 @@ document-registry.yml 업데이트 초안
 - H2, Testcontainers, test profile, test-specific migration, mock/fake/stub 같은 선택은 사용자 답변에 있더라도 승인 전까지 implementation 근거로 사용하지 않는다.
 - Missing Context가 해결되기 전에는 코드 수정, revision 실행, 테스트 전략 변경, Task Contract 수정, complete 진행을 하지 않는다.
 - 사용자 답변 없이 TEST_STRATEGY / MIGRATION_POLICY DRAFT를 생성하지 않는다.
+- 사용자 답변 없이 FRONTEND_UX_CRITERIA / DESIGN_SYSTEM / UI_PATTERN / USER_FLOW / INTERACTION_SPEC / FRONTEND_ARCHITECTURE DRAFT를 생성하지 않는다.
 - source of truth 변경이 Plan, Task, prompt, verification result를 무효화하면 적용 후 반드시 invalidation을 보고한다.
 - 사용자가 특정 파일만 수정하라고 해도 정합성상 필수 파일이 빠지면 APPLY를 제안하지 않는다.
 - 영향 분석에서 발견한 충돌을 warning으로 낮추지 않는다.
@@ -108,6 +113,10 @@ document-registry.yml 업데이트 초안
 사용자 답변이 cross-cutting policy를 확정한다면 적절한 문서 초안으로 변환한다.
 
 - Project Context 답변: `_project-context.md`의 Project Context Template 기반 초안
+- 사용자 흐름/상호작용 답변: USER_FLOW 또는 INTERACTION_SPEC 초안
+- Frontend UI/UX 답변: FRONTEND_UX_CRITERIA 초안
+- Design system/visual pattern 답변: DESIGN_SYSTEM 또는 UI_PATTERN 초안
+- Frontend architecture 답변: FRONTEND_ARCHITECTURE 초안
 - DB/Persistence 답변: DATA_MODEL 또는 MIGRATION_POLICY 초안
 - Test Strategy 답변: TEST_STRATEGY 초안
 - API/Error 답변: API_CONTRACT 또는 ERROR_POLICY 초안
@@ -123,6 +132,21 @@ document-registry.yml 업데이트 초안
 - 금지되는 방식
 - testRequirements 또는 implementationConstraints에 반영할 항목
 - 아직 미결인 항목
+
+Frontend UI/UX 초안에는 다음을 포함한다.
+
+- 대상 화면과 사용자 목표
+- 사용자 흐름과 주요 행동
+- 정보 우선순위와 primary action
+- 기본, 로딩, 빈 상태, 오류, 권한 없음, 성공 상태
+- 반응형 기준과 최소 지원 viewport
+- keyboard/focus, label, 접근성 기준
+- 텍스트 overflow, 긴 문구, 숫자, CJK 표시 기준
+- 디자인 시스템 또는 따라야 할 화면 패턴
+- 허용되는 styling, layout, motion 범위
+- visual QA 방식과 acceptance criteria
+- route/page/component/layout/styling/testRequirements에 반영할 항목
+- 아직 미결인 UI/UX 결정
 
 Project Context 초안에는 하네스 검증 목적, 하네스 약점 발견 목적, skill validation 목적, prompt governance validation 목적을 넣지 않는다. 사용자가 별도로 하네스 평가 기록을 원하면 `harness-evaluation-note`, `harness-test-log`, `harness-experiment-plan` 같은 project source of truth 밖 artifact를 제안한다.
 

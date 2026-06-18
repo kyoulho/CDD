@@ -70,6 +70,8 @@ Internal module을 task entrypoint로 직접 실행하지 마라. Internal modul
 
 웹/모바일 UI 작업은 상호작용 방식만으로 충분하지 않다. 화면 상태, 정보 우선순위, 주요 행동, 반응형 기준, 접근성, 텍스트 overflow, 디자인 시스템 일관성, 시각 검증 방법이 비어 있으면 화면 구조, 컴포넌트, 스타일, 애니메이션, visual QA 기준을 먼저 제안하지 않는다.
 
+웹/모바일 UI 작업의 기준은 `FRONTEND_UX_CRITERIA`, `USER_FLOW` 또는 `INTERACTION_SPEC`, `DESIGN_SYSTEM` 또는 `UI_PATTERN`, `FRONTEND_ARCHITECTURE` 또는 동등한 승인 문서에 기록되어 있어야 한다. 승인 문서가 없으면 UI 구현 기준을 Task나 구현 지시서에 넣지 말고 Missing Context로 돌아간다.
+
 DB table, column, migration, repository, API DTO는 Storage Intent Check가 `DB_DESIGN_ALLOWED`일 때만 제안한다. API path와 request/response shape는 Behavior Contract Check가 `API_DESIGN_ALLOWED`일 때만 제안한다. status enum과 state transition은 State Meaning Check가 `STATE_MODEL_ALLOWED`일 때만 제안한다.
 
 성능, 보안, 권한, 데이터 양, 조회 방식, 실패 처리, 재시도, 로그/감사 같은 운영/품질 기준이 비어 있으면 안전하다고 가정하지 않고 먼저 질문한다. 구현 중 성능 위험 후보가 보이더라도 승인된 작업 범위와 운영/품질 기준이 없으면 에이전트가 임의로 성능 개선 범위로 승격하지 않고 근거 있는 제안으로만 남긴다.

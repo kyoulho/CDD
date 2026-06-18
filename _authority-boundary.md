@@ -295,6 +295,8 @@ Missing Context가 발견되면 Agent는 권한을 확장해서 문제를 해결
 - `UNAUTHORIZED_REVISION_EXECUTION`: Missing Context가 해결되지 않았는데 Agent가 스스로 코드를 수정했다.
 - `UNAPPROVED_TEST_SCOPE_REDUCTION`: 기존 Task Contract의 testRequirements를 만족하지 못하자 테스트 범위를 임의로 줄였다.
 - `UNAPPROVED_POLICY_DOCUMENT_DRAFTING`: 사용자 답변 없이 TEST_STRATEGY / MIGRATION_POLICY DRAFT 문서를 생성했다.
+- `UNAPPROVED_FRONTEND_UX_DOCUMENT_DRAFTING`: 사용자 답변 없이 FRONTEND_UX_CRITERIA / DESIGN_SYSTEM / UI_PATTERN / USER_FLOW / INTERACTION_SPEC / FRONTEND_ARCHITECTURE DRAFT 문서를 생성했다.
+- `UNAPPROVED_FRONTEND_UX_DECISION`: 승인된 UI/UX 기준 문서 없이 route, page, component, layout, styling, motion, visual QA 기준을 결정했다.
 - `VERIFICATION_GATE_BYPASS_ATTEMPT`: Verification이 BLOCKED_BY_MISSING_CONTEXT인데 먼저 revision을 수행하고 verification을 통과시키려 했다.
 - `PARTIAL_SOURCE_OF_TRUTH_UPDATE_ATTEMPT`: 영향받는 문서나 Task Contract를 남겨 둔 채 일부 source of truth 파일만 바꾸려 했다.
 - `INTENTIONAL_SOURCE_OF_TRUTH_INCONSISTENCY`: 알려진 source of truth 불일치를 남긴 채 APPLY하려 했다.

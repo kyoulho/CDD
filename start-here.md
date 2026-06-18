@@ -83,6 +83,7 @@ Internal module direct mention:
 - 제품 기준 준비 상태와 기술 설계 준비 상태가 모두 `READY`가 아니면 Plan/Task를 만들지 마라.
 - 사용자 또는 운영자가 접하는 기능인데 상호작용 방식이 정해지지 않았으면 화면, CLI 명령, API surface, 배치 실행 방식, 저장 구조를 제안하지 마라.
 - 입력, 출력, 실패, 빈 상태, 권한 없음, 처리 중 피드백이 비어 있으면 제품 기준 준비 상태를 `READY`로 보지 마라.
+- 웹/모바일 UI 작업인데 `FRONTEND_UX_CRITERIA`, `USER_FLOW` 또는 `INTERACTION_SPEC`, `DESIGN_SYSTEM` 또는 `UI_PATTERN`, `FRONTEND_ARCHITECTURE` 또는 동등한 승인 문서가 없으면 화면 구조, route, page, component, layout, styling, motion, visual QA 기준을 먼저 제안하지 마라.
 - 저장 의미가 정해지지 않았으면 table, column, migration, repository, API DTO를 제안하지 마라.
 - 동작 계약이 정해지지 않았으면 API path, method, route, request/response shape를 제안하지 마라.
 - 상태 의미가 정해지지 않았으면 status enum, status column, state transition을 제안하지 마라.

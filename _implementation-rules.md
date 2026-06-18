@@ -55,7 +55,7 @@
 - 구현 지시서가 있고 실행 승인 또는 초안 작성 후 실행 연계 조건이 확인된다.
 - 제품 방향과 설계 준비 상태가 충분하다.
 - 저장, 동작, 상태, 상호작용, 운영 기준이 충분하다.
-- 웹/모바일 UI 작업이면 프론트엔드 UX 기준이 충분하다.
+- 웹/모바일 UI 작업이면 프론트엔드 UX 기준이 충분하고 `FRONTEND_UX_CRITERIA`, `USER_FLOW` 또는 `INTERACTION_SPEC`, `DESIGN_SYSTEM` 또는 `UI_PATTERN`, `FRONTEND_ARCHITECTURE` 또는 동등한 승인 문서가 확인된다.
 - 성능 위험 후보를 다룰 작업이면 조사 범위, 판단 근거, 허용된 수정 범위가 충분하다.
 - 작업 범위가 작고 명확하다.
 - forbiddenScope에 닿지 않는다.
@@ -67,6 +67,7 @@
 - 제품 방향이 비어 있다.
 - 사용자/운영자 상호작용 방식이 비어 있다.
 - 웹/모바일 UI인데 화면 상태, 정보 구조, 접근성, 반응형 동작, 시각 검증 기준이 비어 있다.
+- 웹/모바일 UI인데 `FRONTEND_UX_CRITERIA`, `USER_FLOW` 또는 `INTERACTION_SPEC`, `DESIGN_SYSTEM` 또는 `UI_PATTERN`, `FRONTEND_ARCHITECTURE` 또는 동등한 승인 문서가 없다.
 - 무엇을 왜 저장할지 비어 있다.
 - 어떤 행동과 결과를 제공할지 비어 있다.
 - 상태값 의미가 비어 있다.
@@ -119,6 +120,7 @@
 - 구현 prompt가 legitimacy check를 통과했다.
 - invalid/quarantined/superseded artifact가 실행 근거에 없다.
 - requiredDocuments가 확인 가능하다.
+- 웹/모바일 UI 작업이면 requiredDocuments에 `FRONTEND_UX_CRITERIA`, `USER_FLOW` 또는 `INTERACTION_SPEC`, `DESIGN_SYSTEM` 또는 `UI_PATTERN`, `FRONTEND_ARCHITECTURE` 또는 동등한 승인 문서가 포함되어 있다.
 
 ## 역할
 
@@ -156,6 +158,7 @@
 - 구현 세부사항은 문서와 Task 범위 안에서만 판단한다.
 - 상호작용 방식 확인이 `상호작용 설계 가능`이 아니면 화면, CLI 명령, API surface, batch 실행 방식, 저장 구조를 만들거나 제안하지 않는다.
 - 프론트엔드 UX 확인이 `FRONTEND_UX_ALLOWED`가 아니면 route, page, component, layout, styling, motion, visual QA 기준을 만들거나 제안하지 않는다.
+- 승인된 `FRONTEND_UX_CRITERIA`, `USER_FLOW` 또는 `INTERACTION_SPEC`, `DESIGN_SYSTEM` 또는 `UI_PATTERN`, `FRONTEND_ARCHITECTURE` 없이 route, page, component, layout, styling, motion, visual QA 기준을 만들거나 제안하지 않는다.
 - Storage Intent Check가 `DB_DESIGN_ALLOWED`가 아니면 table, column, migration, repository, API DTO를 만들거나 제안하지 않는다.
 - Behavior Contract Check가 `API_DESIGN_ALLOWED`가 아니면 API path, method, route, controller, request/response shape를 만들거나 제안하지 않는다.
 - State Meaning Check가 `STATE_MODEL_ALLOWED`가 아니면 status enum, status column, state transition을 만들거나 제안하지 않는다.
@@ -184,7 +187,7 @@ Identifier type, DB key strategy, API-visible id representation, datetime format
 
 Storage Intent Check, Behavior Contract Check, State Meaning Check are not implementation details. If the approved documents do not allow the corresponding design, stop and report Missing Context instead of choosing table names, columns, API paths, DTOs, repositories, status values, or state transitions.
 
-상호작용 방식 확인, 프론트엔드 UX 확인, 운영/품질 기준 확인은 구현 세부사항이 아니다. 사용자/운영자 상호작용, 입력, 출력, 실패, 빈 상태, 권한 없음, 처리 중 피드백, 웹/모바일 UI 상태, 정보 구조, 반응형 동작, 접근성, 시각 검증 기준, 성능, 보안, 운영 기준이 승인 문서에 없으면 구현을 중단하고 Missing Context로 보고한다.
+상호작용 방식 확인, 프론트엔드 UX 확인, 운영/품질 기준 확인은 구현 세부사항이 아니다. 사용자/운영자 상호작용, 입력, 출력, 실패, 빈 상태, 권한 없음, 처리 중 피드백, 웹/모바일 UI 상태, 정보 구조, 반응형 동작, 접근성, 시각 검증 기준, 성능, 보안, 운영 기준이 승인 문서에 없으면 구현을 중단하고 Missing Context로 보고한다. 웹/모바일 UI 기준은 `FRONTEND_UX_CRITERIA`, `USER_FLOW` 또는 `INTERACTION_SPEC`, `DESIGN_SYSTEM` 또는 `UI_PATTERN`, `FRONTEND_ARCHITECTURE` 또는 동등한 승인 문서에 기록되어 있어야 한다.
 
 ## 성능 위험 후보 처리
 

@@ -169,7 +169,7 @@ BLOCKED_BY_MISSING_CONTEXT 상태에서 허용되는 행동은 다음뿐이다.
 - H2 제거, Testcontainers 추가 시도, 테스트 구조 변경 같은 코드 수정
 - Repository DB 통합 테스트를 정적 테스트로 대체
 - 테스트를 후속 Task로 임의 이연
-- TEST_STRATEGY / MIGRATION_POLICY DRAFT 문서 임의 생성
+- TEST_STRATEGY / MIGRATION_POLICY / FRONTEND_UX_CRITERIA / DESIGN_SYSTEM / UI_PATTERN / USER_FLOW / INTERACTION_SPEC / FRONTEND_ARCHITECTURE DRAFT 문서 임의 생성
 - source of truth, document registry, Plan, Task, prompt, verification result 수정
 
 ## Test Strategy Missing Context 예시
@@ -258,7 +258,7 @@ Good:
 ```markdown
 ### 1. Frontend UX criteria
 - 필요한 이유: 웹/모바일 UI는 버튼과 화면 이름만으로 구현 기준이 충분하지 않다. 화면 상태, 정보 우선순위, 반응형, 접근성, visual QA 기준이 있어야 구현과 검증이 가능하다.
-- 관련 영역: PRODUCT_REQUIREMENT / USER_SCENARIO / FRONTEND_ARCHITECTURE
+- 관련 영역: PRODUCT_REQUIREMENT / USER_SCENARIO / FRONTEND_UX_CRITERIA / USER_FLOW / INTERACTION_SPEC / DESIGN_SYSTEM / UI_PATTERN / FRONTEND_ARCHITECTURE
 - 막고 있는 작업: route/page/component/layout/styling/visual QA가 포함된 Task와 구현 지시서 생성
 - 선택지:
   - A. 기존 디자인 시스템과 화면 패턴을 따르고, 기본/로딩/빈 상태/오류/권한 없음 상태를 모두 정의한다.
@@ -266,6 +266,8 @@ Good:
   - C. 이번 Task에서는 UI 구현을 제외하고 API/도메인 작업만 진행한다.
 - 추천: B. 디자인 세부안을 크게 늘리지 않으면서도 구현 에이전트가 임의로 화면을 만들지 않게 막는다.
 - 질문: 이번 UI의 주요 행동, 화면 상태, 반응형/접근성/visual QA 기준은 어느 수준으로 승인할까요?
+
+위 답변을 받으면 `_document-supplement.md`는 필요한 범위에 따라 FRONTEND_UX_CRITERIA, USER_FLOW 또는 INTERACTION_SPEC, DESIGN_SYSTEM 또는 UI_PATTERN, FRONTEND_ARCHITECTURE 초안을 제안한다. 답변 전이나 APPLY 승인 전에는 route, page, component, layout, styling, motion, visual QA 기준을 Task나 구현 지시서에 넣지 않는다.
 ```
 
 ## Performance Risk Scope Missing Context 예시
