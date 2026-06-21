@@ -84,6 +84,7 @@ Internal module direct mention:
 - 사용자 또는 운영자가 접하는 기능인데 상호작용 방식이 정해지지 않았으면 화면, CLI 명령, API surface, 배치 실행 방식, 저장 구조를 제안하지 마라.
 - 입력, 출력, 실패, 빈 상태, 권한 없음, 처리 중 피드백이 비어 있으면 제품 기준 준비 상태를 `READY`로 보지 마라.
 - 웹/모바일 UI 작업인데 승인 문서 안에 `FRONTEND_UX_CRITERIA`, `USER_FLOW` 또는 `INTERACTION_SPEC`, `DESIGN_SYSTEM` 또는 `UI_PATTERN`, `FRONTEND_ARCHITECTURE` 역할이 명확히 기록되어 있지 않으면 화면 구조, route, page, component, layout, styling, motion, visual QA 기준을 먼저 제안하지 마라. 별도 파일 경로를 강제하지 말고, 프로젝트가 승인한 루트 `DESIGN.md` 같은 단일 기준 문서가 해당 역할을 소유하면 그 구조를 존중한다.
+- 웹/모바일 UI 작업에서 분석 결과가 `uiImplementationContract`로 고정되어 있지 않으면 컴포넌트 수정으로 바로 들어가지 마라. 계약에는 레이아웃, 정보 우선순위, 금지 패턴, 반응형 기준, 브라우저/스크린샷 검증 기준이 있어야 한다.
 - 저장 의미가 정해지지 않았으면 table, column, migration, repository, API DTO를 제안하지 마라.
 - 동작 계약이 정해지지 않았으면 API path, method, route, request/response shape를 제안하지 마라.
 - 상태 의미가 정해지지 않았으면 status enum, status column, state transition을 제안하지 마라.

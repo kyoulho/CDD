@@ -56,6 +56,7 @@
 - 제품 방향과 설계 준비 상태가 충분하다.
 - 저장, 동작, 상태, 상호작용, 운영 기준이 충분하다.
 - 웹/모바일 UI 작업이면 프론트엔드 UX 기준이 충분하고 승인 문서 안의 `FRONTEND_UX_CRITERIA`, `USER_FLOW` 또는 `INTERACTION_SPEC`, `DESIGN_SYSTEM` 또는 `UI_PATTERN`, `FRONTEND_ARCHITECTURE` 역할 coverage가 확인된다.
+- 웹/모바일 UI 작업이면 화면 단위 `uiImplementationContract`가 있으며 레이아웃, 정보 우선순위, 금지 패턴, 반응형 기준, 브라우저/스크린샷 검증 기준이 고정되어 있다.
 - 성능 위험 후보를 다룰 작업이면 조사 범위, 판단 근거, 허용된 수정 범위가 충분하다.
 - 작업 범위가 작고 명확하다.
 - forbiddenScope에 닿지 않는다.
@@ -68,6 +69,7 @@
 - 사용자/운영자 상호작용 방식이 비어 있다.
 - 웹/모바일 UI인데 화면 상태, 정보 구조, 접근성, 반응형 동작, 시각 검증 기준이 비어 있다.
 - 웹/모바일 UI인데 승인 문서 안의 `FRONTEND_UX_CRITERIA`, `USER_FLOW` 또는 `INTERACTION_SPEC`, `DESIGN_SYSTEM` 또는 `UI_PATTERN`, `FRONTEND_ARCHITECTURE` 역할 coverage가 없다.
+- 웹/모바일 UI인데 분석 결과가 화면 단위 `uiImplementationContract`로 고정되지 않았다.
 - 무엇을 왜 저장할지 비어 있다.
 - 어떤 행동과 결과를 제공할지 비어 있다.
 - 상태값 의미가 비어 있다.
@@ -121,6 +123,7 @@
 - invalid/quarantined/superseded artifact가 실행 근거에 없다.
 - requiredDocuments가 확인 가능하다.
 - 웹/모바일 UI 작업이면 requiredDocuments에 필요한 승인 문서가 포함되어 있고, 그 문서 안에서 `FRONTEND_UX_CRITERIA`, `USER_FLOW` 또는 `INTERACTION_SPEC`, `DESIGN_SYSTEM` 또는 `UI_PATTERN`, `FRONTEND_ARCHITECTURE` 역할 coverage가 확인된다.
+- 웹/모바일 UI 작업이면 Task Contract 또는 구현 지시서에 `uiImplementationContract`가 포함되어 있다.
 
 ## 역할
 
@@ -159,6 +162,9 @@
 - 상호작용 방식 확인이 `상호작용 설계 가능`이 아니면 화면, CLI 명령, API surface, batch 실행 방식, 저장 구조를 만들거나 제안하지 않는다.
 - 프론트엔드 UX 확인이 `FRONTEND_UX_ALLOWED`가 아니면 route, page, component, layout, styling, motion, visual QA 기준을 만들거나 제안하지 않는다.
 - 승인 문서 안의 `FRONTEND_UX_CRITERIA`, `USER_FLOW` 또는 `INTERACTION_SPEC`, `DESIGN_SYSTEM` 또는 `UI_PATTERN`, `FRONTEND_ARCHITECTURE` 역할 coverage 없이 route, page, component, layout, styling, motion, visual QA 기준을 만들거나 제안하지 않는다.
+- 웹/모바일 UI 작업에서 `uiImplementationContract` 없이 컴포넌트 단위 수정으로 바로 들어가지 않는다.
+- `uiImplementationContract`의 금지 패턴을 구현 편의, 기존 컴포넌트 구조, 테스트 통과를 이유로 완화하지 않는다.
+- UI 구현은 각 컴포넌트가 아니라 전체 화면에서 계약을 만족해야 한다. 컴포넌트 단위 변경이 전체 화면의 빈 공간, 강조 수준, 정보 우선순위, 숨김 여부를 깨면 구현을 수정한다.
 - Storage Intent Check가 `DB_DESIGN_ALLOWED`가 아니면 table, column, migration, repository, API DTO를 만들거나 제안하지 않는다.
 - Behavior Contract Check가 `API_DESIGN_ALLOWED`가 아니면 API path, method, route, controller, request/response shape를 만들거나 제안하지 않는다.
 - State Meaning Check가 `STATE_MODEL_ALLOWED`가 아니면 status enum, status column, state transition을 만들거나 제안하지 않는다.
@@ -188,6 +194,8 @@ Identifier type, DB key strategy, API-visible id representation, datetime format
 Storage Intent Check, Behavior Contract Check, State Meaning Check are not implementation details. If the approved documents do not allow the corresponding design, stop and report Missing Context instead of choosing table names, columns, API paths, DTOs, repositories, status values, or state transitions.
 
 상호작용 방식 확인, 프론트엔드 UX 확인, 운영/품질 기준 확인은 구현 세부사항이 아니다. 사용자/운영자 상호작용, 입력, 출력, 실패, 빈 상태, 권한 없음, 처리 중 피드백, 웹/모바일 UI 상태, 정보 구조, 반응형 동작, 접근성, 시각 검증 기준, 성능, 보안, 운영 기준이 승인 문서에 없으면 구현을 중단하고 Missing Context로 보고한다. 웹/모바일 UI 기준은 파일 위치가 아니라 `FRONTEND_UX_CRITERIA`, `USER_FLOW` 또는 `INTERACTION_SPEC`, `DESIGN_SYSTEM` 또는 `UI_PATTERN`, `FRONTEND_ARCHITECTURE` 역할 coverage로 확인한다. 프로젝트가 승인한 루트 `DESIGN.md` 같은 단일 기준 문서가 각 역할을 명확히 소유하면 그 구조를 존중한다.
+
+분석 결과는 구현 세부사항이 아니다. "공간을 줄인다", "가독성을 높인다", "강조를 줄인다" 같은 분석을 코드로 옮기려면 먼저 `uiImplementationContract`에 레이아웃, 정보 우선순위, 금지 패턴, 반응형 기준, 브라우저/스크린샷 검증 기준으로 고정되어 있어야 한다.
 
 ## 성능 위험 후보 처리
 
@@ -230,6 +238,8 @@ Implementation Agent는 다음 항목을 임의로 정할 수 없다.
 - 입력/출력 방식
 - 실패/빈 상태/권한 없음/처리 중 피드백
 - route/page/component/layout/styling/motion/visual QA 기준
+- UI 구현 계약
+- 화면 단위 정보 우선순위와 금지 패턴
 - 반응형 기준, 접근성 기준, text overflow 처리
 - table 이름
 - column 이름

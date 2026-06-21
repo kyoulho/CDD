@@ -253,6 +253,25 @@ designIntentChecks:
     keyCopyOrResult:
     missingDecisions:
       - "The user/operator interaction is not approved yet."
+  frontendUx:
+    required: true
+    result: FRONTEND_UX_BLOCKED
+    targetScreens: []
+    userGoals: []
+    implementationContract:
+      layout:
+      informationPriority:
+      forbiddenPatterns: []
+      responsive:
+      browserVerification:
+      currentViewportFirst: true
+    requiredRoleCoverage:
+      - FRONTEND_UX_CRITERIA
+      - USER_FLOW_OR_INTERACTION_SPEC
+      - DESIGN_SYSTEM_OR_UI_PATTERN
+      - FRONTEND_ARCHITECTURE
+    missingDecisions:
+      - "The frontend UX implementation contract is not approved yet."
   storageIntent:
     required: true
     result: DB_DESIGN_BLOCKED
@@ -309,6 +328,8 @@ designIntentChecks:
 Rules:
 
 - `상호작용 설계 가능`이 아니면 화면, CLI 명령, API surface, 배치 실행 방식, 저장 구조를 기록하지 않는다.
+- `FRONTEND_UX_ALLOWED`가 아니면 route, page, component, layout, styling, motion, visual QA 기준을 기록하지 않는다.
+- 분석 결과를 레이아웃, 정보 우선순위, 금지 패턴, 반응형, 브라우저/스크린샷 검증 기준으로 고정한 UI 구현 계약이 없으면 웹/모바일 UI 구현 범위를 기록하지 않는다.
 - `DB_DESIGN_ALLOWED`가 아니면 table, column, migration, repository, API DTO를 기록하지 않는다.
 - `API_DESIGN_ALLOWED`가 아니면 API path, method, route, controller, request/response shape를 기록하지 않는다.
 - `STATE_MODEL_ALLOWED`가 아니면 status enum, status column, state transition을 기록하지 않는다.
@@ -356,6 +377,7 @@ prompt:
         - "Approved Product SOT defines user problem, target users, scenario, scope, non-goals, success criteria, failure UX, and vertical slice boundary."
       missingDecisions: []
       interactionDesign: "상호작용 설계 가능"
+      frontendUx: FRONTEND_UX_ALLOWED
     engineeringReadiness:
       status: READY
       evidence:
@@ -391,6 +413,17 @@ prompt:
       required: false
       result: "상호작용 설계 가능"
       missingDecisions: []
+    frontendUx:
+      required: false
+      result: FRONTEND_UX_ALLOWED
+      implementationContract:
+        layout:
+        informationPriority:
+        forbiddenPatterns: []
+        responsive:
+        browserVerification:
+        currentViewportFirst: true
+      missingDecisions: []
     storageIntent:
       required: false
       result: DB_DESIGN_ALLOWED
@@ -409,6 +442,16 @@ prompt:
       missingDecisions: []
   implementationConstraints: []
   forbiddenApproaches: []
+  uiImplementationContract:
+    required: false
+    targetScreens: []
+    layout:
+    informationPriority:
+    forbiddenPatterns: []
+    responsive:
+    browserVerification:
+    currentViewportFirst: true
+    screenLevelAcceptanceCriteria: []
   acceptanceCriteria: []
   testRequirements: []
   executionRules:
@@ -443,6 +486,7 @@ taskContract:
         - "Approved Product SOT covers the user problem and vertical slice boundary."
       missingDecisions: []
       interactionDesign: "상호작용 설계 가능"
+      frontendUx: FRONTEND_UX_ALLOWED
     engineeringReadiness:
       status: READY
       evidence:
@@ -539,6 +583,16 @@ sotPacket:
     implementation: []
   allowedScope: []
   forbiddenScope: []
+  uiImplementationContract:
+    required: false
+    targetScreens: []
+    layout:
+    informationPriority:
+    forbiddenPatterns: []
+    responsive:
+    browserVerification:
+    currentViewportFirst: true
+    screenLevelAcceptanceCriteria: []
   verificationCommands: []
   userApprovalRequiredFor: []
 ```

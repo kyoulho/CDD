@@ -131,6 +131,7 @@ BLOCKED_BY_MISSING_CONTEXT
 - "이 프로젝트는 실제 서비스 출시용인가요, 연습용인가요?"
 - "데이터 정합성이나 추적 가능성이 중요한 작업인가요?"
 - "이 화면의 주요 사용자 행동, 빈 상태, 오류 상태, 반응형 기준, 접근성 기준은 무엇인가요?"
+- "분석 결과를 어떤 UI 구현 계약으로 고정할까요? 레이아웃, 정보 우선순위, 금지 패턴, 반응형, 브라우저 검증 기준을 짧게 정해야 합니다."
 - "성능 위험 후보는 이번 Task에서 조사/수정 범위인가요, 아니면 후속 제안으로만 남길까요?"
 
 나쁜 질문:
@@ -258,18 +259,30 @@ Good:
 ```markdown
 ### 1. Frontend UX criteria
 - 필요한 이유: 웹/모바일 UI는 버튼과 화면 이름만으로 구현 기준이 충분하지 않다. 화면 상태, 정보 우선순위, 반응형, 접근성, visual QA 기준이 있어야 구현과 검증이 가능하다.
+- 추가 이유: 분석 결과를 구현 계약으로 고정하지 않으면 구현 에이전트가 컴포넌트 단위로 해석해 전체 화면 의도를 놓친다.
 - 관련 영역: PRODUCT_REQUIREMENT / USER_SCENARIO / FRONTEND_UX_CRITERIA / USER_FLOW / INTERACTION_SPEC / DESIGN_SYSTEM / UI_PATTERN / FRONTEND_ARCHITECTURE
 - 막고 있는 작업: route/page/component/layout/styling/visual QA가 포함된 Task와 구현 지시서 생성
 - 선택지:
   - A. 기존 디자인 시스템과 화면 패턴을 따르고, 기본/로딩/빈 상태/오류/권한 없음 상태를 모두 정의한다.
-  - B. 최소 UI만 만들되 반응형, 접근성, overflow, visual QA 기준은 명시한다.
+  - B. 최소 UI만 만들되 레이아웃, 정보 우선순위, 금지 패턴, 반응형, 접근성, overflow, 브라우저/스크린샷 검증 기준은 명시한다.
   - C. 이번 Task에서는 UI 구현을 제외하고 API/도메인 작업만 진행한다.
 - 추천: B. 디자인 세부안을 크게 늘리지 않으면서도 구현 에이전트가 임의로 화면을 만들지 않게 막는다.
 - 질문: 이번 UI의 주요 행동, 화면 상태, 반응형/접근성/visual QA 기준은 어느 수준으로 승인할까요?
 
-위 답변을 받으면 `_document-supplement.md`는 필요한 범위에 따라 FRONTEND_UX_CRITERIA, USER_FLOW 또는 INTERACTION_SPEC, DESIGN_SYSTEM 또는 UI_PATTERN, FRONTEND_ARCHITECTURE 초안을 제안한다. 답변 전이나 APPLY 승인 전에는 route, page, component, layout, styling, motion, visual QA 기준을 Task나 구현 지시서에 넣지 않는다.
+위 답변을 받으면 `_document-supplement.md`는 필요한 범위에 따라 FRONTEND_UX_CRITERIA, USER_FLOW 또는 INTERACTION_SPEC, DESIGN_SYSTEM 또는 UI_PATTERN, FRONTEND_ARCHITECTURE 초안을 제안한다. 답변 전이나 APPLY 승인 전에는 route, page, component, layout, styling, motion, visual QA 기준 또는 `uiImplementationContract`를 Task나 구현 지시서에 넣지 않는다.
 
 사용자 답변이 일부만 채워졌다면 채워진 문서 초안만 제안한다. 예를 들어 사용자 흐름만 답했고 화면 상태나 디자인 시스템 기준이 비어 있으면 `USER_FLOW` 또는 `INTERACTION_SPEC` 초안만 제안하고, `FRONTEND_UX_CRITERIA`, `DESIGN_SYSTEM` 또는 `UI_PATTERN`, `FRONTEND_ARCHITECTURE`는 계속 질문으로 남긴다.
+
+UI 구현 계약은 짧아도 된다. 예:
+
+```text
+UI 구현 계약:
+- 레이아웃: 현재 자산 요약은 한 카드 안의 compact analysis panel이다.
+- 정보 우선순위: 종목명/자산명이 primary이고 코드는 secondary다.
+- 금지 패턴: KPI를 3개 카드로 쪼개지 않고, 태그를 "외 n개"로 숨기지 않고, 표 숫자를 전부 bold 처리하지 않는다.
+- 반응형: 현재 사용자 화면 폭을 먼저 만족하고 이후 desktop/mobile을 확인한다.
+- 브라우저 검증: 스크린샷에서 빈 공간, 볼드 과다, 정보 우선순위, 숨김 처리를 계약과 대조한다.
+```
 ```
 
 ## Performance Risk Scope Missing Context 예시
