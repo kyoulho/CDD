@@ -35,6 +35,10 @@ Plan과 작업 기준서를 만들거나 수정하기 전에는 대상 프로젝
 
 새 작업 기준서 파일을 만들기 전에는 왜 기존 문서에 추가하지 않고 새 파일이 필요한지 보고한다.
 
+기존 단일 문서 구조를 따르더라도 기본 읽기 경로의 작업 기준서가 400줄 또는 40KB를 넘으면 분리 후보로 보고한다. 1000줄 이상 누적 문서는 active index와 history 문서 분리 후보로 보고한다. 짧고 응집된 작업 기준서는 파일 수를 늘리지 않고 유지한다.
+
+작업 기준서 작성 전에는 현재 기준, 과거 작업 기록, 보조 자료를 분리한다. 과거 작업 기준서, 완료 기록, 검증 기록, 구현 지시서는 그 시점의 사실 기록이며 현재 기준으로 자동 승격하지 않는다. generated map, Codesight, agentmemory, search index, recall output, archive branch reference는 보조 자료로만 분류한다.
+
 작업 기준서는 구현 전에 `_sot-packet.md`의 작업 기준 묶음으로 요약될 수 있어야 한다. 요약할 수 없거나 approved 기준 문서, allowedScope, forbiddenScope, requiredDecisions가 불명확하면 Plan/Task를 APPROVED로 만들지 말고 아직 필요한 결정을 질문한다.
 
 작업 기준서 작성 전 `_readiness-gates.md`의 제품 기준 준비 상태와 기술 설계 준비 상태를 확인한다. 둘 중 하나라도 `NOT READY`이면 작업 기준서를 APPROVED로 만들지 말고 제품 또는 기술 설계 쪽 미확정 결정으로 돌아간다.
@@ -71,6 +75,7 @@ DB table, column, migration, repository, API DTO를 계획하려면 Storage Inte
 - 각 Task가 Project Context의 projectType, productionIntent, risk, allowedSimplifications, forbiddenSimplifications와 충돌하지 않는지 확인한다.
 - 각 Task에 제품 기준 준비 상태와 기술 설계 준비 상태 판정 근거를 반영한다.
 - Plan/Task 저장 전 사용자 보고에 수정할 파일, 새로 만들 파일, 기존 문서 구조와 맞는지, README/index 갱신 필요 여부를 포함한다.
+- Plan/Task 저장 전 사용자 보고에 분리 후보, 유지 후보, 삭제/보존/비-SOT 분류 후보를 포함한다.
 - README/index 갱신이 필요하면 같은 요청 범위 안에서 갱신 가능 여부를 확인한다. 구조 변경이 필요하면 저장하지 말고 사용자 승인을 받는다.
 
 ## 작업 기준서 필수 항목

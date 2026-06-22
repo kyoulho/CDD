@@ -109,6 +109,10 @@ Internal module direct mention:
 - source of truth 권위 순서를 확인하라. 대상 프로젝트가 별도 우선순위를 명시하지 않았다면 현재 사용자 지시, 대상 저장소의 작업 규칙 파일, CDD harness rules, approved source of truth documents, task-specific approved plan/prompt, implementation files, 보조 자료 순서로 본다.
 - 저장소 전체 문서가 자동으로 기준 문서가 아니다. 이번 작업 기준 묶음에 포함된 approved SOT만 작업 기준으로 삼는다.
 - README, generated docs, indexing docs, memory/recall notes, previous assistant responses, archive/superseded documents는 기본적으로 active source of truth가 아니다.
+- 현재 기준, 과거 기록, 보조 자료를 먼저 분류하라. 과거 task/completion/verification/prompt는 그 시점의 사실 기록이며, active 기준으로 승격된 근거가 없으면 현재 기준이 아니다.
+- generated map, Codesight, agentmemory, search index, recall output, archive branch reference는 기본 읽기 경로에서 제외하고 보조 자료로만 취급하라.
+- 기본 읽기 경로의 문서가 400줄 또는 40KB를 넘으면 분리 후보로 보고하라. 1000줄 이상 누적 문서는 active index와 history 문서 분리 후보로 보고하라.
+- 현재 기준과 과거 산출물이 충돌하면 구현, 작업 기준서, 구현 지시서, 검증, 완료로 넘어가기 전에 먼저 정합성 정리 질문으로 돌아가라.
 - 삭제, 폐기, dead code 제거, stale API/UI/DB artifact 제거 요청은 일반 리팩토링으로 보지 말고 `cleanup-delete.md`를 확인하라.
 - `CLEANUP_DELETE`는 삭제 작업 분류와 playbook 선택이다. 파일 수정/삭제 권한은 별도의 patch/apply/implementation 승인과 cleanup/delete 사람 확인 지점을 통과해야 한다.
 - 사용자-facing 응답은 `_user-facing-language.md`를 따르고, 내부 하네스 용어를 그대로 남발하지 마라.
@@ -154,8 +158,12 @@ Internal module direct mention:
 - `_artifact-templates.md`의 Document Placement Check를 작성한다.
 - `docs/README.md`, 문서 index, document registry, 기존 작업 산출물 목록, 기존 파일명과 누적 방식을 확인한다.
 - 단일 문서 누적 구조면 같은 문서에 추가하고, task별 파일 분리 구조면 같은 방식으로 분리한다.
+- 같은 문서에 추가하더라도 기본 읽기 경로가 400줄 또는 40KB를 넘거나 누적 문서가 1000줄 이상이면 분리 후보와 유지 후보를 보고한다.
+- 작업 기준서, ADR, 검증 결과, 완료 기록은 커질 경우 active index와 history record 분리를 우선 검토한다.
+- Product/Engineering 기준 문서는 너무 커질 때만 domain packet으로 분리하고, 원래 기준 문서는 얇은 진입점과 index로 유지한다.
+- 루트 `DESIGN.md`가 승인된 단일 디자인 기준이면 유지하되, 너무 커질 경우 전역 원칙과 index만 남기고 화면별 세부 기준 분리를 제안한다.
 - 기존 구조와 다른 파일 배치를 하려면 auto-stop하고 전체 문서 구조 변경안과 사용자 승인을 요청한다.
-- 저장 전 사용자 보고에 수정할 파일, 새로 만들 파일, 기존 문서 구조와 맞는지, README/index 갱신 필요 여부를 포함한다.
+- 저장 전 사용자 보고에 수정할 파일, 새로 만들 파일, 기존 문서 구조와 맞는지, 분리 후보, 유지 후보, 삭제/보존/비-SOT 분류 후보, README/index 갱신 필요 여부를 포함한다.
 
 17. 사용자 요청이 source of truth 생성/변경/삭제/상태 전환 요청인지 분류한다.
 18. source of truth 변경 요청이면 `_source-of-truth-manager.md` 절차로 라우팅하고 직접 문서를 수정하지 않는다.

@@ -271,6 +271,10 @@ State Meaning Check:
 - user approval gate 통과
 - 필요한 선행 Task complete
 - archive/superseded 문서를 active SOT로 사용하지 않음
+- 과거 task, completion, verification, prompt를 현재 기준으로 사용하지 않음
+- generated map, Codesight, agentmemory, search index, recall output, archive branch reference를 active 기준으로 사용하지 않음
+- 현재 기준과 과거 기록 사이 충돌 없음
+- 기본 읽기 경로의 큰 문서와 누적 문서에 대해 분리 후보/유지 후보 보고 완료
 
 `NOT READY` 예:
 
@@ -281,6 +285,10 @@ State Meaning Check:
 - 검증 명령이 없다.
 - 사용자 승인이 없다.
 - 아직 필요한 결정이 남아 있다.
+- 과거 작업 기록이나 검증 기록을 현재 기준처럼 읽어야 구현할 수 있다.
+- 현재 기준과 과거 task, completion, verification, prompt가 충돌한다.
+- generated map, Codesight, agentmemory, search index, recall output, archive branch reference 같은 보조 자료를 기준 문서처럼 사용해야 한다.
+- 기본 읽기 경로의 큰 문서나 1000줄 이상 누적 문서가 있는데 분리 후보/유지 후보가 보고되지 않았다.
 
 ## 판정 출력 형식
 
@@ -306,6 +314,15 @@ Codex는 구현 전에 다음 형식으로 보고한다.
 구현 시작 가능 여부: READY / NOT READY
 - 근거:
 - 구현 가능 여부:
+문서 정합성:
+- 현재 기준으로 읽을 문서:
+- 과거 기록으로만 볼 문서:
+- 보조 자료로만 볼 문서:
+- 현재 기준과 과거 기록의 충돌:
+문서 크기 / 읽기 비용:
+- 기본 읽기 경로에서 큰 문서:
+- 분리 후보:
+- 유지 후보:
 결론:
 - 구현 가능 / 구현 보류
 - 필요한 다음 행동:
@@ -341,6 +358,8 @@ Codex는 구현 전에 다음 형식으로 보고한다.
 - 작업 기준서가 있다고 구현 가능한 것은 아니다.
 - 작업 기준 묶음이 있어도 제품/기술 기준 중 하나가 부족하면 구현 금지다.
 - 사용자의 "좋아"는 준비 상태 확인 통과나 구현 승인으로 자동 해석되지 않는다.
+- 과거 completion, verification, task, prompt가 있다고 현재 기준이 준비된 것은 아니다.
+- generated map, Codesight, agentmemory, search index, recall output, archive branch reference는 탐색 보조 자료이지 구현 기준이 아니다.
 
 ## SOT 관계
 
@@ -349,3 +368,7 @@ Codex는 구현 전에 다음 형식으로 보고한다.
 제품 기준 문서만 있거나 기술 설계 기준 문서만 있으면 구현하지 않는다.
 
 README, generated/index docs, memory/recall notes, previous reports, archive/superseded documents는 명시적으로 작업 기준 묶음에 포함되지 않으면 준비 상태 근거가 아니라 보조 자료다.
+
+과거 task, completion, verification, old prompt는 그 시점의 사실 기록이며 현재 기준 문서가 아니다. active 기준 문서나 registry에서 승격 근거를 찾을 수 없으면 readiness 근거로 사용하지 않는다.
+
+기본 읽기 경로의 문서가 400줄 또는 40KB를 넘으면 분리 후보로 보고한다. 1000줄 이상 누적 문서는 active index와 history 문서 분리 후보로 보고한다. 짧고 응집된 문서는 파일 수를 늘리지 않고 유지 후보로 보고한다. 문서 크기 문제만으로 구현을 막지는 않지만, 현재 기준과 과거 기록이 섞여 판단을 흐리거나 분리/유지 판단이 보고되지 않았으면 구현 시작 가능 여부를 `READY`로 보지 않는다.

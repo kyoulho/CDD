@@ -67,6 +67,14 @@ artifact:
     indexUpdatesRequired:
       - docs/README.md
     newFileReason: null
+    readCostCheck:
+      splitCandidates: []
+      keepCandidates: []
+    baselineRoleCheck:
+      activeCriteriaDocuments: []
+      historicalRecords: []
+      nonSotReferences: []
+      currentVsHistoryConflicts: []
     structureChangeRequired: false
   knownConflicts: []
   supersedes: []

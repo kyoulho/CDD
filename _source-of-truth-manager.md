@@ -68,8 +68,47 @@ Project Context에는 하네스 검증 목적, 하네스 약점 발견 목적, s
 - Previous assistant messages or task reports
 - Archive/superseded documents
 - Codesight, agentmemory, search index, recall output 같은 indexing 또는 memory 자료
+- generated map
+- archive branch reference
+- 과거 task completion, verification, prompt, old task 기록
 
 이 자료는 관련 파일을 찾거나 과거 맥락을 이해하는 데 사용할 수 있지만, approved source of truth와 충돌하면 기준으로 삼지 않는다. 제품/정책 판단 근거로 사용하려면 명시적 승인 또는 active source of truth 승격 기록이 필요하다.
+
+## 현재 기준 / 과거 기록 / 보조 자료 분류
+
+Source of Truth Manager는 기준 문서 정합성을 판단하기 전에 관련 문서를 다음 세 그룹으로 분류한다.
+
+- 현재 기준: approved Product/Engineering source of truth, 현재 작업 기준서의 active 항목, document registry에서 active로 표시된 문서.
+- 과거 기록: completion, verification, old task, old prompt, ADR history, archive/superseded 문서처럼 생성 당시 사실을 보존하는 문서.
+- 보조 자료: generated map, Codesight, agentmemory, search index, recall output, archive branch reference, generated/index docs처럼 탐색과 맥락 파악에만 쓰는 자료.
+
+과거 기록은 그 시점의 사실 기록이지 현재 기준이 아니다. 과거 기록을 현재 기준으로 다시 쓰려면 active 기준 문서나 registry에 승격 근거가 있어야 한다.
+
+현재 기준과 과거 산출물이 충돌하면 Source of Truth Manager는 source of truth 변경, Plan/Task 작성, prompt 생성, verification completion으로 넘어가기 전에 먼저 충돌을 보고한다. 이 충돌은 warning이 아니라 정합성 gate다.
+
+분류 보고에는 다음을 포함한다.
+
+- 현재 기준으로 읽을 문서
+- 과거 기록으로만 볼 문서
+- 보조 자료로만 볼 문서
+- 현재 기준과 과거 기록의 충돌
+- 삭제/보존/비-SOT 표시 후보
+
+stale 문서는 자동 삭제하지 않는다. 삭제, 보존, 비-SOT 분류 후보와 이유를 사용자에게 보여주고 명시 승인 후에만 cleanup/delete 절차로 넘긴다.
+
+## 문서 크기 / 읽기 비용 gate
+
+Source of Truth Manager는 대상 프로젝트의 기존 문서 구조를 존중하되, 기본 읽기 경로가 과도하게 커지면 읽기 비용을 별도 판단으로 보고한다.
+
+- 기본 읽기 경로에 있는 문서가 400줄 또는 40KB를 넘으면 분리 후보로 보고한다.
+- 1000줄 이상 누적 문서는 active index와 history 문서 분리 후보로 보고한다.
+- 짧고 응집된 문서는 파일 수를 늘리지 않고 기존 구조를 유지한다.
+- 분리 우선순위는 매번 읽는 hot path 문서부터 잡는다.
+- 작업 기준서, ADR, 검증 결과, 완료 기록이 커졌다면 active index와 history record 분리를 우선 추천한다.
+- Product/Engineering SOT는 너무 커질 때만 domain packet으로 분리하고, 원래 SOT는 얇은 진입점과 index로 유지한다.
+- 루트 `DESIGN.md`가 승인된 단일 디자인 기준이면 유지한다. 너무 커질 경우 root `DESIGN.md`는 전역 원칙과 index로 남기고 화면별 세부 기준만 분리 후보로 제안한다.
+
+분리는 파일 수를 늘리는 목적이 아니라 기본 읽기 경로를 줄이고 현재 기준이 과거 기록에 오염되지 않게 하는 목적일 때만 제안한다.
 
 ## Archive / Superseded 처리
 
@@ -313,6 +352,9 @@ Source of Truth Manager는 변경 전후에 다음을 확인한다.
 - `owns` 영역 충돌
 - DRAFT 문서를 APPROVED 근거로 사용하는지 여부
 - generated/index/memory/recall/archive/superseded 자료를 active source of truth처럼 사용하는지 여부
+- 과거 completion/verification/task/prompt를 현재 기준처럼 사용하는지 여부
+- 현재 기준과 과거 기록의 충돌이 남아 있는지 여부
+- 기본 읽기 경로의 문서 크기와 hot path 분리 후보
 - registry status와 실제 문서 status 불일치
 - Plan/Task/prompt/verification result 영향
 - `requiredDocuments` 정렬 여부

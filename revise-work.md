@@ -22,6 +22,10 @@ Revision prompt artifact는 `_artifact-metadata.md`, `_artifact-templates.md`의
 
 작업 모드가 `ANALYSIS_ONLY` 또는 `PROPOSAL_ONLY`이면 수정 지시서 생성, 코드 수정, 테스트 수정, rollback을 하지 않는다. 필요한 revision 후보와 승인 조건만 보고한다.
 
+수정 지시서를 만들기 전에는 현재 기준, 과거 검증 기록, 기존 prompt, 작업 기준서를 분리해서 확인한다. 검증 결과와 기존 prompt는 그 시점의 사실 기록이며 현재 기준 문서가 아니다. 현재 기준과 과거 산출물이 충돌하면 revision prompt를 만들지 말고 Source of Truth 정합성 정리로 돌린다.
+
+기본 읽기 경로의 revision, prompt, verification 기록이 400줄 또는 40KB를 넘으면 분리 후보로 보고한다. 1000줄 이상 누적 문서는 active index와 history 문서 분리 후보로 보고한다. 짧고 응집된 문서는 파일 수를 늘리지 않고 기존 구조를 유지한다.
+
 ## 시작 조건
 
 Revision은 다음 조건을 모두 만족해야만 가능하다.
@@ -64,6 +68,8 @@ Revision은 다음 조건을 모두 만족해야만 가능하다.
 - invalid prompt나 invalid verification result를 기반으로 revision하지 않는다.
 - 기존 invalid prompt를 보강해서 revision prompt로 사용하지 않는다.
 - 미확정 결정이 해결되기 전에는 revision prompt를 만들거나 실행하지 않는다.
+- 현재 기준과 과거 verification, prompt, task, completion 기록이 충돌하면 revision prompt를 만들지 않는다.
+- generated map, Codesight, agentmemory, search index, recall output, archive branch reference를 revision 기준으로 사용하지 않는다.
 - 구현 결과가 승인되지 않은 테스트 전략을 도입했고 verification status가 NEEDS_REVISION이며 승인된 대체 전략이 이미 존재한다면, revision prompt는 그 전략으로 되돌리도록 지시한다.
 - 구현 결과가 승인되지 않은 dependency, Gradle plugin, annotation processor, code generation tool, runtime-exposed library를 도입했고 기존 승인 스택 안에서 수정 가능하다면, revision prompt는 그 변경을 제거하도록 지시한다.
 - 승인된 대체 전략이 없거나 사용자 정책 결정이 필요하면 revision prompt가 아니라 미확정 결정 질문 또는 Source of Truth Change Request로 되돌린다.
@@ -135,6 +141,7 @@ If TEST_STRATEGY is missing, do not remove H2 or change tests yet. Stop with BLO
 - dependsOn Task가 COMPLETE가 아니다.
 - 미확정 결정을 "나중에"로 미루고 있다.
 - revision 근거 artifact가 legitimacy check를 통과하지 못했다.
+- 현재 기준과 과거 verification, prompt, task, completion 기록 사이 충돌이 남아 있다.
 - revision-prompt 실행에 대한 사용자 승인이 없다.
 
 이 경우 `_missing-context.md` 또는 `_source-of-truth-manager.md`로 이동한다.

@@ -24,6 +24,10 @@ Readiness Agent는 사용자가 지정한 좁은 변경 scope를 그대로 sourc
 
 Readiness Agent는 디스크에 존재하는 docs, registry, Plan/Task, prompt, verification result를 자동으로 신뢰하지 않는다. 필요한 artifact가 legitimacy check를 통과하지 못하면 READY_FOR_PLANNING을 선언하지 않는다.
 
+Readiness Agent는 현재 기준, 과거 기록, 보조 자료를 먼저 구분한다. 과거 task, completion, verification, old prompt는 그 시점의 사실 기록이지 현재 기준이 아니다. generated map, Codesight, agentmemory, search index, recall output, archive branch reference는 탐색 보조 자료이며 active source of truth 승격 근거가 없으면 기준 문서로 보지 않는다.
+
+기본 읽기 경로의 문서가 400줄 또는 40KB를 넘으면 분리 후보를 보고한다. 1000줄 이상 누적 문서는 active index와 history 문서 분리 후보로 보고한다. 단, 짧고 응집된 문서는 파일 수를 늘리지 않고 기존 구조를 유지한다.
+
 ## 입력
 
 - 사용자 Goal
@@ -231,12 +235,15 @@ DEPENDENCY_POLICY
 19. 문서가 존재해도 구현 판단에 필요한 정책이 비어 있으면 부족하다고 판단한다.
 20. 사용할 artifact가 있으면 생성 단계, 승인, dependency, documentCoverage, source of truth validation, superseded 여부를 확인한다.
 21. legitimacy check를 통과하지 못한 artifact가 있으면 INVALID/QUARANTINED/SUPERSEDED 후보로 보고한다.
-22. source of truth 변경 요청이 있으면 영향받는 문서, Task Contract, prompt, verification result를 식별한다.
-23. known conflict가 남는 partial source of truth update라면 Missing Context 또는 Source of Truth Change Request blocker로 보고한다.
-24. Product Readiness와 Engineering Readiness를 판정한다.
-25. Task Contract, SOT Packet, 승인 상태가 있으면 Implementation Readiness도 판정한다.
-26. 부족한 항목이 있으면 Product/Engineering/Implementation Missing Context로 분리한 Missing Context Report를 만든다.
-27. Product Readiness와 Engineering Readiness가 모두 `READY`이면 `READY_FOR_PLANNING`을 선언할 수 있다.
+22. 현재 기준으로 읽을 문서, 과거 기록으로만 볼 문서, 보조 자료로만 볼 문서를 분류한다.
+23. 현재 기준과 과거 기록 또는 보조 자료가 충돌하면 `READY_FOR_PLANNING`을 선언하지 않고 정합성 정리 질문으로 돌아간다.
+24. 기본 읽기 경로의 문서 크기와 hot path 여부를 확인하고 분리 후보, 유지 후보, README/index 갱신 필요 여부를 기록한다.
+25. source of truth 변경 요청이 있으면 영향받는 문서, Task Contract, prompt, verification result를 식별한다.
+26. known conflict가 남는 partial source of truth update라면 Missing Context 또는 Source of Truth Change Request blocker로 보고한다.
+27. Product Readiness와 Engineering Readiness를 판정한다.
+28. Task Contract, SOT Packet, 승인 상태가 있으면 Implementation Readiness도 판정한다.
+29. 부족한 항목이 있으면 Product/Engineering/Implementation Missing Context로 분리한 Missing Context Report를 만든다.
+30. Product Readiness와 Engineering Readiness가 모두 `READY`이면 `READY_FOR_PLANNING`을 선언할 수 있다.
 
 Readiness는 도메인/API 문서만 확인하면 안 된다. Goal 또는 Task가 DB, migration, repository, test, external integration, batch, infra, config를 포함하면 관련 cross-cutting policy를 반드시 점검한다.
 
@@ -479,6 +486,9 @@ Do not classify test database choice, test profile strategy, test-specific migra
 - acceptance criteria와 testRequirements를 문서 근거로 만들 수 있다.
 - AI가 문서 밖 판단을 하지 않아도 Plan/Task를 생성할 수 있다.
 - source of truth 문서와 Task Contract 사이 known conflict가 없다.
+- 현재 기준과 과거 completion/verification/task/prompt 사이 known conflict가 없다.
+- generated map, Codesight, agentmemory, search index, recall output, archive branch reference를 active 기준으로 사용하지 않았다.
+- 기본 읽기 경로의 문서 크기와 분리 후보가 보고되었다.
 - 필요한 artifact가 legitimacy check를 통과했다.
 
 ### BLOCKED_BY_MISSING_CONTEXT

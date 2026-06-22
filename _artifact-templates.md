@@ -81,6 +81,25 @@ documentPlacementCheck:
   newFileReason: null
   readmeOrIndexUpdatesRequired:
     - docs/README.md
+  readCostCheck:
+    hotPathDocuments:
+      - path: docs/tasks.md
+        lines:
+        bytes:
+        role: active-index
+        readFrequency: every-task
+        recommendation: keep
+    splitCandidates: []
+    keepCandidates:
+      - docs/tasks.md
+    thresholds:
+      hotPathSplitCandidate: "400 lines or 40KB"
+      accumulatedHistorySplitCandidate: "1000 lines"
+  baselineRoleCheck:
+    activeCriteriaDocuments: []
+    historicalRecords: []
+    nonSotReferences: []
+    currentVsHistoryConflicts: []
   matchesExistingStructure: true
   structureChangeRequired: false
   userApprovalRequired: false
@@ -92,10 +111,20 @@ documentPlacementCheck:
 - `docs/README.md`, 문서 index, document registry, 기존 작업 산출물 목록, 기존 파일명과 누적 방식을 먼저 확인한다.
 - 기존 구조가 단일 작업 기준서에 task를 누적하는 방식이면 후속 phase/task도 같은 문서에 추가한다.
 - 기존 구조가 task별 파일 분리 방식이면 후속 task도 같은 방식으로 분리한다.
+- 기존 구조를 따르더라도 기본 읽기 경로의 문서가 400줄 또는 40KB를 넘으면 분리 후보로 보고한다.
+- 1000줄 이상 누적 문서는 active index와 history 문서 분리 후보로 보고한다.
+- 분리 우선순위는 매번 읽는 hot path 문서부터 잡는다.
+- 짧고 응집된 문서는 파일 수를 늘리지 않고 기존 구조를 유지한다.
+- 작업 기준서, ADR, 검증 결과, 완료 기록이 누적 문서로 커졌다면 active index와 history record 분리를 우선 검토한다.
+- Product/Engineering 기준 문서는 너무 커질 때만 domain packet으로 나누고, 원래 기준 문서는 얇은 진입점과 index로 유지한다.
+- 루트 `DESIGN.md`가 승인된 단일 디자인 기준이면 유지한다. 너무 커지면 root `DESIGN.md`는 전역 원칙과 index로 남기고 화면별 세부 기준만 분리 후보로 제안한다.
+- generated map, Codesight, agentmemory, search index, recall output, archive branch reference는 기본적으로 `nonSotReferences`에 분류하고 기본 읽기 경로에서 제외한다.
+- 과거 task completion, verification, prompt, old task 문서는 `historicalRecords`로 분류한다. active 기준으로 쓰려면 active 기준 문서나 registry의 승격 근거가 필요하다.
+- 현재 기준과 과거 산출물이 충돌하면 `currentVsHistoryConflicts`에 기록하고, 저장 또는 후속 작업으로 진행하기 전에 사용자에게 정합성 정리 선택지를 제시한다.
 - 새 문서 파일을 만들기 전에는 왜 기존 문서에 추가하지 않고 새 파일이 필요한지 사용자에게 보고한다.
 - 기존 구조와 다른 파일 배치를 하려면 일부 파일만 다르게 만들지 말고 전체 문서 구조 변경안으로 제안하고 사용자 승인을 받는다.
 - `matchesExistingStructure: false` 또는 `structureChangeRequired: true`이면 auto-stop하고 사용자 확인 전에는 저장하지 않는다.
-- 저장 전 사용자 보고에는 수정할 파일, 새로 만들 파일, 기존 문서 구조와 맞는지, README/index 갱신 필요 여부를 포함한다.
+- 저장 전 사용자 보고에는 수정할 파일, 새로 만들 파일, 기존 문서 구조와 맞는지, 분리 후보, 유지 후보, 삭제/보존/비-SOT 분류 후보, README/index 갱신 필요 여부를 포함한다.
 
 ## Harness Operation Artifact Types
 
@@ -219,6 +248,24 @@ sourceOfTruthSnapshot:
         - api.response
       requiredFor:
         - TASK-000
+  currentCriteria:
+    hotPathDocuments:
+      - docs/product/product-sot.md
+    activeIndexes: []
+    domainPackets: []
+  historicalRecords:
+    - path: docs/tasks/history.md
+      role: historical-record
+      reason: "과거 작업 완료 기록이며 현재 기준 문서가 아니다."
+  nonSotReferences:
+    - path: .codesight/wiki/index.md
+      role: generated-map
+      reason: "탐색 보조 자료이며 현재 기준이 아니다."
+  readCost:
+    splitCandidates: []
+    keepCandidates: []
+    readmeOrIndexUpdatesRequired: []
+  currentVsHistoryConflicts: []
   coverageSummary:
     status: READY
     missing: []
@@ -230,6 +277,8 @@ sourceOfTruthSnapshot:
 
 - prompt, verification, completion이 어떤 기준 문서 버전을 참조했는지 추적한다.
 - 이후 기준 문서 변경 시 supersede 여부를 판단한다.
+- 현재 기준, 과거 기록, 보조 자료를 분리해 후속 작업이 과거 산출물을 현재 기준처럼 읽지 않게 한다.
+- 기본 읽기 경로가 커졌을 때 active index, history, domain packet 분리 후보를 추적한다.
 
 ## Design Intent Checks Template
 
