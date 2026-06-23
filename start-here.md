@@ -112,6 +112,8 @@ Internal module direct mention:
 - 현재 기준, 과거 기록, 보조 자료를 먼저 분류하라. 과거 task/completion/verification/prompt는 그 시점의 사실 기록이며, active 기준으로 승격된 근거가 없으면 현재 기준이 아니다.
 - generated map, Codesight, agentmemory, search index, recall output, archive branch reference는 기본 읽기 경로에서 제외하고 보조 자료로만 취급하라.
 - 기본 읽기 경로의 문서가 400줄 또는 40KB를 넘으면 분리 후보로 보고하라. 1000줄 이상 누적 문서는 active index와 history 문서 분리 후보로 보고하라.
+- 문서가 커졌거나 다음 작업 판단에 과거 완료 기록까지 훑어야 한다면 현재 작업 포인터 역할을 확인하라. 파일명은 강제하지 않지만 기본 후보는 `docs/project/current-work.md`다. 현재 gate, 다음 task, 현재 진행 가능한 task, 반드시 읽을 문서, 읽지 않을 과거 기록, 현재 기준과 충돌하는 문서, README/index 갱신 필요 여부가 짧게 있어야 한다.
+- 기본 읽기 경로 계약을 확인하라. 이번 작업에서 반드시 읽을 문서와 기본 읽기 경로에서 제외할 과거 기록/보조 자료를 분리하지 못하면 구현, 작업 기준서, 구현 지시서, 검증, 완료로 넘어가기 전에 정합성 정리 질문으로 돌아가라.
 - 현재 기준과 과거 산출물이 충돌하면 구현, 작업 기준서, 구현 지시서, 검증, 완료로 넘어가기 전에 먼저 정합성 정리 질문으로 돌아가라.
 - 삭제, 폐기, dead code 제거, stale API/UI/DB artifact 제거 요청은 일반 리팩토링으로 보지 말고 `cleanup-delete.md`를 확인하라.
 - `CLEANUP_DELETE`는 삭제 작업 분류와 playbook 선택이다. 파일 수정/삭제 권한은 별도의 patch/apply/implementation 승인과 cleanup/delete 사람 확인 지점을 통과해야 한다.
@@ -141,17 +143,18 @@ Internal module direct mention:
 3. 사용자 개입이 필요한지 판정한다. 필요하면 선택지, 추천, 바로 답할 수 있는 문장을 제공하고 멈춘다.
 4. 사용자 개입이 필요 없으면 현재 요청이 허용한 다음 단계까지 진행한다.
 5. `_sot-packet.md`를 확인하고 이번 작업 기준 묶음의 존재 여부와 부족한 필드를 확인한다.
-6. `_readiness-gates.md`를 확인하고 준비 상태 판정 형식을 준비한다.
-7. 작업 시작 전 작업 방식, 이번 작업 기준, 가능한 작업, 금지된 작업, 진행 전 필요한 승인, 검증 방법을 선언한다.
-8. `ANALYSIS_ONLY` 또는 `PROPOSAL_ONLY`이면 읽기, 분석, 제안만 수행하고 파일 수정 없이 다음 승인 문구를 포함해 보고한다.
-9. `_authority-boundary.md`를 읽고 AI가 판단할 수 있는 영역과 금지된 판단 영역을 확인한다.
-10. `_artifact-metadata.md`, `_artifact-templates.md`, `_status-machine.md`, `_approval-reference.md`, `_user-facing-language.md`를 확인한다.
-11. 새 프로젝트이거나 프로젝트 성격이 불명확하면 `_project-context.md`로 Project Context를 확인한다.
-12. 사용자 요청에서 실제 서비스 여부, 연습용 여부, 사용자 유형, 도메인 위험, 운영 전제를 추론할 수 있으면 Project Context 초안으로 받아들인다.
-13. Project Context가 없으면 사용자에게 프로젝트 자체의 목적, 사용자, 운영 전제, 위험도, 단순화 경계를 질문한다. 하네스 내부 평가 목적은 묻지 않는다.
-14. 사용자 요청을 Goal로 해석한다.
-15. 현재 상태의 docs, registry, Plan/Task, prompt, verification result, completion record를 사용해야 하면 먼저 artifact legitimacy check를 수행한다.
-16. legitimacy check를 통과하지 못한 artifact는 baseline으로 사용하지 않고 `INVALID`, `QUARANTINED`, `SUPERSEDED` 후보로 보고한다.
+6. 현재 작업 포인터와 기본 읽기 경로 계약을 확인한다. 없거나 불완전해 과거 기록을 함께 훑어야 하면 먼저 정리 후보를 보고한다.
+7. `_readiness-gates.md`를 확인하고 준비 상태 판정 형식을 준비한다.
+8. 작업 시작 전 작업 방식, 이번 작업 기준, 가능한 작업, 금지된 작업, 진행 전 필요한 승인, 검증 방법을 선언한다.
+9. `ANALYSIS_ONLY` 또는 `PROPOSAL_ONLY`이면 읽기, 분석, 제안만 수행하고 파일 수정 없이 다음 승인 문구를 포함해 보고한다.
+10. `_authority-boundary.md`를 읽고 AI가 판단할 수 있는 영역과 금지된 판단 영역을 확인한다.
+11. `_artifact-metadata.md`, `_artifact-templates.md`, `_status-machine.md`, `_approval-reference.md`, `_user-facing-language.md`를 확인한다.
+12. 새 프로젝트이거나 프로젝트 성격이 불명확하면 `_project-context.md`로 Project Context를 확인한다.
+13. 사용자 요청에서 실제 서비스 여부, 연습용 여부, 사용자 유형, 도메인 위험, 운영 전제를 추론할 수 있으면 Project Context 초안으로 받아들인다.
+14. Project Context가 없으면 사용자에게 프로젝트 자체의 목적, 사용자, 운영 전제, 위험도, 단순화 경계를 질문한다. 하네스 내부 평가 목적은 묻지 않는다.
+15. 사용자 요청을 Goal로 해석한다.
+16. 현재 상태의 docs, registry, Plan/Task, prompt, verification result, completion record를 사용해야 하면 먼저 artifact legitimacy check를 수행한다.
+17. legitimacy check를 통과하지 못한 artifact는 baseline으로 사용하지 않고 `INVALID`, `QUARANTINED`, `SUPERSEDED` 후보로 보고한다.
 
 문서 저장이 필요한 경우, 다음을 먼저 수행한다.
 
@@ -163,30 +166,30 @@ Internal module direct mention:
 - Product/Engineering 기준 문서는 너무 커질 때만 domain packet으로 분리하고, 원래 기준 문서는 얇은 진입점과 index로 유지한다.
 - 루트 `DESIGN.md`가 승인된 단일 디자인 기준이면 유지하되, 너무 커질 경우 전역 원칙과 index만 남기고 화면별 세부 기준 분리를 제안한다.
 - 기존 구조와 다른 파일 배치를 하려면 auto-stop하고 전체 문서 구조 변경안과 사용자 승인을 요청한다.
-- 저장 전 사용자 보고에 수정할 파일, 새로 만들 파일, 기존 문서 구조와 맞는지, 분리 후보, 유지 후보, 삭제/보존/비-SOT 분류 후보, README/index 갱신 필요 여부를 포함한다.
+- 저장 전 사용자 보고에 수정할 파일, 새로 만들 파일, 기존 문서 구조와 맞는지, 현재 작업 포인터 갱신 필요 여부, 기본 읽기 경로 계약 변경 여부, 분리 후보, 유지 후보, 삭제/보존/비-SOT 분류 후보, README/index 갱신 필요 여부를 포함한다.
 
-17. 사용자 요청이 source of truth 생성/변경/삭제/상태 전환 요청인지 분류한다.
-18. source of truth 변경 요청이면 `_source-of-truth-manager.md` 절차로 라우팅하고 직접 문서를 수정하지 않는다.
-19. 관련 source of truth 문서를 찾는다.
-20. 프로젝트에 `document-registry.yml`이 있으면 등록 문서의 type, status, owns, requiredFor를 확인한다.
-21. registry가 없으면 Goal에 필요한 문서 타입을 임시로 추론하되, 추론을 source of truth로 확정하지 않는다.
-22. archive/superseded/generated/index/memory/recall/previous-report 자료가 검색되면 보조 자료로만 취급하고 active source of truth 승격 근거를 확인한다.
-23. `_source-of-truth-manager.md` 하위 절차로 `_document-readiness.md`를 사용해 제품 기준 준비 상태와 기술 설계 준비 상태를 판단한다.
-24. 문서나 정책이 부족하면 `_source-of-truth-manager.md` 하위 절차로 `_missing-context.md`를 사용해 제품/기술/구현 관련 미확정 결정 질문을 만든다.
-25. 사용자가 답하면 `_source-of-truth-manager.md` 하위 절차로 `_document-supplement.md`를 사용해 문서/정책 초안을 제안한다.
-26. 사용자가 변경 방향과 실제 적용을 각각 명시적으로 승인하면 source of truth 문서와 document registry 업데이트를 승인된 범위 안에서만 수행한다.
-27. 제품 기준 준비 상태와 기술 설계 준비 상태가 모두 `READY`일 때만 `plan-task.md` 절차로 Plan/Task를 만든다.
-28. Task가 cleanup/delete 작업이면 `cleanup-delete.md`의 keep list, delete list, 의존성 확인, 사람 확인 지점을 Task와 prompt에 반영한다.
-29. Task가 승인되고 `documentCoverage.status`가 READY일 때만 `write-implementation-prompt.md` 절차로 구현 prompt를 만든다.
-30. 구현 prompt 작성 후 새 미확정 결정, 정책 충돌, 위험 변경, 범위 확대가 있는지 판단한다.
-31. 사용자가 실제 구현까지 명확히 요청했고 초안 작성 후 실행 연계 조건을 모두 만족하면 별도 실행 승인 요청을 반복하지 않고 `_implementation-rules.md` 절차로 구현한다.
-32. 사용자가 초안 검토를 요청했거나 실행 연계 조건을 만족하지 않으면 구현하지 말고 선택지, 추천, 바로 답할 수 있는 문장을 제공한다.
-33. 구현 후 check를 수행한다.
-34. `verify-work.md` 절차로 구현 결과를 제품 기준 문서, 기술 설계 기준 문서, 작업 기준서, requiredDocuments, rules, 기준 문서, prompt, result와 대조한다.
-35. 문제가 있으면 `revise-work.md` 절차로 수정 prompt를 만들고 사용자 승인 후 수정 루프를 수행한다.
-36. verification이 VERIFIED이고 사용자가 review를 승인한 뒤에만 `complete-work.md` 절차로 완료한다.
-37. 단, 검증 완료된 선행 작업 뒤에 사용자가 후속 작업을 명확히 요청했고 후속 작업 전환 연계 조건을 모두 만족하면 완료 기록 정합성 정리를 먼저 수행한 뒤 후속 작업으로 이어간다.
-38. 모든 사용자-facing 보고는 "다음에 할 일" 종료 형식으로 끝낸다.
+18. 사용자 요청이 source of truth 생성/변경/삭제/상태 전환 요청인지 분류한다.
+19. source of truth 변경 요청이면 `_source-of-truth-manager.md` 절차로 라우팅하고 직접 문서를 수정하지 않는다.
+20. 관련 source of truth 문서를 찾는다.
+21. 프로젝트에 `document-registry.yml`이 있으면 등록 문서의 type, status, owns, requiredFor를 확인한다.
+22. registry가 없으면 Goal에 필요한 문서 타입을 임시로 추론하되, 추론을 source of truth로 확정하지 않는다.
+23. archive/superseded/generated/index/memory/recall/previous-report 자료가 검색되면 보조 자료로만 취급하고 active source of truth 승격 근거를 확인한다.
+24. `_source-of-truth-manager.md` 하위 절차로 `_document-readiness.md`를 사용해 제품 기준 준비 상태와 기술 설계 준비 상태를 판단한다.
+25. 문서나 정책이 부족하면 `_source-of-truth-manager.md` 하위 절차로 `_missing-context.md`를 사용해 제품/기술/구현 관련 미확정 결정 질문을 만든다.
+26. 사용자가 답하면 `_source-of-truth-manager.md` 하위 절차로 `_document-supplement.md`를 사용해 문서/정책 초안을 제안한다.
+27. 사용자가 변경 방향과 실제 적용을 각각 명시적으로 승인하면 source of truth 문서와 document registry 업데이트를 승인된 범위 안에서만 수행한다.
+28. 제품 기준 준비 상태와 기술 설계 준비 상태가 모두 `READY`일 때만 `plan-task.md` 절차로 Plan/Task를 만든다.
+29. Task가 cleanup/delete 작업이면 `cleanup-delete.md`의 keep list, delete list, 의존성 확인, 사람 확인 지점을 Task와 prompt에 반영한다.
+30. Task가 승인되고 `documentCoverage.status`가 READY일 때만 `write-implementation-prompt.md` 절차로 구현 prompt를 만든다.
+31. 구현 prompt 작성 후 새 미확정 결정, 정책 충돌, 위험 변경, 범위 확대가 있는지 판단한다.
+32. 사용자가 실제 구현까지 명확히 요청했고 초안 작성 후 실행 연계 조건을 모두 만족하면 별도 실행 승인 요청을 반복하지 않고 `_implementation-rules.md` 절차로 구현한다.
+33. 사용자가 초안 검토를 요청했거나 실행 연계 조건을 만족하지 않으면 구현하지 말고 선택지, 추천, 바로 답할 수 있는 문장을 제공한다.
+34. 구현 후 check를 수행한다.
+35. `verify-work.md` 절차로 구현 결과를 제품 기준 문서, 기술 설계 기준 문서, 작업 기준서, requiredDocuments, rules, 기준 문서, prompt, result와 대조한다.
+36. 문제가 있으면 `revise-work.md` 절차로 수정 prompt를 만들고 사용자 승인 후 수정 루프를 수행한다.
+37. verification이 VERIFIED이고 사용자가 review를 승인한 뒤에만 `complete-work.md` 절차로 완료한다.
+38. 단, 검증 완료된 선행 작업 뒤에 사용자가 후속 작업을 명확히 요청했고 후속 작업 전환 연계 조건을 모두 만족하면 완료 기록 정합성 정리를 먼저 수행한 뒤 후속 작업으로 이어간다.
+39. 모든 사용자-facing 보고는 "다음에 할 일" 종료 형식으로 끝낸다.
 
 ## Source of Truth 권위 순서
 

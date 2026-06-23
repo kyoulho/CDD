@@ -70,6 +70,14 @@ artifact:
     readCostCheck:
       splitCandidates: []
       keepCandidates: []
+    currentWorkPointer:
+      path: null
+      updateRequired: false
+      missingFields: []
+    readPathContract:
+      requiredReadDocuments: []
+      excludedHistoricalRecords: []
+      excludedNonSotReferences: []
     baselineRoleCheck:
       activeCriteriaDocuments: []
       historicalRecords: []

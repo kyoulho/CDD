@@ -146,6 +146,7 @@
 - 사용자가 "문서도 같이 맞춰줘"라고 해도 직접 source of truth를 수정하지 않는다.
 - partial source of truth update를 제안하거나 수행하지 않는다.
 - known source of truth conflict가 남아 있으면 구현하지 않는다.
+- 현재 작업 포인터와 기본 읽기 경로 계약이 없어 완료된 task history, 과거 verification, completion, old prompt를 현재 기준처럼 읽어야 한다면 구현하지 않는다.
 - Product Readiness, Engineering Readiness, Implementation Readiness 중 하나라도 `NOT READY`이면 구현하지 않는다.
 - Product SOT만 있거나 Engineering SOT만 있으면 구현하지 않는다.
 - 테스트가 통과한다는 이유만으로 Implementation Readiness를 `READY`로 보지 않는다.

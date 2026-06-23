@@ -96,6 +96,29 @@ Source of Truth Manager는 기준 문서 정합성을 판단하기 전에 관련
 
 stale 문서는 자동 삭제하지 않는다. 삭제, 보존, 비-SOT 분류 후보와 이유를 사용자에게 보여주고 명시 승인 후에만 cleanup/delete 절차로 넘긴다.
 
+## 현재 작업 포인터 / 기본 읽기 경로 계약
+
+문서가 커진 프로젝트에서는 다음 작업 판단 전에 현재 작업 포인터 역할을 확인한다. 파일 경로를 강제하지 않는다. 기본 후보는 `docs/project/current-work.md`지만, 프로젝트가 `docs/README.md`, 단일 task index, 루트 문서, document registry 안의 섹션을 승인했다면 그 구조를 따른다.
+
+현재 작업 포인터에는 최소한 다음이 있어야 한다.
+
+- 현재 gate
+- 다음 task
+- 현재 진행 가능한 task
+- 반드시 읽을 문서
+- 기본 읽기 경로에서 제외할 과거 기록
+- 현재 기준과 충돌하는 문서
+- README/index 갱신 필요 여부
+
+기본 읽기 경로 계약은 이번 작업에서 반드시 읽을 문서와 읽지 않을 과거 기록/보조 자료를 고정한다. 이 계약에는 `AGENTS.md`, `docs/README.md`, 현재 작업 포인터, Product/Engineering 기준 진입점, 현재 task 기준서처럼 매번 읽어야 하는 문서와 완료된 task history, 과거 verification, 과거 prompt, completion record, generated map, Codesight, agentmemory처럼 제외할 자료가 분리되어 있어야 한다.
+
+현재 작업 포인터나 기본 읽기 경로 계약이 없어서 다음 작업 판단 때 완료된 과거 작업까지 훑어야 한다면, Source of Truth Manager는 구현, Plan/Task, prompt, verification, completion으로 넘어가기 전에 먼저 정리 후보를 보고한다. 이 경우 추천은 다음 순서다.
+
+1. 현재 작업 포인터를 만들거나 갱신한다.
+2. 큰 작업 기준서는 현재 진행 가능한 task만 남긴 active index와 완료 기록을 담는 history로 분리한다.
+3. Product/Engineering SOT는 원칙과 index 중심의 얇은 진입점으로 유지하고, task별 세부 기준은 task 문서로 내린다.
+4. decision log가 크면 현재 적용 중인 결정, 최근 변경된 결정, 과거 결정 기록, superseded 결정을 나눠 읽게 한다.
+
 ## 문서 크기 / 읽기 비용 gate
 
 Source of Truth Manager는 대상 프로젝트의 기존 문서 구조를 존중하되, 기본 읽기 경로가 과도하게 커지면 읽기 비용을 별도 판단으로 보고한다.

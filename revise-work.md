@@ -26,6 +26,8 @@ Revision prompt artifact는 `_artifact-metadata.md`, `_artifact-templates.md`의
 
 기본 읽기 경로의 revision, prompt, verification 기록이 400줄 또는 40KB를 넘으면 분리 후보로 보고한다. 1000줄 이상 누적 문서는 active index와 history 문서 분리 후보로 보고한다. 짧고 응집된 문서는 파일 수를 늘리지 않고 기존 구조를 유지한다.
 
+수정 지시서를 만들기 전에는 현재 작업 포인터와 기본 읽기 경로 계약이 현재 Task와 검증 finding을 가리키는지 확인한다. 과거 prompt나 verification을 기본 읽기 경로로 삼아야만 revision을 이해할 수 있으면 revision prompt를 만들지 말고 문서 정합성 정리로 돌린다.
+
 ## 시작 조건
 
 Revision은 다음 조건을 모두 만족해야만 가능하다.

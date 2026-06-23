@@ -39,6 +39,8 @@ Plan과 작업 기준서를 만들거나 수정하기 전에는 대상 프로젝
 
 작업 기준서 작성 전에는 현재 기준, 과거 작업 기록, 보조 자료를 분리한다. 과거 작업 기준서, 완료 기록, 검증 기록, 구현 지시서는 그 시점의 사실 기록이며 현재 기준으로 자동 승격하지 않는다. generated map, Codesight, agentmemory, search index, recall output, archive branch reference는 보조 자료로만 분류한다.
 
+작업 기준서 작성 전 현재 작업 포인터와 기본 읽기 경로 계약을 확인한다. 다음 task를 판단하려면 완료된 task history나 과거 검증/완료 기록까지 훑어야 하는 구조라면 Plan/Task를 APPROVED로 만들지 말고 현재 작업 포인터 갱신, active index/history 분리, README/index 갱신 후보를 먼저 보고한다.
+
 작업 기준서는 구현 전에 `_sot-packet.md`의 작업 기준 묶음으로 요약될 수 있어야 한다. 요약할 수 없거나 approved 기준 문서, allowedScope, forbiddenScope, requiredDecisions가 불명확하면 Plan/Task를 APPROVED로 만들지 말고 아직 필요한 결정을 질문한다.
 
 작업 기준서 작성 전 `_readiness-gates.md`의 제품 기준 준비 상태와 기술 설계 준비 상태를 확인한다. 둘 중 하나라도 `NOT READY`이면 작업 기준서를 APPROVED로 만들지 말고 제품 또는 기술 설계 쪽 미확정 결정으로 돌아간다.

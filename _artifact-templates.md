@@ -95,6 +95,26 @@ documentPlacementCheck:
     thresholds:
       hotPathSplitCandidate: "400 lines or 40KB"
       accumulatedHistorySplitCandidate: "1000 lines"
+  currentWorkPointer:
+    path: docs/project/current-work.md
+    exists: false
+    requiredFields:
+      - currentGate
+      - nextTask
+      - activeTasks
+      - requiredReadDocuments
+      - excludedHistoricalRecords
+      - currentConflicts
+      - readmeOrIndexUpdatesRequired
+    missingFields: []
+    updateRequired: false
+  readPathContract:
+    requiredReadDocuments: []
+    excludedHistoricalRecords: []
+    excludedNonSotReferences: []
+    oversizedRequiredReadDocuments: []
+    activeHistoryMixedDocuments: []
+    decisionLogSplitCandidates: []
   baselineRoleCheck:
     activeCriteriaDocuments: []
     historicalRecords: []
@@ -118,13 +138,18 @@ documentPlacementCheck:
 - 작업 기준서, ADR, 검증 결과, 완료 기록이 누적 문서로 커졌다면 active index와 history record 분리를 우선 검토한다.
 - Product/Engineering 기준 문서는 너무 커질 때만 domain packet으로 나누고, 원래 기준 문서는 얇은 진입점과 index로 유지한다.
 - 루트 `DESIGN.md`가 승인된 단일 디자인 기준이면 유지한다. 너무 커지면 root `DESIGN.md`는 전역 원칙과 index로 남기고 화면별 세부 기준만 분리 후보로 제안한다.
+- 문서가 커졌거나 다음 작업 판단에 과거 완료 기록까지 읽어야 하면 현재 작업 포인터 역할을 확인한다. 파일명은 강제하지 않고 기본 후보는 `docs/project/current-work.md`다.
+- 현재 작업 포인터에는 현재 gate, 다음 task, 현재 진행 가능한 task, 반드시 읽을 문서, 읽지 않을 과거 기록, 현재 기준과 충돌하는 문서, README/index 갱신 필요 여부가 있어야 한다.
+- 기본 읽기 경로 계약은 이번 작업에서 반드시 읽을 문서와 기본 읽기 경로에서 제외할 과거 기록/보조 자료를 분리한다.
+- 큰 작업 기준서는 현재 진행 가능한 task만 담은 active index와 완료 기록을 담은 history로 분리하는 방식을 우선 검토한다.
+- decision log가 커졌다면 현재 적용 중인 결정, 최근 변경 결정, 과거 결정 기록, superseded 결정을 나눠 읽게 한다.
 - generated map, Codesight, agentmemory, search index, recall output, archive branch reference는 기본적으로 `nonSotReferences`에 분류하고 기본 읽기 경로에서 제외한다.
 - 과거 task completion, verification, prompt, old task 문서는 `historicalRecords`로 분류한다. active 기준으로 쓰려면 active 기준 문서나 registry의 승격 근거가 필요하다.
 - 현재 기준과 과거 산출물이 충돌하면 `currentVsHistoryConflicts`에 기록하고, 저장 또는 후속 작업으로 진행하기 전에 사용자에게 정합성 정리 선택지를 제시한다.
 - 새 문서 파일을 만들기 전에는 왜 기존 문서에 추가하지 않고 새 파일이 필요한지 사용자에게 보고한다.
 - 기존 구조와 다른 파일 배치를 하려면 일부 파일만 다르게 만들지 말고 전체 문서 구조 변경안으로 제안하고 사용자 승인을 받는다.
 - `matchesExistingStructure: false` 또는 `structureChangeRequired: true`이면 auto-stop하고 사용자 확인 전에는 저장하지 않는다.
-- 저장 전 사용자 보고에는 수정할 파일, 새로 만들 파일, 기존 문서 구조와 맞는지, 분리 후보, 유지 후보, 삭제/보존/비-SOT 분류 후보, README/index 갱신 필요 여부를 포함한다.
+- 저장 전 사용자 보고에는 수정할 파일, 새로 만들 파일, 기존 문서 구조와 맞는지, 현재 작업 포인터 갱신 필요 여부, 기본 읽기 경로 계약 변경 여부, 분리 후보, 유지 후보, 삭제/보존/비-SOT 분류 후보, README/index 갱신 필요 여부를 포함한다.
 
 ## Harness Operation Artifact Types
 

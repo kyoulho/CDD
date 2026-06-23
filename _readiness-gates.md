@@ -275,6 +275,8 @@ State Meaning Check:
 - generated map, Codesight, agentmemory, search index, recall output, archive branch reference를 active 기준으로 사용하지 않음
 - 현재 기준과 과거 기록 사이 충돌 없음
 - 기본 읽기 경로의 큰 문서와 누적 문서에 대해 분리 후보/유지 후보 보고 완료
+- 현재 작업 포인터로 현재 gate, 다음 task, 현재 진행 가능한 task, 반드시 읽을 문서, 읽지 않을 과거 기록을 식별할 수 있음
+- 기본 읽기 경로 계약으로 이번 작업에 필요한 최소 문서와 제외할 과거 기록/보조 자료가 분리됨
 
 `NOT READY` 예:
 
@@ -289,6 +291,8 @@ State Meaning Check:
 - 현재 기준과 과거 task, completion, verification, prompt가 충돌한다.
 - generated map, Codesight, agentmemory, search index, recall output, archive branch reference 같은 보조 자료를 기준 문서처럼 사용해야 한다.
 - 기본 읽기 경로의 큰 문서나 1000줄 이상 누적 문서가 있는데 분리 후보/유지 후보가 보고되지 않았다.
+- 현재 작업 포인터가 없어 다음 task와 반드시 읽을 문서를 식별하려면 큰 누적 문서 전체를 읽어야 한다.
+- 기본 읽기 경로 계약이 없어 완료된 task, 과거 verification, completion, old prompt가 현재 기준과 섞여 읽힌다.
 
 ## 판정 출력 형식
 
@@ -319,6 +323,12 @@ Codex는 구현 전에 다음 형식으로 보고한다.
 - 과거 기록으로만 볼 문서:
 - 보조 자료로만 볼 문서:
 - 현재 기준과 과거 기록의 충돌:
+현재 작업 포인터:
+- 위치:
+- 현재 gate:
+- 다음 task:
+- 반드시 읽을 문서:
+- 읽지 않을 과거 기록:
 문서 크기 / 읽기 비용:
 - 기본 읽기 경로에서 큰 문서:
 - 분리 후보:
