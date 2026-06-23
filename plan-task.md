@@ -39,6 +39,10 @@ Plan과 작업 기준서를 만들거나 수정하기 전에는 대상 프로젝
 
 작업 기준서 작성 전에는 현재 기준, 과거 작업 기록, 보조 자료를 분리한다. 과거 작업 기준서, 완료 기록, 검증 기록, 구현 지시서는 그 시점의 사실 기록이며 현재 기준으로 자동 승격하지 않는다. generated map, Codesight, agentmemory, search index, recall output, archive branch reference는 보조 자료로만 분류한다.
 
+대상 프로젝트에 `docs/README.md`, document registry, `docs/project/current-work.md`, 기존 작업 기준서, 검증/완료 기록이 있거나 후속 task 판단이 필요하면 작업 기준서 작성 전에 `cdd-audit docs --root <project> --format text --fail-on never`를 조건부로 먼저 실행한다. 실행할 수 없으면 같은 항목을 수동 확인하고, 보고에 "cdd-audit 실행 불가, 수동 확인으로 대체"와 이유를 남긴다.
+
+`cdd-audit` 결과에 차단 항목이 있으면 작업 기준서를 APPROVED로 만들지 않는다. current pointer, 기본 읽기 경로, active/history 분리, README/index 갱신, 비-SOT 표시 후보를 먼저 사용자에게 보고한다.
+
 작업 기준서 작성 전 현재 작업 포인터와 기본 읽기 경로 계약을 확인한다. 다음 task를 판단하려면 완료된 task history나 과거 검증/완료 기록까지 훑어야 하는 구조라면 Plan/Task를 APPROVED로 만들지 말고 현재 작업 포인터 갱신, active index/history 분리, README/index 갱신 후보를 먼저 보고한다.
 
 작업 기준서는 구현 전에 `_sot-packet.md`의 작업 기준 묶음으로 요약될 수 있어야 한다. 요약할 수 없거나 approved 기준 문서, allowedScope, forbiddenScope, requiredDecisions가 불명확하면 Plan/Task를 APPROVED로 만들지 말고 아직 필요한 결정을 질문한다.

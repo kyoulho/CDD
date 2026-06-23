@@ -26,6 +26,10 @@ Readiness Agent는 디스크에 존재하는 docs, registry, Plan/Task, prompt, 
 
 Readiness Agent는 현재 기준, 과거 기록, 보조 자료를 먼저 구분한다. 과거 task, completion, verification, old prompt는 그 시점의 사실 기록이지 현재 기준이 아니다. generated map, Codesight, agentmemory, search index, recall output, archive branch reference는 탐색 보조 자료이며 active source of truth 승격 근거가 없으면 기준 문서로 보지 않는다.
 
+대상 프로젝트에 `docs/README.md`, document registry, `docs/project/current-work.md`, 작업 기준서, 검증/완료 기록이 있거나 다음 작업/후속 task/문서 정합성/완료 처리/구현 지시서/cleanup-delete 판단이 필요하면 Readiness Agent는 가능할 때 `cdd-audit docs --root <project> --format text --fail-on never`를 먼저 실행한다. 실행할 수 없으면 같은 항목을 수동 확인하고, 사용자 보고에 "cdd-audit 실행 불가, 수동 확인으로 대체"와 이유를 남긴다.
+
+`cdd-audit` 결과에 차단 항목이 있으면 READY_FOR_PLANNING을 선언하지 않는다. 차단 항목은 현재 작업 포인터 갱신, 기본 읽기 경로 계약 보강, active/history 분리, README/index 갱신, 비-SOT 표시 후보로 번역해서 보고한다.
+
 기본 읽기 경로의 문서가 400줄 또는 40KB를 넘으면 분리 후보를 보고한다. 1000줄 이상 누적 문서는 active index와 history 문서 분리 후보로 보고한다. 단, 짧고 응집된 문서는 파일 수를 늘리지 않고 기존 구조를 유지한다.
 
 문서가 커졌거나 다음 작업 판단에 과거 완료 기록까지 읽어야 한다면 현재 작업 포인터와 기본 읽기 경로 계약을 확인한다. 현재 작업 포인터는 파일 경로가 아니라 역할이다. 기본 후보는 `docs/project/current-work.md`지만, 프로젝트가 승인한 index나 registry 섹션이 같은 역할을 명확히 수행하면 허용한다.

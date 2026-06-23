@@ -1,0 +1,32 @@
+#!/bin/sh
+set -eu
+
+SOURCE=$0
+while [ -L "$SOURCE" ]; do
+	DIR=$(CDPATH= cd -P -- "$(dirname -- "$SOURCE")" && pwd)
+	TARGET=$(readlink "$SOURCE")
+	case "$TARGET" in
+		/*) SOURCE=$TARGET ;;
+		*) SOURCE=$DIR/$TARGET ;;
+	esac
+done
+
+SCRIPT_DIR=$(CDPATH= cd -P -- "$(dirname -- "$SOURCE")" && pwd)
+CDD_ROOT=$(CDPATH= cd -P -- "$SCRIPT_DIR/.." && pwd)
+PYTHONPATH=$CDD_ROOT${PYTHONPATH:+:$PYTHONPATH}
+export PYTHONPATH
+
+for PYTHON in python3.13 python3.12 python3.11 python3; do
+	if command -v "$PYTHON" >/dev/null 2>&1; then
+		if "$PYTHON" -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 11) else 1)' >/dev/null 2>&1; then
+			exec "$PYTHON" -m cdd_audit "$@"
+		fi
+	fi
+done
+
+if command -v uv >/dev/null 2>&1; then
+	exec uv run --python 3.12 python -m cdd_audit "$@"
+fi
+
+printf '%s\n' 'cdd-audit requires Python 3.11+ or uv.' >&2
+exit 1

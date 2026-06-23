@@ -151,6 +151,42 @@ documentPlacementCheck:
 - `matchesExistingStructure: false` 또는 `structureChangeRequired: true`이면 auto-stop하고 사용자 확인 전에는 저장하지 않는다.
 - 저장 전 사용자 보고에는 수정할 파일, 새로 만들 파일, 기존 문서 구조와 맞는지, 현재 작업 포인터 갱신 필요 여부, 기본 읽기 경로 계약 변경 여부, 분리 후보, 유지 후보, 삭제/보존/비-SOT 분류 후보, README/index 갱신 필요 여부를 포함한다.
 
+## Read-only Audit Tool Contract
+
+`bin/cdd-audit`는 문서 정합성 반복 점검을 위한 보조 도구다. CDD 판단을 대신하지 않고, 파일 write, git write, agentmemory write, 네트워크 호출, 자동 분리, 자동 삭제, 과거 기록 자동 승격, 현재 기준 자동 확정을 수행하지 않는다.
+
+명령:
+
+```text
+cdd-audit docs [--root <path>] [--config <path>] [--format text|json] [--fail-on blocking|never]
+```
+
+입력:
+
+- project root. 없으면 현재 위치에서 위로 올라가며 marker를 찾는다.
+- optional config: `.cdd-audit.json`, `cdd-audit.json`, `.cdd/audit.json`.
+- 읽을 문서 후보: `*.md`, `*.yml`, `*.yaml`.
+- 제외 directory 후보: `.git`, `node_modules`, `.venv`, `dist`, `build`, `.next`, `.cache`, `__pycache__`.
+
+출력:
+
+- 현재 작업 포인터와 누락 필드
+- 현재 gate, 다음 task, active task
+- 반드시 읽을 문서와 제외할 과거 기록
+- 400줄 또는 40KB를 넘는 기본 읽기 경로 문서
+- 1000줄 이상 누적 문서
+- active/history 혼재 후보
+- 비-SOT 자료 혼입 후보
+- README/index 갱신 필요 여부
+
+exit code:
+
+- `0`: 실행 성공, 차단 항목 없음
+- `2`: 실행 성공, 차단 항목 있음
+- `1`: 실행 실패
+
+`--fail-on never`는 automation에서 사용할 수 있다. 이 옵션은 차단 finding을 숨기지 않고 exit code만 `0`으로 바꾼다.
+
 ## Harness Operation Artifact Types
 
 하네스 평가 목적을 추적해야 한다면 project source of truth가 아닌 별도 harness operation artifact를 사용한다.

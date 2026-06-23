@@ -73,6 +73,63 @@ UI/UX 기준 문서는 특정 경로를 강제하지 않는다. 기본 후보로
 
 CDD는 작업 시작 전에 기본 읽기 경로 계약을 확인해야 한다. 이 계약은 이번 작업에서 반드시 읽을 문서와 기본 읽기 경로에서 제외할 과거 기록/보조 자료를 나눈다. 완료된 task, 과거 검증 결과, 완료 기록, old prompt를 다시 훑어야만 다음 작업을 판단할 수 있다면 먼저 active index와 history 분리 또는 현재 작업 포인터 갱신을 제안해야 한다.
 
+## `cdd-audit` 문서 점검
+
+`bin/cdd-audit`는 CDD 문서 규칙을 보조하는 read-only CLI다. 파일을 만들거나 고치거나 삭제하지 않고, 현재 작업 포인터, 기본 읽기 경로, 큰 문서, active/history 혼재, 비-SOT 자료 혼입을 보고한다.
+
+문서 역할 판정은 프로젝트 설정과 문서 역할 선언을 우선한다. `.cdd-audit.json`의 `roleOverrides`, 문서 frontmatter의 `role`, `documentRole`, `type`이 있으면 본문 키워드보다 먼저 적용한다. `completion`, `verification`, `history`, `archive`, `superseded` 성격의 경로나 문서는 본문에 `next task` 같은 표현이 있어도 현재 작업 후보로 승격하지 않는다.
+
+큰 문서가 발견되면 단순히 "크다"라고만 보고하지 않는다. text와 JSON 출력 모두에서 분리 후보를 보여주며, 진입점에 남길 내용, packet 또는 history로 옮길 내용, README/index 갱신 필요 여부를 함께 보고한다.
+
+직접 실행:
+
+```sh
+/path/to/cdd/bin/cdd-audit docs --root /path/to/project --format text
+```
+
+PATH에 걸어두기:
+
+```sh
+mkdir -p ~/.local/bin
+ln -s /path/to/cdd/bin/cdd-audit ~/.local/bin/cdd-audit
+cdd-audit docs --root /path/to/project --format text
+```
+
+프로젝트 하위 디렉터리에서 실행하면 `docs/README.md`, `docs/project/current-work.md`, `document-registry.yml`, `AGENTS.md`, `.git` 같은 marker를 기준으로 root를 자동 탐지한다.
+
+JSON 출력:
+
+```sh
+cdd-audit docs --root /path/to/project --format json --fail-on never
+```
+
+exit code:
+
+- `0`: 실행 성공, 차단 항목 없음
+- `2`: 실행 성공, 차단 항목 있음
+- `1`: 실행 실패
+
+`--fail-on never`를 쓰면 차단 항목을 출력에 유지하면서 exit code만 `0`으로 둔다.
+
+선택 설정 파일은 project root의 `.cdd-audit.json`, `cdd-audit.json`, `.cdd/audit.json` 중 하나를 쓴다.
+
+```json
+{
+  "defaultReadPath": ["docs/README.md", "docs/project/current-work.md", "DESIGN.md"],
+  "requiredReadDocuments": ["docs/README.md", "docs/project/current-work.md"],
+  "excludedHistoricalRecords": ["docs/archive/**"],
+  "excludedNonSotReferences": ["docs/generated-map.md"],
+  "roleOverrides": {
+    "DESIGN.md": "current-criteria",
+    "docs/archive/**": "history"
+  },
+  "ignore": ["node_modules/**", "dist/**"],
+  "currentWorkPointer": "docs/project/current-work.md"
+}
+```
+
+이 도구는 CDD 판단을 대체하지 않는다. 차단 항목이 나오면 CDD 절차에 따라 사용자에게 정리 후보와 선택지를 보고해야 한다.
+
 ## 진행하는 경우
 
 다음 조건이 충분하면 CDD는 다시 묻지 않고 요청 범위 안에서 이어서 진행할 수 있다.

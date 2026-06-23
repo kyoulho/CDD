@@ -96,6 +96,12 @@ DB table, column, migration, repository, API DTO는 Storage Intent Check가 `DB_
 
 현재 기준과 과거 기록은 분리해서 읽는다. Product/Engineering 기준 문서와 현재 작업 기준서의 active 항목은 현재 판단 기준이지만, 과거 task, completion, verification, old prompt는 그 시점의 사실 기록이지 현재 기준이 아니다. generated map, Codesight, agentmemory, search index, recall output, archive branch reference 같은 비-SOT 자료는 탐색 보조 자료이며 기본 읽기 경로에서 제외한다. 현재 기준과 과거 산출물이 충돌하면 구현, 후속 지시서 작성, 완료 처리 전에 먼저 정합성 문제를 보고한다.
 
+`cdd-audit`는 이 문서 정합성 규칙을 반복 확인하는 read-only 보조 도구다. 대상 프로젝트에 `docs/README.md`, document registry, `docs/project/current-work.md`, 작업 기준서, 검증/완료 기록이 있거나 사용자가 다음 작업, 후속 task, 문서 정합성, 완료 처리, 구현 지시서, cleanup/delete를 요청하면 파일 수정, 작업 기준서 작성, 구현 지시서 작성, 검증/완료 판단 전에 조건부로 먼저 실행한다.
+
+실행 명령은 `cdd-audit docs --root <project> --format text --fail-on never`를 우선 사용한다. PATH에 없으면 CDD skill root를 알 수 있을 때 `<cdd-root>/bin/cdd-audit docs --root <project> --format text --fail-on never`를 시도한다. 실행할 수 없거나 실패하면 동일 항목을 수동으로 확인하고 사용자 보고에 "cdd-audit 실행 불가, 수동 확인으로 대체"와 실패 이유를 남긴다.
+
+`cdd-audit` 결과에 차단 항목이 있으면 바로 구현하지 않는다. 현재 작업 포인터 갱신, 기본 읽기 경로 계약 보강, active/history 분리, README/index 갱신, 비-SOT 표시 중 필요한 선택지와 추천을 사용자에게 보고한다. 도구 결과는 근거 자료일 뿐이며 CDD 판단, 사용자 선택, 문서 수정 승인을 대체하지 않는다.
+
 작업 중간마다 사용자 개입이 필요한지 판정한다. 제품 판단, 설계 판단, 삭제/보존 선택, migration, 데이터 삭제, public API 제거, 큰 dependency 변경, 애매한 요청, 수정 금지 지시가 있으면 멈추고 질문한다. 반대로 요청이 명확하고, 파일 수정이 허용되어 있고, 제품/설계/저장/동작/상태/상호작용/운영 기준과 검증 방법이 충분하며, 위험 변경과 금지 범위가 없으면 다시 묻지 말고 요청 범위 안에서 문서 보강, 구현, 검증, 보고까지 이어서 수행한다.
 
 작업 지시서 초안 작성과 실행 승인을 기계적으로 연달아 요구하지 않는다. 사용자가 실제 구현, 문서 수정, cleanup/delete 실행, revision 실행까지 명확히 요청했고 작업 지시서 작성 중 새 미확정 결정, 정책 충돌, 위험 변경, 범위 확대가 없으면 작업 지시서를 내부 실행 기준으로 작성한 뒤 같은 요청 범위 안에서 바로 실행한다. 사용자가 "초안만", "먼저 보여줘", "검토 후 진행"을 요청했거나 새 결정이 필요하면 실행하지 않고 멈춘다.
