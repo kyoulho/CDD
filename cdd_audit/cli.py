@@ -6,7 +6,7 @@ import json
 import sys
 
 from cdd_audit.config import ConfigError, load_config
-from cdd_audit.model import AuditOptions, AuditResult, JsonValue
+from cdd_audit.model import AuditOptions, AuditResult, JsonValue, SectionHint
 from cdd_audit.root import detect_project_root
 from cdd_audit.scanner import audit
 
@@ -133,6 +133,7 @@ def _format_brief(result: AuditResult, exit_code: int) -> str:
             f"- 현재 gate: {result.current_gate or '없음'}",
             f"- 다음 task: {result.next_task or '없음'}",
             f"- 먼저 읽을 문서: {_format_list(result.required_read_documents)}",
+            *_section_hint_lines(result.section_hints),
             f"- 읽지 않을 기록: {_format_list(result.excluded_history)}",
             f"- 읽지 않을 보조 자료: {_format_list(result.excluded_non_sot)}",
             f"- 차단 항목: {blocking}",
@@ -149,6 +150,15 @@ def _format_list(value: tuple[str, ...] | list[str]) -> str:
     if not value:
         return "없음"
     return ", ".join(value)
+
+
+def _section_hint_lines(section_hints: tuple[SectionHint, ...]) -> list[str]:
+    if not section_hints:
+        return ["- 먼저 볼 섹션: 없음"]
+    return [
+        "- 먼저 볼 섹션:",
+        *(f"  - {item.path} > {_format_list(item.headings)}" for item in section_hints),
+    ]
 
 
 def _oversized_hot_path_documents(result: AuditResult) -> list[str]:

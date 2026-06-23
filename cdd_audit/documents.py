@@ -9,6 +9,8 @@ import re
 from cdd_audit.config import AuditConfig
 from cdd_audit.model import ACTIVE_SIGNALS, HISTORY_SIGNALS, NON_SOT_SIGNALS, DocumentInfo
 
+HEADING_PATTERN = re.compile(r"^(#{1,3})\s+(.+?)\s*$")
+
 IGNORED_DIRS = frozenset(
     {
         ".git",
@@ -63,6 +65,7 @@ def read_documents(root: Path, config: AuditConfig) -> list[DocumentInfo]:
                 in_default_read_path=_in_default_read_path(parsed, role, config),
                 status=status,
                 signals=signals,
+                headings=_headings(text),
                 text=text,
                 text_lower=f"{path_lower}\n{lowered}",
             )
@@ -85,6 +88,15 @@ def _signals(path: str, text: str) -> tuple[str, ...]:
         if signal in path or signal in text:
             found.append(signal)
     return tuple(found)
+
+
+def _headings(text: str) -> tuple[str, ...]:
+    result: list[str] = []
+    for line in text.splitlines():
+        match = HEADING_PATTERN.match(line.strip())
+        if match is not None:
+            result.append(f"{match.group(1)} {match.group(2).strip()}")
+    return tuple(result)
 
 
 def _role(parsed: ParsedDocument, config: AuditConfig) -> str:

@@ -21,7 +21,7 @@
 
 처음부터 모든 internal module을 열지 않는다. 먼저 사용자 요청만으로 작업 성격을 다음 중 하나로 분류한다: 설명/판단, 계획, 구현 지시서, 구현, cleanup/delete, 검증, 수정, 완료, 기준 문서 변경. 하나로 확정되지 않으면 파일을 수정하지 말고 자연어로 확인한다.
 
-작업 성격이 확정되면 Routing Table의 public entrypoint 하나로 이동한다. 대상 프로젝트에 문서 구조가 있으면 `cdd-audit docs --root <project> --format brief --fail-on never`로 먼저 읽을 문서만 좁힌다. `brief` 결과에 차단 항목이 있거나 분리 이유가 필요하면 반드시 text 또는 JSON으로 확장한다.
+작업 성격이 확정되면 Routing Table의 public entrypoint 하나로 이동한다. 대상 프로젝트에 문서 구조가 있으면 `cdd-audit docs --root <project> --format brief --fail-on never`로 먼저 읽을 문서와 먼저 볼 섹션을 좁힌다. 먼저 볼 섹션은 문서 안의 진입점일 뿐이며, 기준/승인/gate 판단이 불충분하면 해당 문서 전체 또는 text/JSON audit으로 확장한다. `brief` 결과에 차단 항목이 있거나 분리 이유가 필요하면 반드시 text 또는 JSON으로 확장한다.
 
 `_work-mode.md`, `_sot-packet.md`, `_readiness-gates.md`, `_authority-boundary.md`, `_artifact-*.md`, `_status-machine.md`, `_approval-reference.md`, `_user-facing-language.md`는 항상 먼저 읽는 파일이 아니다. 선택한 entrypoint가 요구하거나 판단이 막힌 경우에만 연다.
 

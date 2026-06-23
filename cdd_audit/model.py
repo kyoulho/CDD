@@ -72,6 +72,7 @@ class DocumentInfo:
     in_default_read_path: bool
     status: str | None
     signals: tuple[str, ...]
+    headings: tuple[str, ...]
     text: str
     text_lower: str
 
@@ -84,6 +85,19 @@ class DocumentInfo:
             "inDefaultReadPath": self.in_default_read_path,
             "status": self.status,
             "signals": list(self.signals),
+            "headings": list(self.headings),
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class SectionHint:
+    path: str
+    headings: tuple[str, ...]
+
+    def to_json(self) -> JsonObject:
+        return {
+            "path": self.path,
+            "headings": list(self.headings),
         }
 
 
@@ -127,6 +141,7 @@ class AuditResult:
     required_read_documents: tuple[str, ...]
     excluded_history: tuple[str, ...]
     excluded_non_sot: tuple[str, ...]
+    section_hints: tuple[SectionHint, ...]
     checks: JsonObject
     oversized_hot_path_count: int
     current_gate: str | None
@@ -169,6 +184,7 @@ class AuditResult:
                 },
                 "readPathContract": {
                     "requiredReadDocuments": list(self.required_read_documents),
+                    "sectionHints": [item.to_json() for item in self.section_hints],
                     "excludedHistoricalRecords": list(self.excluded_history),
                     "excludedNonSotReferences": list(self.excluded_non_sot),
                     "unknownRoleDocuments": [

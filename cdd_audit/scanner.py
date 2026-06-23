@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Final
 from pathlib import Path
 
 from cdd_audit.checks import (
@@ -11,8 +12,33 @@ from cdd_audit.checks import (
 )
 from cdd_audit.config import AuditConfig
 from cdd_audit.documents import read_documents
-from cdd_audit.model import ACCUMULATED_LINES, SEVERITY_ORDER, AuditResult, DocumentInfo, Finding
+from cdd_audit.model import ACCUMULATED_LINES, SEVERITY_ORDER, AuditResult, DocumentInfo, Finding, SectionHint
 from cdd_audit.pointer import missing_pointer_fields, pointer_details
+
+SECTION_HINT_LIMIT: Final[int] = 4
+COMMON_SECTION_KEYWORDS: Final[tuple[str, ...]] = (
+    "current",
+    "현재",
+    "gate",
+    "다음",
+    "task",
+    "작업",
+    "required",
+    "read",
+    "읽",
+    "criteria",
+    "기준",
+    "scope",
+    "범위",
+    "decision",
+    "결정",
+    "routing",
+)
+ROLE_SECTION_KEYWORDS: Final[dict[str, tuple[str, ...]]] = {
+    "active-index": ("pointer", "포인터", "index", "인덱스", "conflict", "충돌", "시작", "확인", "audit", "점검", "호출"),
+    "current-criteria": ("product", "engineering", "design", "설계", "제품", "보안", "성능", "ux"),
+    "task-contract": ("allowed", "forbidden", "금지", "포함", "제외", "approval", "승인", "verification", "검증", "test", "테스트"),
+}
 
 
 def audit(root: Path, config: AuditConfig) -> AuditResult:
@@ -23,6 +49,7 @@ def audit(root: Path, config: AuditConfig) -> AuditResult:
     required = _required_documents(docs, config, details.required_read_documents)
     excluded_history = _excluded_history(config, details.excluded_historical_records)
     excluded_non_sot = _excluded_non_sot(config, details.excluded_non_sot_references)
+    section_hints = _section_hints(docs, required)
     checks = checks_json(docs)
     oversized_count = len(oversized_hot_path(docs))
     findings = tuple(_sorted_findings(_findings(docs, pointer, missing, excluded_history, excluded_non_sot)))
@@ -35,6 +62,7 @@ def audit(root: Path, config: AuditConfig) -> AuditResult:
         required_read_documents=required,
         excluded_history=excluded_history,
         excluded_non_sot=excluded_non_sot,
+        section_hints=section_hints,
         checks=checks,
         oversized_hot_path_count=oversized_count,
         current_gate=details.current_gate,
@@ -77,6 +105,33 @@ def _excluded_non_sot(config: AuditConfig, pointer_excluded: tuple[str, ...]) ->
     if pointer_excluded:
         return pointer_excluded
     return config.excluded_non_sot_references
+
+
+def _section_hints(docs: tuple[DocumentInfo, ...], required: tuple[str, ...]) -> tuple[SectionHint, ...]:
+    by_path = {item.path: item for item in docs}
+    result: list[SectionHint] = []
+    for path in required:
+        item = by_path.get(path)
+        if item is None:
+            continue
+        headings = _recommended_headings(item)
+        if headings:
+            result.append(SectionHint(path, headings))
+    return tuple(result)
+
+
+def _recommended_headings(document: DocumentInfo) -> tuple[str, ...]:
+    if not document.headings:
+        return ()
+    selected = [document.headings[0]]
+    keywords = COMMON_SECTION_KEYWORDS + ROLE_SECTION_KEYWORDS.get(document.role, ())
+    for heading in document.headings[1:]:
+        lowered = heading.lower()
+        if heading not in selected and any(keyword in lowered for keyword in keywords):
+            selected.append(heading)
+        if len(selected) >= SECTION_HINT_LIMIT:
+            break
+    return tuple(selected)
 
 
 def _findings(

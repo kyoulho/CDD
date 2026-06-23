@@ -28,6 +28,7 @@ def main() -> None:
         test_root_is_detected_from_nested_directory,
         test_current_work_pointer_fields_are_extracted,
         test_brief_format_prints_only_minimal_read_path,
+        test_brief_format_prints_section_hints,
         test_config_overrides_document_roles_and_default_read_path,
         test_history_path_beats_active_keywords,
         test_oversized_hot_path_blocks_without_pointer,
@@ -140,6 +141,33 @@ def test_brief_format_prints_only_minimal_read_path() -> None:
         assert "- 읽지 않을 기록: docs/archive/*" in result.stdout
         assert "findings:" not in result.stdout
         assert "분리 후보:" not in result.stdout
+
+
+def test_brief_format_prints_section_hints() -> None:
+    with TemporaryDirectory() as temp:
+        root = Path(temp)
+        write(root / "docs/project/current-work.md", current_work_pointer())
+        write(
+            root / "docs/README.md",
+            "\n".join(
+                [
+                    "# Docs",
+                    "",
+                    "## Current Work",
+                    "",
+                    "## Required Read Documents",
+                    "",
+                    "## Historical Notes",
+                    "",
+                ]
+            ),
+        )
+        result = run_direct("docs", "--root", str(root), "--format", "brief")
+
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert "- 먼저 볼 섹션:" in result.stdout
+        assert "  - docs/README.md > # Docs, ## Current Work, ## Required Read Documents" in result.stdout
+        assert "Historical Notes" not in result.stdout
 
 
 def test_config_overrides_document_roles_and_default_read_path() -> None:
