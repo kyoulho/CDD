@@ -24,24 +24,20 @@ Revision prompt artifact는 `_artifact-metadata.md`, `_artifact-templates.md`의
 
 작업 모드가 `ANALYSIS_ONLY` 또는 `PROPOSAL_ONLY`이면 수정 지시서 생성, 코드 수정, 테스트 수정, rollback을 하지 않는다. 필요한 revision 후보와 승인 조건만 보고한다.
 
-수정 지시서를 만들기 전에는 현재 기준, 과거 검증 기록, 기존 prompt, 작업 기준서를 분리해서 확인한다. 검증 결과와 기존 prompt는 그 시점의 사실 기록이며 현재 기준 문서가 아니다. 현재 기준과 과거 산출물이 충돌하면 revision prompt를 만들지 말고 Source of Truth 정합성 정리로 돌린다.
-
-기본 읽기 경로의 revision, prompt, verification 기록이 400줄 또는 40KB를 넘으면 분리 후보로 보고한다. 1000줄 이상 누적 문서는 active index와 history 문서 분리 후보로 보고한다. 짧고 응집된 문서는 파일 수를 늘리지 않고 기존 구조를 유지한다.
-
-수정 지시서를 만들기 전에는 현재 작업 포인터와 기본 읽기 경로 계약이 현재 Task와 검증 finding을 가리키는지 확인한다. 과거 prompt나 verification을 기본 읽기 경로로 삼아야만 revision을 이해할 수 있으면 revision prompt를 만들지 말고 문서 정합성 정리로 돌린다.
+수정 지시서를 만들기 전에는 `_source-of-truth-manager.md`의 현재 기준/과거 기록/보조 자료 분리와 기본 읽기 경로 규칙을 따른다. 검증 결과와 기존 prompt는 그 시점의 사실 기록이며 현재 기준 문서가 아니다. 현재 기준과 과거 산출물이 충돌하거나 과거 prompt/verification을 기본으로 읽어야만 revision을 이해할 수 있으면 revision prompt를 만들지 말고 문서 정합성 정리로 돌린다.
 
 ## 빠른 탐색
 
-- 처음에는 "Fast Path", "시작 조건", "중단 조건"만 먼저 본다.
+- 처음에는 "최소 읽기 경로", "시작 조건", "중단 조건"만 먼저 본다.
 - 수정 지시서 시작 조건은 "시작 조건"을 본다.
 - revision agent의 책임과 규칙은 "역할", "규칙"을 본다.
 - 수정 지시서에 들어갈 내용은 "수정 prompt에 포함할 내용"을 본다.
 - verification 상태별 허용 행동은 "Verification 상태별 허용 행동"을 본다.
 - revision을 멈춰야 하는 경우는 "중단 조건"을 본다.
 
-## Fast Path
+## 최소 읽기 경로
 
-수정 요청이면 먼저 verification finding, 승인된 작업 기준서, 현재 작업 포인터가 가리킨 기준 문서만 읽는다. finding이 기존 Task 범위 안에서 구체적으로 고칠 수 있고 새 정책 결정이 없으면 수정 지시서 작성까지 진행한다.
+수정 요청이면 먼저 verification finding, 승인된 작업 기준서, 현재 작업 포인터가 가리킨 기준 문서만 읽는다. 이 경로는 revision 시작 조건을 대체하지 않는다. finding이 기존 Task 범위 안에서 구체적으로 고칠 수 있고 새 정책 결정이 없으면 수정 지시서 작성까지 진행한다.
 
 수정 범위가 Task 밖으로 나가거나 source of truth 변경, approval, prompt metadata, artifact legitimacy 판단이 필요할 때만 `_source-of-truth-manager.md`, `_artifact-metadata.md`, `_artifact-templates.md`, `_approval-reference.md`, `_implementation-rules.md`, `_user-facing-language.md`를 연다.
 

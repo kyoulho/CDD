@@ -127,7 +127,7 @@ def _format_brief(result: AuditResult, exit_code: int) -> str:
     warning = sum(1 for item in result.findings if item.severity == "warning")
     return "\n".join(
         [
-            "빠른 읽기 경로:",
+            "최소 읽기 경로:",
             f"- root: {result.root}",
             f"- 현재 작업 포인터: {result.current_pointer_path or '없음'}",
             f"- 현재 gate: {result.current_gate or '없음'}",
