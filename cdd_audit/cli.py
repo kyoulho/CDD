@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import assert_never
 import json
 import sys
 
@@ -9,10 +10,10 @@ from cdd_audit.model import AuditOptions, AuditResult, JsonValue
 from cdd_audit.root import detect_project_root
 from cdd_audit.scanner import audit
 
-VERSION = "0.3.0"
+VERSION = "0.4.0"
 USAGE = "\n".join(
     [
-        "usage: cdd-audit docs [--root <path>] [--config <path>] [--format text|json] [--fail-on blocking|never]",
+        "usage: cdd-audit docs [--root <path>] [--config <path>] [--format text|json|brief] [--fail-on blocking|never]",
         "       cdd-audit docs --help",
         "       cdd-audit --version",
     ]
@@ -37,10 +38,15 @@ def run_cli(arguments: list[str]) -> int:
         return 1
     result = audit(root, config)
     exit_code = result.exit_code(parsed.fail_on)
-    if parsed.output_format == "json":
-        print(json.dumps(result.to_json(exit_code), ensure_ascii=False, indent=2))
-    else:
-        print(_format_text(result, exit_code))
+    match parsed.output_format:
+        case "json":
+            print(json.dumps(result.to_json(exit_code), ensure_ascii=False, indent=2))
+        case "brief":
+            print(_format_brief(result, exit_code))
+        case "text":
+            print(_format_text(result, exit_code))
+        case unreachable:
+            assert_never(unreachable)
     return exit_code
 
 
@@ -71,8 +77,8 @@ def _parse_arguments(arguments: list[str]) -> AuditOptions | ConfigError | str:
         elif arg == "--config":
             config_path = Path(value).resolve()
         elif arg == "--format":
-            if value not in {"text", "json"}:
-                return ConfigError("--format must be text or json")
+            if value not in {"text", "json", "brief"}:
+                return ConfigError("--format must be text, json, or brief")
             output_format = value
         elif arg == "--fail-on":
             if value not in {"blocking", "never"}:
@@ -114,6 +120,29 @@ def _format_text(result: AuditResult, exit_code: int) -> str:
         lines.append(f"  추천: {item.recommended_action}")
     lines.extend(["", "다음에 할 일:", _next_step_line(blocking), "", "자동 수정 여부: 없음"])
     return "\n".join(lines)
+
+
+def _format_brief(result: AuditResult, exit_code: int) -> str:
+    blocking = sum(1 for item in result.findings if item.severity == "blocking")
+    warning = sum(1 for item in result.findings if item.severity == "warning")
+    return "\n".join(
+        [
+            "빠른 읽기 경로:",
+            f"- root: {result.root}",
+            f"- 현재 작업 포인터: {result.current_pointer_path or '없음'}",
+            f"- 현재 gate: {result.current_gate or '없음'}",
+            f"- 다음 task: {result.next_task or '없음'}",
+            f"- 먼저 읽을 문서: {_format_list(result.required_read_documents)}",
+            f"- 읽지 않을 기록: {_format_list(result.excluded_history)}",
+            f"- 읽지 않을 보조 자료: {_format_list(result.excluded_non_sot)}",
+            f"- 차단 항목: {blocking}",
+            f"- 주의 항목: {warning}",
+            f"- exit code: {exit_code}",
+            "",
+            "다음에 할 일:",
+            _brief_next_step_line(blocking),
+        ]
+    )
 
 
 def _format_list(value: tuple[str, ...] | list[str]) -> str:
@@ -167,3 +196,9 @@ def _next_step_line(blocking: int) -> str:
     if blocking:
         return "- 현재 작업 포인터, 기본 읽기 경로, active/history 분리 중 필요한 선택지를 사용자에게 제시합니다."
     return "- 사용자 선택이 필요한 차단 항목은 없습니다. 요청 범위 안에서 다음 작업으로 이어갈 수 있습니다."
+
+
+def _brief_next_step_line(blocking: int) -> str:
+    if blocking:
+        return "- 전체 감사 보고로 차단 이유를 확인합니다: cdd-audit docs --format text --fail-on never"
+    return "- 위 문서만 먼저 읽고, 필요한 경우에만 상세 기준 문서나 과거 기록을 추가로 엽니다."

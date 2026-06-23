@@ -120,7 +120,8 @@ Internal module direct mention:
 - README, generated docs, indexing docs, memory/recall notes, previous assistant responses, archive/superseded documents는 기본적으로 active source of truth가 아니다.
 - 현재 기준, 과거 기록, 보조 자료를 먼저 분류하라. 과거 task/completion/verification/prompt는 그 시점의 사실 기록이며, active 기준으로 승격된 근거가 없으면 현재 기준이 아니다.
 - generated map, Codesight, agentmemory, search index, recall output, archive branch reference는 기본 읽기 경로에서 제외하고 보조 자료로만 취급하라.
-- 대상 프로젝트에 문서 구조 판단이 필요한 흔적이 있으면 먼저 `cdd-audit docs --root <project> --format text --fail-on never`를 실행하라. 흔적에는 `docs/README.md`, document registry, `docs/project/current-work.md`, 작업 기준서, 검증/완료 기록, 후속 task/완료 처리/구현 지시서/cleanup-delete 요청이 포함된다.
+- 대상 프로젝트에 문서 구조 판단이 필요한 흔적이 있으면 먼저 `cdd-audit docs --root <project> --format brief --fail-on never`를 실행해 최소 읽기 경로만 확인하라. 흔적에는 `docs/README.md`, document registry, `docs/project/current-work.md`, 작업 기준서, 검증/완료 기록, 후속 task/완료 처리/구현 지시서/cleanup-delete 요청이 포함된다.
+- `brief` 결과에 차단 항목이 있거나 분리 후보의 이유가 필요할 때만 `--format text` 또는 `--format json`으로 확장하라.
 - `cdd-audit`가 없거나 실패하면 같은 항목을 수동 확인으로 대체하고, 사용자에게 "cdd-audit 실행 불가, 수동 확인으로 대체"와 이유를 보고하라.
 - `cdd-audit` 결과에 차단 항목이 있으면 구현, 작업 기준서, 구현 지시서, 검증, 완료로 넘어가지 말고 정리 후보와 추천을 먼저 보고하라.
 - 기본 읽기 경로의 문서가 400줄 또는 40KB를 넘으면 분리 후보로 보고하라. 1000줄 이상 누적 문서는 active index와 history 문서 분리 후보로 보고하라.

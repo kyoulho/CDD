@@ -91,12 +91,14 @@ CDD는 작업 시작 전에 기본 읽기 경로 계약을 확인해야 한다. 
 
 문서 역할 판정은 프로젝트 설정과 문서 역할 선언을 우선한다. `.cdd-audit.json`의 `roleOverrides`, 문서 frontmatter의 `role`, `documentRole`, `type`이 있으면 본문 키워드보다 먼저 적용한다. `completion`, `verification`, `history`, `archive`, `superseded` 성격의 경로나 문서는 본문에 `next task` 같은 표현이 있어도 현재 작업 후보로 승격하지 않는다.
 
+빠른 작업 판단이 필요하면 먼저 `--format brief`를 사용한다. `brief` 출력은 현재 작업 포인터, 먼저 읽을 문서, 읽지 않을 과거 기록/보조 자료, 차단/주의 개수만 보여준다. 차단 항목이나 분리 후보의 이유가 필요할 때만 text 또는 JSON 출력으로 확장한다.
+
 큰 문서가 발견되면 단순히 "크다"라고만 보고하지 않는다. text와 JSON 출력 모두에서 분리 후보를 보여주며, 진입점에 남길 내용, packet 또는 history로 옮길 내용, README/index 갱신 필요 여부를 함께 보고한다.
 
 직접 실행:
 
 ```sh
-/path/to/cdd/bin/cdd-audit docs --root /path/to/project --format text
+/path/to/cdd/bin/cdd-audit docs --root /path/to/project --format brief --fail-on never
 ```
 
 PATH에 걸어두기:
@@ -104,7 +106,7 @@ PATH에 걸어두기:
 ```sh
 mkdir -p ~/.local/bin
 ln -s /path/to/cdd/bin/cdd-audit ~/.local/bin/cdd-audit
-cdd-audit docs --root /path/to/project --format text
+cdd-audit docs --root /path/to/project --format brief --fail-on never
 ```
 
 프로젝트 하위 디렉터리에서 실행하면 `docs/README.md`, `docs/project/current-work.md`, `document-registry.yml`, `AGENTS.md`, `.git` 같은 marker를 기준으로 root를 자동 탐지한다.
@@ -113,7 +115,13 @@ symlink를 만든 뒤 어느 디렉터리에서든 실행:
 
 ```sh
 cd /path/to/project/subdir
-cdd-audit docs --format text --fail-on never
+cdd-audit docs --format brief --fail-on never
+```
+
+상세 보고가 필요할 때:
+
+```sh
+cdd-audit docs --root /path/to/project --format text --fail-on never
 ```
 
 JSON 출력:
@@ -220,7 +228,7 @@ CDD 변경 후에는 다음을 우선 실행한다.
 
 ```sh
 git diff --check
-PYTHONDONTWRITEBYTECODE=1 ./bin/cdd-audit docs --root . --format text --fail-on never
+PYTHONDONTWRITEBYTECODE=1 ./bin/cdd-audit docs --root . --format brief --fail-on never
 PYTHONDONTWRITEBYTECODE=1 python3.12 tests/test_cdd_audit.py
 ```
 

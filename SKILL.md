@@ -13,6 +13,12 @@ CDD는 승인된 기준 문서와 사용자 승인 지점이 준비된 작업만
 - `_*.md`는 "Internal Modules"의 접근 정책을 따른다.
 - CDD 핵심 용어가 필요하면 "핵심 용어"를 먼저 본다.
 
+## 속도 우선 규칙
+
+처음부터 모든 public entrypoint와 internal module을 읽지 않는다. 사용자 요청에 맞는 public entrypoint 하나를 고르고, 대상 프로젝트에 문서 구조가 있으면 `cdd-audit docs --root <project> --format brief --fail-on never`로 먼저 읽을 문서만 좁힌다. `brief`에서 차단 항목이 있거나 상세 분리 이유가 필요할 때만 `--format text` 또는 `--format json`으로 확장한다.
+
+선택한 entrypoint와 `brief`가 가리킨 문서만 먼저 읽는다. `_*.md` internal module은 해당 entrypoint가 요구하거나 판단이 막힌 경우에만 연다. 과거 task, completion, verification, old prompt, generated map, Codesight, agentmemory는 current pointer가 명시적으로 요구하지 않는 한 기본 읽기에서 제외한다.
+
 ## 핵심 용어
 
 - 제품 기준 준비 상태: 무엇을 왜 만들 것인지에 대한 기획 준비도.
@@ -105,7 +111,7 @@ DB table, column, migration, repository, API DTO는 Storage Intent Check가 `DB_
 
 `cdd-audit`는 이 문서 정합성 규칙을 반복 확인하는 read-only 보조 도구다. 대상 프로젝트에 `docs/README.md`, document registry, `docs/project/current-work.md`, 작업 기준서, 검증/완료 기록이 있거나 사용자가 다음 작업, 후속 task, 문서 정합성, 완료 처리, 구현 지시서, cleanup/delete를 요청하면 파일 수정, 작업 기준서 작성, 구현 지시서 작성, 검증/완료 판단 전에 조건부로 먼저 실행한다.
 
-실행 명령은 `cdd-audit docs --root <project> --format text --fail-on never`를 우선 사용한다. PATH에 없으면 CDD skill root를 알 수 있을 때 `<cdd-root>/bin/cdd-audit docs --root <project> --format text --fail-on never`를 시도한다. 실행할 수 없거나 실패하면 동일 항목을 수동으로 확인하고 사용자 보고에 "cdd-audit 실행 불가, 수동 확인으로 대체"와 실패 이유를 남긴다.
+속도를 위해 먼저 `cdd-audit docs --root <project> --format brief --fail-on never`로 현재 작업 포인터와 최소 읽기 경로만 확인한다. 차단 항목, 큰 문서, active/history 혼재, 분리 후보 설명이 필요할 때만 `--format text` 또는 `--format json`으로 확장한다. PATH에 없으면 CDD skill root를 알 수 있을 때 `<cdd-root>/bin/cdd-audit docs --root <project> --format brief --fail-on never`를 시도한다. 실행할 수 없거나 실패하면 동일 항목을 수동으로 확인하고 사용자 보고에 "cdd-audit 실행 불가, 수동 확인으로 대체"와 실패 이유를 남긴다.
 
 `cdd-audit` 결과에 차단 항목이 있으면 바로 구현하지 않는다. 현재 작업 포인터 갱신, 기본 읽기 경로 계약 보강, active/history 분리, README/index 갱신, 비-SOT 표시 중 필요한 선택지와 추천을 사용자에게 보고한다. 도구 결과는 근거 자료일 뿐이며 CDD 판단, 사용자 선택, 문서 수정 승인을 대체하지 않는다.
 

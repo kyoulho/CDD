@@ -27,6 +27,7 @@ def main() -> None:
         test_symlinked_command_runs_from_any_directory,
         test_root_is_detected_from_nested_directory,
         test_current_work_pointer_fields_are_extracted,
+        test_brief_format_prints_only_fast_read_path,
         test_config_overrides_document_roles_and_default_read_path,
         test_history_path_beats_active_keywords,
         test_oversized_hot_path_blocks_without_pointer,
@@ -125,6 +126,20 @@ def test_current_work_pointer_fields_are_extracted() -> None:
         assert current["activeTasks"] == ["TASK-001"]
         assert contract["requiredReadDocuments"] == ["docs/README.md"]
         assert contract["excludedHistoricalRecords"] == ["docs/archive/*"]
+
+
+def test_brief_format_prints_only_fast_read_path() -> None:
+    with TemporaryDirectory() as temp:
+        root = Path(temp)
+        write(root / "docs/project/current-work.md", current_work_pointer())
+        result = run_direct("docs", "--root", str(root), "--format", "brief")
+
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert "빠른 읽기 경로:" in result.stdout
+        assert "- 먼저 읽을 문서: docs/README.md" in result.stdout
+        assert "- 읽지 않을 기록: docs/archive/*" in result.stdout
+        assert "findings:" not in result.stdout
+        assert "분리 후보:" not in result.stdout
 
 
 def test_config_overrides_document_roles_and_default_read_path() -> None:
