@@ -16,7 +16,7 @@ from cdd_audit.model import (
 from cdd_audit.root import detect_project_root
 from cdd_audit.scanner import audit
 
-VERSION = "0.5.0"
+VERSION = "0.6.0"
 USAGE = "\n".join(
     [
         "usage: cdd-audit docs [--root <path>] [--config <path>] [--format text|json|brief] [--fail-on blocking|never]",
@@ -176,6 +176,8 @@ def _format_section_hint(section_hint: SectionHint) -> str:
 
 def _format_section_location(section: SectionLocation) -> str:
     if not section.exists:
+        if section.suggested_headings:
+            return f"{section.heading} (missing; 후보: {_format_list(section.suggested_headings)})"
         return f"{section.heading} (missing)"
     return f"{section.heading} (L{section.start_line}-L{section.end_line})"
 

@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Final
 
 from cdd_audit.model import DocumentInfo, SectionHint, SectionLocation
+
+SUGGESTION_LIMIT: Final[int] = 3
 
 
 @dataclass(frozen=True, slots=True)
@@ -20,9 +23,24 @@ def located_section_hint(hint: SectionHint, document: DocumentInfo | None) -> Se
     for heading in hint.headings:
         position = by_heading.get(heading)
         if position is None:
-            sections.append(SectionLocation(heading, None, None, False))
+            sections.append(
+                SectionLocation(
+                    heading=heading,
+                    start_line=None,
+                    end_line=None,
+                    exists=False,
+                    suggested_headings=_suggested_headings(heading, positions),
+                )
+            )
         else:
-            sections.append(SectionLocation(heading, position.start_line, position.end_line, True))
+            sections.append(
+                SectionLocation(
+                    heading=heading,
+                    start_line=position.start_line,
+                    end_line=position.end_line,
+                    exists=True,
+                )
+            )
     return SectionHint(hint.path, hint.headings, tuple(sections))
 
 
@@ -64,4 +82,34 @@ def _with_section_end_lines(
                 end_line = next_position.start_line - 1
                 break
         result.append(HeadingPosition(position.heading, position.level, position.start_line, end_line))
+    return result
+
+
+def _suggested_headings(heading: str, positions: tuple[HeadingPosition, ...]) -> tuple[str, ...]:
+    ranked = sorted(
+        (
+            (_similarity_score(heading, position.heading), position.start_line, position.heading)
+            for position in positions
+        ),
+        key=lambda item: (-item[0], item[1]),
+    )
+    return tuple(item[2] for item in ranked if item[0] > 0)[:SUGGESTION_LIMIT]
+
+
+def _similarity_score(left: str, right: str) -> int:
+    left_tokens = _heading_tokens(left)
+    right_tokens = _heading_tokens(right)
+    common = left_tokens & right_tokens
+    if not common:
+        return 0
+    return len(common)
+
+
+def _heading_tokens(value: str) -> set[str]:
+    cleaned = value.lower().replace("#", " ")
+    result: set[str] = set()
+    for item in cleaned.split():
+        token = item.strip("`.,:;()[]{}-/")
+        if token:
+            result.add(token)
     return result

@@ -20,6 +20,7 @@ from cdd_audit.model import (
     DocumentInfo,
     Finding,
     SectionHint,
+    SectionLocation,
 )
 from cdd_audit.pointer import missing_pointer_fields, pointer_details
 from cdd_audit.section_hints import located_section_hint
@@ -203,7 +204,7 @@ def _findings(
 def _section_hint_findings(section_hints: tuple[SectionHint, ...]) -> list[Finding]:
     findings: list[Finding] = []
     for hint in section_hints:
-        missing = tuple(item.heading for item in hint.sections if not item.exists)
+        missing = tuple(item for item in hint.sections if not item.exists)
         if not missing:
             continue
         findings.append(
@@ -212,12 +213,18 @@ def _section_hint_findings(section_hints: tuple[SectionHint, ...]) -> list[Findi
                 "warning",
                 hint.path,
                 "먼저 볼 섹션으로 지정된 heading을 문서에서 찾을 수 없습니다.",
-                ", ".join(missing),
+                ", ".join(_section_hint_evidence(item) for item in missing),
                 "섹션 힌트를 현재 문서 heading에 맞게 고치거나 current-work/read path 계약을 갱신합니다.",
                 "autoModifyReadmeOrIndexWithoutApproval",
             )
         )
     return findings
+
+
+def _section_hint_evidence(section: SectionLocation) -> str:
+    if section.suggested_headings:
+        return f"{section.heading} -> 후보: {', '.join(section.suggested_headings)}"
+    return section.heading
 
 
 def _size_and_mix_findings(

@@ -95,14 +95,18 @@ class SectionLocation:
     start_line: int | None
     end_line: int | None
     exists: bool
+    suggested_headings: tuple[str, ...] = ()
 
     def to_json(self) -> JsonObject:
-        return {
+        result: JsonObject = {
             "heading": self.heading,
             "startLine": self.start_line,
             "endLine": self.end_line,
             "exists": self.exists,
         }
+        if self.suggested_headings:
+            result["suggestedHeadings"] = list(self.suggested_headings)
+        return result
 
 
 @dataclass(frozen=True, slots=True)

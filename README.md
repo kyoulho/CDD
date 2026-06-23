@@ -95,7 +95,7 @@ CDD는 작업 시작 전에 기본 읽기 경로 계약을 확인해야 한다. 
 
 프로젝트가 heading 추정에 의존하지 않으려면 `.cdd-audit.json`에 `sectionHints`를 둔다. 설정 파일의 `sectionHints`가 가장 먼저 적용되고, 없으면 current-work 문서의 `먼저 볼 섹션` 필드를 사용한다. 둘 다 없을 때만 `cdd-audit`가 heading 이름으로 추정한다.
 
-명시된 heading이 실제 문서에 없으면 `cdd-audit`는 해당 섹션을 `missing`으로 표시하고 `SECTION_HINT_MISSING_HEADING` warning을 보고한다. 이 경우 에이전트는 heading을 임의로 고쳐 읽은 척하지 말고, 현재 문서 heading에 맞게 `sectionHints` 또는 current-work의 `먼저 볼 섹션` 계약을 갱신해야 한다.
+명시된 heading이 실제 문서에 없으면 `cdd-audit`는 해당 섹션을 `missing`으로 표시하고 `SECTION_HINT_MISSING_HEADING` warning을 보고한다. 비슷한 실제 heading이 있으면 후보도 함께 보여준다. 이 경우 에이전트는 heading을 임의로 고쳐 읽은 척하지 말고, 현재 문서 heading에 맞게 `sectionHints` 또는 current-work의 `먼저 볼 섹션` 계약을 갱신해야 한다.
 
 ```json
 {
