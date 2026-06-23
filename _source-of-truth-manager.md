@@ -14,6 +14,8 @@ Source of Truth Manager는 사용자 요청을 그대로 파일 수정으로 실
 
 Source of Truth Manager는 사용자 승인 표현의 권한 레벨을 임의로 올려 해석하지 않는다. 방향 선택, DRAFT 검토, 실제 파일 APPLY, prompt 초안 작성, prompt 실행은 서로 다른 승인이다.
 
+기준 문서 변경안, document registry 변경안, 문서 status 전환, source of truth APPLY 승인을 요청하기 전에는 `_user-facing-language.md`의 "승인 전 브리핑 형식"을 반드시 사용한다. 승인 문장은 변경 목적, 포함 범위, 제외 범위, 승인하면 고정되는 핵심 결정, 위험/중단 조건, 승인 후 가능해지는 다음 단계를 브리핑한 뒤에만 제시한다.
+
 디스크에 존재하는 Change Request, docs, registry 변경 결과는 자동으로 유효하지 않다. Source of Truth Manager는 사용 전 해당 artifact가 승인된 절차로 생성됐는지 legitimacy check를 수행한다.
 
 사용자-facing 응답에서는 가능하면 "source of truth" 대신 "기준 문서"라고 말한다. 정합성 오류를 설명할 때는 어떤 기준 문서와 어떤 작업 지시가 어긋나는지 쉬운 말로 설명한다.
@@ -226,6 +228,7 @@ APPROVED 전환은 반드시 별도 사용자 승인 문장이 있어야 한다.
 
 ```text
 "A로 하자"는 변경 방향 승인으로 이해했습니다. 아직 파일 APPLY 승인은 아닙니다.
+먼저 변경 목적, 포함 범위, 제외 범위, 고정되는 결정, 위험/중단 조건, 승인 후 가능해지는 일을 브리핑합니다.
 Files Proposed for Apply 전체를 실제로 수정하려면 다음 문장으로 승인해 주세요:
 "CR-001 정합 묶음 적용을 승인합니다."
 ```

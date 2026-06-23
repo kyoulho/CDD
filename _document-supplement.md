@@ -61,10 +61,11 @@ document-registry.yml 업데이트 초안
 6. 영향받는 source of truth 문서, Task Contract, prompt, verification result를 식별한다.
 7. `Known Conflicts After Apply`를 작성한다.
 8. Known Conflicts After Apply가 비어 있지 않으면 APPLY를 제안하지 않는다.
-9. 사용자에게 변경 방향 승인을 요청한다.
+9. 사용자에게 변경 방향 승인을 요청하기 전에 `_user-facing-language.md`의 "승인 전 브리핑 형식"으로 목적, 포함 범위, 제외 범위, 핵심 결정, 위험/중단 조건, 승인 후 가능해지는 다음 단계를 설명한다.
 10. 변경 방향 승인 후 target file list, 변경 목록, DRAFT diff/proposal을 보여준다.
-11. 사용자가 Files Proposed for Apply 전체를 명시적으로 APPLY 승인한 뒤에만 source of truth 문서 저장 또는 변경을 수행한다.
-12. 적용 후 문서 간 일관성, registry status, Plan/Task/prompt/verification result 영향을 검증한다.
+11. Files Proposed for Apply 승인 요청 전에도 같은 승인 전 브리핑을 출력한다.
+12. 사용자가 Files Proposed for Apply 전체를 명시적으로 APPLY 승인한 뒤에만 source of truth 문서 저장 또는 변경을 수행한다.
+13. 적용 후 문서 간 일관성, registry status, Plan/Task/prompt/verification result 영향을 검증한다.
 
 ## 문서 초안 생성 조건
 
