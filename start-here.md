@@ -6,6 +6,15 @@
 
 이 파일은 CDD Skill Layer의 최초 진입점이다. 사용자가 이 파일을 링크하고 목표를 말하면, AI는 이 지시를 최상위 작업 절차로 따른다.
 
+## 빠른 탐색
+
+- CDD 전체 흐름을 처음 시작하면 "전체 지휘 흐름"을 본다.
+- public/internal 접근은 "Public/Internal 접근 정책"과 "Routing Table"을 본다.
+- 바로 적용할 금지/허용 규칙은 "즉시 적용할 규칙"을 본다.
+- 기준 문서 권위와 변경 요청은 "Source of Truth 권위 순서", "Source of Truth 변경 라우팅"을 본다.
+- 선행 작업, artifact 정합성, CLI 사용은 각 gate 섹션을 본다.
+- 사용자 보고는 "User-Facing Language"와 "중단 조건"을 본다.
+
 ## 핵심 용어
 
 - 제품 기준 준비 상태: 무엇을 왜 만들 것인지에 대한 기획 준비도.

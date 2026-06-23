@@ -16,6 +16,15 @@
 
 "A로 하자", "그 방향으로 가자", "좋아", "진행해", "추천대로", "알아서 반영해", "나중에 보자", "일단 해" 같은 표현은 Apply Approval로 해석하지 않는다. Direction Approval, Draft Approval, Apply Approval을 분리한다.
 
+## 빠른 탐색
+
+- 이 module의 책임은 "역할"을 본다.
+- 만들 수 있는 초안 후보와 기본 위치는 "출력 후보"를 본다.
+- 실제 절차와 승인 분리는 "수행 절차"를 본다.
+- 초안을 만들어도 되는 조건은 "문서 초안 생성 조건"을 본다.
+- 초안에 들어갈 판단과 금지 범위는 "문서 초안에 포함할 내용", "규칙"을 본다.
+- 제품/기술/테스트/의존성 보강 예시는 각 template 섹션을 본다.
+
 ## 역할
 
 - Missing Context 질문과 사용자 답변을 정리한다.
@@ -61,7 +70,7 @@ document-registry.yml 업데이트 초안
 6. 영향받는 source of truth 문서, Task Contract, prompt, verification result를 식별한다.
 7. `Known Conflicts After Apply`를 작성한다.
 8. Known Conflicts After Apply가 비어 있지 않으면 APPLY를 제안하지 않는다.
-9. 사용자에게 변경 방향 승인을 요청하기 전에 `_user-facing-language.md`의 "승인 전 브리핑 형식"으로 목적, 포함 범위, 제외 범위, 핵심 결정, 위험/중단 조건, 승인 후 가능해지는 다음 단계를 설명한다.
+9. 사용자에게 변경 방향 승인을 요청하기 전에 `_user-facing-language.md`의 "승인 전 브리핑 형식"으로 먼저 확인할 정책/문서 결정과 추천, 이 승인이 허용하는 문서 변경, 아직 허용하지 않는 변경, 고정되는 결정, 위험/중단 조건, 승인 후 실제로 진행할 일을 설명한다.
 10. 변경 방향 승인 후 target file list, 변경 목록, DRAFT diff/proposal을 보여준다.
 11. Files Proposed for Apply 승인 요청 전에도 같은 승인 전 브리핑을 출력한다.
 12. 사용자가 Files Proposed for Apply 전체를 명시적으로 APPLY 승인한 뒤에만 source of truth 문서 저장 또는 변경을 수행한다.

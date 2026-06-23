@@ -10,6 +10,18 @@
 
 사용자-facing 보고에서는 내부 필드명을 먼저 보여주지 않고 "이 파일을 지금 기준으로 써도 되는지 확인했습니다"처럼 쉬운 표현을 우선 사용한다. 내부 YAML은 artifact 판단과 감사 기록에 사용한다.
 
+## 빠른 탐색
+
+- 모든 산출물 공통 metadata는 "1. Artifact Metadata Template"을 본다.
+- 문서 저장 위치와 기존 구조 확인은 "Document Placement Check Template"을 본다.
+- 문서 읽기 비용과 active/history 점검 도구 계약은 "Read-only Audit Tool Contract"를 본다.
+- 사용자 승인 기록은 "2. Approval Record Template"을 본다.
+- 기존 산출물을 지금 기준으로 써도 되는지 확인하려면 "3. Legitimacy Report Template"을 본다.
+- 기준 문서 묶음은 "4. Source Of Truth Snapshot Template"과 "SOT Packet Template"을 본다.
+- 저장/동작/상태/상호작용/운영 기준 확인은 "Design Intent Checks Template"을 본다.
+- 구현 지시서는 "5. Prompt Artifact Template"을, 작업 기준서는 "Task Contract Template"을 본다.
+- 검증과 완료 산출물은 "6. Verification Result Metadata Template"과 "Completion Report Example"을 본다.
+
 ## 1. Artifact Metadata Template
 
 모든 주요 산출물의 공통 머리말이다.
@@ -581,6 +593,8 @@ prompt:
 ## Task Contract Template
 
 Task Contract는 구현 가능성보다 먼저 readiness를 고정해야 한다.
+
+사용자에게 Task Contract 승인을 요청할 때는 내부 YAML이나 readiness 표를 먼저 보여주지 않는다. `_user-facing-language.md`의 "승인 전 브리핑 형식"에 따라 먼저 확인할 정책/작업 결정, 각 결정에 대한 추천, 허용 범위, 제외 범위, 위험, 승인 후 진행할 일을 사용자 언어로 요약한 뒤 승인 문장을 제시한다.
 
 ```yaml
 taskContract:

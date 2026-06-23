@@ -6,6 +6,13 @@ description: CDD 작업 하네스. 요청이 애매하거나 구현/프론트엔
 
 CDD는 승인된 기준 문서와 사용자 승인 지점이 준비된 작업만 구현으로 넘기게 하는 문서 기반 작업 하네스다. 이 디렉터리가 skill root이며, 보통 `start-here.md`에서 시작한다.
 
+## 빠른 탐색
+
+- 처음 호출되면 "Routing"으로 public entrypoint를 고른다.
+- 사용자가 직접 읽을 문서는 "Public Entry Points"만 노출한다.
+- `_*.md`는 "Internal Modules"의 접근 정책을 따른다.
+- CDD 핵심 용어가 필요하면 "핵심 용어"를 먼저 본다.
+
 ## 핵심 용어
 
 - 제품 기준 준비 상태: 무엇을 왜 만들 것인지에 대한 기획 준비도.

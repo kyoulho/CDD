@@ -1,0 +1,28 @@
+{
+  "defaultReadPath": ["README.md", "SKILL.md"],
+  "requiredReadDocuments": ["README.md", "SKILL.md"],
+  "excludedHistoricalRecords": [
+    "archive/**",
+    "docs/archive/**",
+    "**/*completion*.md",
+    "**/*verification*.md",
+    "**/*history*.md",
+    "**/*old-prompt*.md"
+  ],
+  "excludedNonSotReferences": [
+    ".codegraph/**",
+    "**/*generated-map*.md",
+    "**/*codesight*.md",
+    "**/*agentmemory*.md",
+    "**/*search-index*.md",
+    "**/*recall*.md"
+  ],
+  "roleOverrides": {
+    "readme.md": "active-index",
+    "skill.md": "active-index",
+    "_*.md": "non-sot-reference",
+    "agents/openai.yaml": "non-sot-reference"
+  },
+  "ignore": [".codegraph/**", "cdd_audit/**", "tests/**"],
+  "currentWorkPointer": "README.md"
+}

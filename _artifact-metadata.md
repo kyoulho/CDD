@@ -10,6 +10,14 @@
 
 V2.1의 실제 YAML 골격은 `_artifact-templates.md`의 `Artifact Metadata Template`을 우선 사용한다. 이 문서는 필드 의미와 판단 원칙을 설명한다.
 
+## 빠른 탐색
+
+- metadata를 붙일 산출물 범위는 "대상 Artifact"를 본다.
+- 공통 필드 구조는 "공통 Metadata"를 본다.
+- 각 필드의 의미는 "필드 의미"를 본다.
+- 적용 규칙은 "규칙"을 본다.
+- 기존 파일을 지금 기준으로 써도 되는지는 "Legitimacy와의 관계"를 본다.
+
 ## 대상 Artifact
 
 다음 artifact는 가능한 한 공통 metadata를 포함한다.

@@ -10,6 +10,15 @@ Project Context는 도메인 문서, 아키텍처 문서, 테스트 전략, Plan
 
 목표는 운영 정책을 더 많이 요구하는 것이 아니라, 프로젝트 성격에 맞는 질문과 판단 강도를 정하는 것이다.
 
+## 빠른 탐색
+
+- 프로젝트 목적과 하네스 평가 목적 분리는 "Project Reality Over Harness Meta"를 본다.
+- Project Context가 맡는 역할은 "역할"을 본다.
+- 프로젝트 성격 분류와 필수 질문은 "프로젝트 성격 분류", "필수 질문"을 본다.
+- 기록 형식은 "Project Context Template"을 본다.
+- 사용자의 말에서 추론할 수 있는 범위는 "Project Context 추론 규칙"을 본다.
+- readiness, planning, prompt authoring 영향은 각 규칙 섹션을 본다.
+
 ## Project Reality Over Harness Meta
 
 Project Context는 프로젝트 자체의 목적, 사용자, 운영 전제, 도메인 위험, 기술 전제를 기록한다.

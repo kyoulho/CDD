@@ -16,6 +16,16 @@ V2 artifact는 `_artifact-metadata.md`, `_artifact-templates.md`, `_status-machi
 
 작업 모드와 쓰기 권한은 `_work-mode.md`를 따른다. 작업 모드 판별은 이 문서의 판단 권한 경계보다 먼저 적용되는 전역 게이트다.
 
+## 빠른 탐색
+
+- 기준 문서 권위 순서는 "Source of Truth 권위 순서"를 본다.
+- README, generated docs, memory 같은 보조 자료는 "비-SOT 자료 규칙"을 본다.
+- 작업 모드와 쓰기 권한은 "작업 모드 게이트"를 본다.
+- AI가 판단할 수 있는 범위는 "AI가 판단할 수 있는 것"과 "구현 세부사항 판정 기준"을 본다.
+- AI가 임의로 정하면 안 되는 범위는 "AI가 임의 판단하면 안 되는 것"을 본다.
+- source of truth 변경, dependency, test strategy, identifier 정책은 각 policy 섹션을 본다.
+- 사용자 보고는 "User-Facing Language 원칙"과 "금지 판단이 필요할 때"를 본다.
+
 ## Source of Truth 권위 순서
 
 대상 프로젝트가 자체 권위 순서를 명시하면 그 우선순위를 먼저 따른다.

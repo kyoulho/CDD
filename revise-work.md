@@ -16,7 +16,7 @@
 
 Revision prompt artifact는 `_artifact-metadata.md`, `_artifact-templates.md`의 `Prompt Artifact Template`, `_status-machine.md`, `_approval-reference.md`를 따른다. 사용자-facing 응답에서는 "수정 지시서"처럼 쉬운 표현을 우선 사용한다.
 
-수정 지시서 승인 요청 전에는 `_user-facing-language.md`의 "승인 전 브리핑 형식"을 반드시 사용한다. 승인 문장은 수정 지시서의 목적, 포함 범위, 제외 범위, 사용자가 승인해야 하는 핵심 결정, 위험/중단 조건, 승인 후 실제로 가능해지는 수정 단계를 브리핑한 뒤에만 제시한다. 브리핑 없이 수정 지시서 승인 문장만 출력하지 않는다.
+수정 지시서 승인 요청 전에는 `_user-facing-language.md`의 "승인 전 브리핑 형식"을 반드시 사용한다. 브리핑은 먼저 확인할 수정 결정과 추천을 제시해야 한다. 승인 문장은 이 승인이 허용하는 수정 작업, 아직 허용하지 않는 작업, 승인하면 고정되는 결정, 위험/중단 조건, 승인 후 실제로 진행할 일을 브리핑한 뒤에만 제시한다. 브리핑 없이 수정 지시서 승인 문장만 출력하지 않는다.
 
 수정 불가 사유는 내부 status 목록이 아니라 먼저 해결해야 할 행동으로 안내한다.
 
@@ -29,6 +29,14 @@ Revision prompt artifact는 `_artifact-metadata.md`, `_artifact-templates.md`의
 기본 읽기 경로의 revision, prompt, verification 기록이 400줄 또는 40KB를 넘으면 분리 후보로 보고한다. 1000줄 이상 누적 문서는 active index와 history 문서 분리 후보로 보고한다. 짧고 응집된 문서는 파일 수를 늘리지 않고 기존 구조를 유지한다.
 
 수정 지시서를 만들기 전에는 현재 작업 포인터와 기본 읽기 경로 계약이 현재 Task와 검증 finding을 가리키는지 확인한다. 과거 prompt나 verification을 기본 읽기 경로로 삼아야만 revision을 이해할 수 있으면 revision prompt를 만들지 말고 문서 정합성 정리로 돌린다.
+
+## 빠른 탐색
+
+- 수정 지시서 시작 조건은 "시작 조건"을 본다.
+- revision agent의 책임과 규칙은 "역할", "규칙"을 본다.
+- 수정 지시서에 들어갈 내용은 "수정 prompt에 포함할 내용"을 본다.
+- verification 상태별 허용 행동은 "Verification 상태별 허용 행동"을 본다.
+- revision을 멈춰야 하는 경우는 "중단 조건"을 본다.
 
 ## 시작 조건
 

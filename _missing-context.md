@@ -14,6 +14,15 @@
 
 이 skill은 `_source-of-truth-manager.md`의 하위 절차다. Missing Context Agent는 질문을 만들고 사용자 답변을 기다릴 수 있지만, source of truth 문서, registry, Plan, Task, prompt, verification result를 수정하지 않는다.
 
+## 빠른 탐색
+
+- 이 module의 책임은 "역할"을 본다.
+- 질문 생성 원칙은 "규칙"을 본다.
+- 요청 자체가 애매한 경우는 "요청 의도 Missing Context"를 본다.
+- 사용자에게 보여줄 구조는 "출력 형식"을 본다.
+- 좋은 질문 기준과 추천 처리 방식은 "좋은 질문의 기준", "추천안 처리"를 본다.
+- 테스트, 의존성, 프론트엔드 UX, 성능 범위 질문 예시는 각 Missing Context 예시를 본다.
+
 ## 역할
 
 - 부족한 결정을 목록화한다.

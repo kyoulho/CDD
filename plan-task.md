@@ -55,6 +55,16 @@ DB table, column, migration, repository, API DTO를 계획하려면 Storage Inte
 
 사용자-facing 계획 보고에서는 내부 판정 용어를 그대로 제목으로 쓰지 않는다. `Product Readiness`는 "제품 방향", `Engineering Readiness`는 "설계 준비 상태", `Implementation Readiness`는 "지금 바로 만들 수 있는지", `Storage Intent Check`는 "무엇을 왜 저장할지", `Behavior Contract Check`는 "사용자가 어떤 행동을 하고 어떤 결과를 받는지", `State Meaning Check`는 "상태값이 무엇을 의미하는지"로 바꿔 말한다. 내부 enum은 작업 기준서 YAML과 에이전트 간 전달물에만 그대로 둔다.
 
+## 빠른 탐색
+
+- Plan/Task 시작 가능 여부는 "시작 조건"을 본다.
+- 작업 기준서에 반드시 들어갈 내용은 "작업 기준서 필수 항목"을 본다.
+- readiness 예시는 "작업 기준서 readinessCheck 예시"를 본다.
+- table/API/status 조기 제안 차단은 "구조 제안 전 차단 규칙"을 본다.
+- Task와 Plan 작성 규칙은 "Task 작성 규칙", "Plan 작성 규칙"을 본다.
+- Project Context, identifier, test DB, dependency coverage는 각 coverage 예시를 본다.
+- 후속 단계와 승인 전 브리핑은 "다음 단계"를 본다.
+
 ## 시작 조건
 
 다음이 모두 충족되어야 한다.
@@ -330,7 +340,7 @@ documentCoverage:
 - 사용자 개입 없이 진행 가능한 경우, Task 작성 후 검증하고 `write-implementation-prompt.md` 단계까지 이어서 진행할 수 있는지 판단한다.
 - 사용자 선택이 필요한 경우, Plan/Task를 APPROVED로 만들지 않고 선택지, 제 추천, 바로 답할 수 있는 문장을 제공한다.
 
-작업 기준서 승인 요청 전에는 `_user-facing-language.md`의 "승인 전 브리핑 형식"을 반드시 사용한다. 승인 문장은 이번 작업의 목적, 포함 범위, 제외 범위, 승인하면 고정되는 핵심 결정, 위험/중단 조건, 승인 후 가능해지는 다음 단계를 브리핑한 뒤에만 제시한다. 브리핑 없이 작업 기준서 승인 문장만 출력하지 않는다.
+작업 기준서 승인 요청 전에는 `_user-facing-language.md`의 "승인 전 브리핑 형식"을 반드시 사용한다. 브리핑은 먼저 사용자가 확인해야 할 정책/작업 결정과 각 결정에 대한 추천을 제시해야 한다. 승인 문장은 이 승인이 허용하는 작업, 아직 허용하지 않는 작업, 승인하면 고정되는 결정, 위험/중단 조건, 승인 후 실제로 진행할 일을 브리핑한 뒤에만 제시한다. 브리핑 없이 작업 기준서 승인 문장만 출력하지 않는다.
 
 사용자-facing 보고에서는 내부 status만 말하지 않고, 다음 형식을 우선 사용한다.
 
