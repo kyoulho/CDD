@@ -124,6 +124,24 @@ class SectionHint:
 
 
 @dataclass(frozen=True, slots=True)
+class EntrypointGuide:
+    name: str
+    purpose: str
+    primary_documents: tuple[str, ...]
+    section_hints: tuple[SectionHint, ...]
+    expansion_documents: tuple[str, ...]
+
+    def to_json(self) -> JsonObject:
+        return {
+            "entrypoint": self.name,
+            "purpose": self.purpose,
+            "primaryDocuments": list(self.primary_documents),
+            "sectionHints": [item.to_json() for item in self.section_hints],
+            "expansionDocuments": list(self.expansion_documents),
+        }
+
+
+@dataclass(frozen=True, slots=True)
 class Finding:
     id: str
     severity: str
@@ -151,6 +169,7 @@ class AuditOptions:
     config_path: Path | None
     output_format: str
     fail_on: str
+    entrypoint: str | None
 
 
 @dataclass(frozen=True, slots=True)
@@ -175,47 +194,48 @@ class AuditResult:
             return 0
         return 2 if any(item.severity == "blocking" for item in self.findings) else 0
 
-    def to_json(self, exit_code: int) -> JsonObject:
+    def to_json(self, exit_code: int, entrypoint_guide: EntrypointGuide | None = None) -> JsonObject:
         blocking = [item for item in self.findings if item.severity == "blocking"]
         warning = [item for item in self.findings if item.severity == "warning"]
         info = [item for item in self.findings if item.severity == "info"]
-        return {
-            "readOnlyDocumentAudit": {
-                "schemaVersion": 1,
-                "commandCandidate": "cdd-audit docs",
-                "mode": "read-only",
-                "root": str(self.root),
-                "checkedAt": datetime.now(UTC).isoformat(),
-                "exitCode": exit_code,
-                "summary": {
-                    "blockingCount": len(blocking),
-                    "warningCount": len(warning),
-                    "infoCount": len(info),
-                    "requiredReadDocumentCount": len(self.required_read_documents),
-                    "excludedDocumentCount": len(self.excluded_history) + len(self.excluded_non_sot),
-                    "oversizedHotPathCount": self.oversized_hot_path_count,
-                },
-                "currentWorkPointer": {
-                    "path": self.current_pointer_path,
-                    "exists": self.current_pointer_path is not None,
-                    "requiredFields": list(CURRENT_POINTER_FIELDS.keys()),
-                    "missingFields": list(self.missing_pointer_fields),
-                    "currentGate": self.current_gate,
-                    "nextTask": self.next_task,
-                    "activeTasks": list(self.active_tasks),
-                },
-                "readPathContract": {
-                    "requiredReadDocuments": list(self.required_read_documents),
-                    "sectionHints": [item.to_json() for item in self.section_hints],
-                    "excludedHistoricalRecords": list(self.excluded_history),
-                    "excludedNonSotReferences": list(self.excluded_non_sot),
-                    "unknownRoleDocuments": [
-                        item.path for item in self.documents if item.in_default_read_path and item.role == "unknown"
-                    ],
-                },
-                "documents": [item.to_json() for item in self.documents],
-                "checks": self.checks,
-                "findings": [item.to_json() for item in self.findings],
-                "prohibitedActions": list(PROHIBITED_ACTIONS),
-            }
+        audit: JsonObject = {
+            "schemaVersion": 1,
+            "commandCandidate": "cdd-audit docs",
+            "mode": "read-only",
+            "root": str(self.root),
+            "checkedAt": datetime.now(UTC).isoformat(),
+            "exitCode": exit_code,
+            "summary": {
+                "blockingCount": len(blocking),
+                "warningCount": len(warning),
+                "infoCount": len(info),
+                "requiredReadDocumentCount": len(self.required_read_documents),
+                "excludedDocumentCount": len(self.excluded_history) + len(self.excluded_non_sot),
+                "oversizedHotPathCount": self.oversized_hot_path_count,
+            },
+            "currentWorkPointer": {
+                "path": self.current_pointer_path,
+                "exists": self.current_pointer_path is not None,
+                "requiredFields": list(CURRENT_POINTER_FIELDS.keys()),
+                "missingFields": list(self.missing_pointer_fields),
+                "currentGate": self.current_gate,
+                "nextTask": self.next_task,
+                "activeTasks": list(self.active_tasks),
+            },
+            "readPathContract": {
+                "requiredReadDocuments": list(self.required_read_documents),
+                "sectionHints": [item.to_json() for item in self.section_hints],
+                "excludedHistoricalRecords": list(self.excluded_history),
+                "excludedNonSotReferences": list(self.excluded_non_sot),
+                "unknownRoleDocuments": [
+                    item.path for item in self.documents if item.in_default_read_path and item.role == "unknown"
+                ],
+            },
+            "documents": [item.to_json() for item in self.documents],
+            "checks": self.checks,
+            "findings": [item.to_json() for item in self.findings],
+            "prohibitedActions": list(PROHIBITED_ACTIONS),
         }
+        if entrypoint_guide is not None:
+            audit["entrypointReadPath"] = entrypoint_guide.to_json()
+        return {"readOnlyDocumentAudit": audit}

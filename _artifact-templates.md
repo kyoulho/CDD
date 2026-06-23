@@ -170,13 +170,14 @@ documentPlacementCheck:
 명령:
 
 ```text
-cdd-audit docs [--root <path>] [--config <path>] [--format text|json] [--fail-on blocking|never]
+cdd-audit docs [--root <path>] [--config <path>] [--format text|json|brief] [--fail-on blocking|never] [--entrypoint <name>]
 ```
 
 입력:
 
 - project root. 없으면 현재 위치에서 위로 올라가며 marker를 찾는다.
 - optional config: `.cdd-audit.json`, `cdd-audit.json`, `.cdd/audit.json`.
+- optional entrypoint: `start-here`, `plan-task`, `write-implementation-prompt`, `cleanup-delete`, `verify-work`, `revise-work`, `complete-work`.
 - 읽을 문서 후보: `*.md`, `*.yml`, `*.yaml`.
 - 제외 directory 후보: `.git`, `node_modules`, `.venv`, `dist`, `build`, `.next`, `.cache`, `__pycache__`.
 
@@ -184,6 +185,7 @@ cdd-audit docs [--root <path>] [--config <path>] [--format text|json] [--fail-on
 
 - 현재 작업 포인터와 누락 필드
 - 현재 gate, 다음 task, active task
+- 요청한 CDD entrypoint 기준으로 먼저 볼 CDD 문서와 섹션
 - 반드시 읽을 문서와 제외할 과거 기록
 - 400줄 또는 40KB를 넘는 기본 읽기 경로 문서
 - 1000줄 이상 누적 문서

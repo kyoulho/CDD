@@ -93,6 +93,8 @@ CDD는 작업 시작 전에 기본 읽기 경로 계약을 확인해야 한다. 
 
 반복 읽기를 줄이려면 먼저 `--format brief`를 사용한다. `brief` 출력은 현재 작업 포인터, 먼저 읽을 문서, 먼저 볼 섹션, 읽지 않을 과거 기록/보조 자료, 차단/주의 개수만 보여준다. 먼저 볼 섹션은 이미 읽기로 한 문서 안의 진입점 안내이며, 가능하면 `L시작-L끝` 줄 범위까지 함께 표시한다. `brief`는 CDD 판단을 대체하지 않으며, 차단 항목이나 분리 후보의 이유가 필요하거나 섹션 힌트만으로 기준을 판단할 수 없으면 반드시 text 또는 JSON 출력으로 확장한다.
 
+사용자가 호출한 CDD public entrypoint가 명확하면 `--entrypoint <name>`을 함께 사용한다. 이 옵션은 대상 프로젝트의 기준 문서를 바꾸지 않고, CDD skill 안에서 먼저 열 문서와 섹션을 좁히는 안내만 추가한다. 지원 값은 `start-here`, `plan-task`, `write-implementation-prompt`, `cleanup-delete`, `verify-work`, `revise-work`, `complete-work`다. 예를 들어 작업 기준서를 만들 때는 `--entrypoint plan-task`를 붙이면 `plan-task.md`와 필요한 internal module의 최소 섹션을 먼저 보여준다.
+
 프로젝트가 heading 추정에 의존하지 않으려면 `.cdd-audit.json`에 `sectionHints`를 둔다. 설정 파일의 `sectionHints`가 가장 먼저 적용되고, 없으면 current-work 문서의 `먼저 볼 섹션` 필드를 사용한다. 둘 다 없을 때만 `cdd-audit`가 heading 이름으로 추정한다.
 
 명시된 heading이 실제 문서에 없으면 `cdd-audit`는 해당 섹션을 `missing`으로 표시하고 `SECTION_HINT_MISSING_HEADING` warning을 보고한다. 비슷한 실제 heading이 있으면 후보도 함께 보여준다. 이 경우 에이전트는 heading을 임의로 고쳐 읽은 척하지 말고, 현재 문서 heading에 맞게 `sectionHints` 또는 current-work의 `먼저 볼 섹션` 계약을 갱신해야 한다.
@@ -111,7 +113,7 @@ CDD는 작업 시작 전에 기본 읽기 경로 계약을 확인해야 한다. 
 직접 실행:
 
 ```sh
-/path/to/cdd/bin/cdd-audit docs --root /path/to/project --format brief --fail-on never
+/path/to/cdd/bin/cdd-audit docs --root /path/to/project --format brief --fail-on never --entrypoint plan-task
 ```
 
 PATH에 걸어두기:
@@ -119,7 +121,7 @@ PATH에 걸어두기:
 ```sh
 mkdir -p ~/.local/bin
 ln -s /path/to/cdd/bin/cdd-audit ~/.local/bin/cdd-audit
-cdd-audit docs --root /path/to/project --format brief --fail-on never
+cdd-audit docs --root /path/to/project --format brief --fail-on never --entrypoint plan-task
 ```
 
 프로젝트 하위 디렉터리에서 실행하면 `docs/README.md`, `docs/project/current-work.md`, `document-registry.yml`, `AGENTS.md`, `.git` 같은 marker를 기준으로 root를 자동 탐지한다.

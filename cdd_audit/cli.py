@@ -6,9 +6,11 @@ import json
 import sys
 
 from cdd_audit.config import ConfigError, load_config
+from cdd_audit.entrypoints import allowed_entrypoints, entrypoint_guide, is_allowed_entrypoint
 from cdd_audit.model import (
     AuditOptions,
     AuditResult,
+    EntrypointGuide,
     JsonValue,
     SectionHint,
     SectionLocation,
@@ -16,10 +18,10 @@ from cdd_audit.model import (
 from cdd_audit.root import detect_project_root
 from cdd_audit.scanner import audit
 
-VERSION = "0.6.0"
+VERSION = "0.7.0"
 USAGE = "\n".join(
     [
-        "usage: cdd-audit docs [--root <path>] [--config <path>] [--format text|json|brief] [--fail-on blocking|never]",
+        "usage: cdd-audit docs [--root <path>] [--config <path>] [--format text|json|brief] [--fail-on blocking|never] [--entrypoint <name>]",
         "       cdd-audit docs --help",
         "       cdd-audit --version",
     ]
@@ -44,13 +46,14 @@ def run_cli(arguments: list[str]) -> int:
         return 1
     result = audit(root, config)
     exit_code = result.exit_code(parsed.fail_on)
+    guide = entrypoint_guide(parsed.entrypoint)
     match parsed.output_format:
         case "json":
-            print(json.dumps(result.to_json(exit_code), ensure_ascii=False, indent=2))
+            print(json.dumps(result.to_json(exit_code, guide), ensure_ascii=False, indent=2))
         case "brief":
-            print(_format_brief(result, exit_code))
+            print(_format_brief(result, exit_code, guide))
         case "text":
-            print(_format_text(result, exit_code))
+            print(_format_text(result, exit_code, guide))
         case unreachable:
             assert_never(unreachable)
     return exit_code
@@ -69,10 +72,11 @@ def _parse_arguments(arguments: list[str]) -> AuditOptions | ConfigError | str:
     config_path: Path | None = None
     output_format = "text"
     fail_on = "blocking"
+    entrypoint: str | None = None
     index = 1
     while index < len(arguments):
         arg = arguments[index]
-        if arg not in {"--root", "--config", "--format", "--fail-on"}:
+        if arg not in {"--root", "--config", "--format", "--fail-on", "--entrypoint"}:
             return ConfigError(f"unknown option: {arg}\n{USAGE}")
         if index + 1 >= len(arguments):
             return ConfigError(f"missing value for {arg}")
@@ -90,10 +94,14 @@ def _parse_arguments(arguments: list[str]) -> AuditOptions | ConfigError | str:
             if value not in {"blocking", "never"}:
                 return ConfigError("--fail-on must be blocking or never")
             fail_on = value
-    return AuditOptions(root, config_path, output_format, fail_on)
+        elif arg == "--entrypoint":
+            if not is_allowed_entrypoint(value):
+                return ConfigError(f"--entrypoint must be one of: {allowed_entrypoints()}")
+            entrypoint = value
+    return AuditOptions(root, config_path, output_format, fail_on, entrypoint)
 
 
-def _format_text(result: AuditResult, exit_code: int) -> str:
+def _format_text(result: AuditResult, exit_code: int, guide: EntrypointGuide | None = None) -> str:
     blocking = sum(1 for item in result.findings if item.severity == "blocking")
     warning = sum(1 for item in result.findings if item.severity == "warning")
     oversized = _oversized_hot_path_documents(result)
@@ -103,6 +111,7 @@ def _format_text(result: AuditResult, exit_code: int) -> str:
         f"- 현재 작업 포인터: {result.current_pointer_path or '없음'}",
         f"- 현재 gate: {result.current_gate or '없음'}",
         f"- 다음 task: {result.next_task or '없음'}",
+        *_entrypoint_lines(guide),
         f"- 반드시 읽을 문서: {_format_list(result.required_read_documents)}",
         *_section_hint_lines(result.section_hints),
         f"- 제외할 과거 기록: {_format_list(result.excluded_history)}",
@@ -129,7 +138,7 @@ def _format_text(result: AuditResult, exit_code: int) -> str:
     return "\n".join(lines)
 
 
-def _format_brief(result: AuditResult, exit_code: int) -> str:
+def _format_brief(result: AuditResult, exit_code: int, guide: EntrypointGuide | None = None) -> str:
     blocking = sum(1 for item in result.findings if item.severity == "blocking")
     warning = sum(1 for item in result.findings if item.severity == "warning")
     return "\n".join(
@@ -139,6 +148,7 @@ def _format_brief(result: AuditResult, exit_code: int) -> str:
             f"- 현재 작업 포인터: {result.current_pointer_path or '없음'}",
             f"- 현재 gate: {result.current_gate or '없음'}",
             f"- 다음 task: {result.next_task or '없음'}",
+            *_entrypoint_lines(guide),
             f"- 먼저 읽을 문서: {_format_list(result.required_read_documents)}",
             *_section_hint_lines(result.section_hints),
             f"- 읽지 않을 기록: {_format_list(result.excluded_history)}",
@@ -151,6 +161,26 @@ def _format_brief(result: AuditResult, exit_code: int) -> str:
             _brief_next_step_line(blocking),
         ]
     )
+
+
+def _entrypoint_lines(guide: EntrypointGuide | None) -> list[str]:
+    if guide is None:
+        return []
+    return [
+        f"- 요청 기준 entrypoint: {guide.name}",
+        f"- CDD에서 먼저 볼 문서: {_format_list(guide.primary_documents)}",
+        *_entrypoint_section_hint_lines(guide.section_hints),
+        f"- 필요하면 확장할 CDD 문서: {_format_list(guide.expansion_documents)}",
+    ]
+
+
+def _entrypoint_section_hint_lines(section_hints: tuple[SectionHint, ...]) -> list[str]:
+    if not section_hints:
+        return ["- CDD에서 먼저 볼 섹션: 없음"]
+    return [
+        "- CDD에서 먼저 볼 섹션:",
+        *(f"  - {item.path} > {_format_list(item.headings)}" for item in section_hints),
+    ]
 
 
 def _format_list(value: tuple[str, ...] | list[str]) -> str:
