@@ -6,7 +6,7 @@ import json
 import sys
 
 from cdd_audit.config import ConfigError, load_config
-from cdd_audit.entrypoints import allowed_entrypoints, entrypoint_guide, is_allowed_entrypoint
+from cdd_audit.entrypoints import allowed_entrypoints, is_allowed_entrypoint, located_entrypoint_guide
 from cdd_audit.model import (
     AuditOptions,
     AuditResult,
@@ -18,7 +18,7 @@ from cdd_audit.model import (
 from cdd_audit.root import detect_project_root
 from cdd_audit.scanner import audit
 
-VERSION = "0.7.0"
+VERSION = "0.8.0"
 USAGE = "\n".join(
     [
         "usage: cdd-audit docs [--root <path>] [--config <path>] [--format text|json|brief] [--fail-on blocking|never] [--entrypoint <name>]",
@@ -46,7 +46,7 @@ def run_cli(arguments: list[str]) -> int:
         return 1
     result = audit(root, config)
     exit_code = result.exit_code(parsed.fail_on)
-    guide = entrypoint_guide(parsed.entrypoint)
+    guide = located_entrypoint_guide(parsed.entrypoint)
     match parsed.output_format:
         case "json":
             print(json.dumps(result.to_json(exit_code, guide), ensure_ascii=False, indent=2))
@@ -179,7 +179,7 @@ def _entrypoint_section_hint_lines(section_hints: tuple[SectionHint, ...]) -> li
         return ["- CDD에서 먼저 볼 섹션: 없음"]
     return [
         "- CDD에서 먼저 볼 섹션:",
-        *(f"  - {item.path} > {_format_list(item.headings)}" for item in section_hints),
+        *(f"  - {item.path} > {_format_section_hint(item)}" for item in section_hints),
     ]
 
 

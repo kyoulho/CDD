@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from cdd_audit.model import (
     ACCUMULATED_LINES,
     ACTIVE_SIGNALS,
@@ -9,6 +11,7 @@ from cdd_audit.model import (
     DocumentInfo,
     JsonObject,
 )
+from cdd_audit.skill_health import skill_health
 
 
 def has_active_history_mix(item: DocumentInfo) -> bool:
@@ -94,7 +97,7 @@ def decision_log_unpartitioned(item: DocumentInfo) -> bool:
     return not partitioned and (item.lines > HOT_PATH_LINES or any(signal in HISTORY_SIGNALS for signal in item.signals))
 
 
-def checks_json(docs: tuple[DocumentInfo, ...]) -> JsonObject:
+def checks_json(root: Path, docs: tuple[DocumentInfo, ...]) -> JsonObject:
     split_candidates = split_recommendations(docs)
     return {
         "readCost": {
@@ -140,4 +143,5 @@ def checks_json(docs: tuple[DocumentInfo, ...]) -> JsonObject:
         "indexMaintenance": {
             "readmeOrIndexUpdatesRequired": [str(item["path"]) for item in split_candidates],
         },
+        "skillHealth": skill_health(root).to_json(),
     }

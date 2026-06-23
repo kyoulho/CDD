@@ -185,7 +185,8 @@ cdd-audit docs [--root <path>] [--config <path>] [--format text|json|brief] [--f
 
 - 현재 작업 포인터와 누락 필드
 - 현재 gate, 다음 task, active task
-- 요청한 CDD entrypoint 기준으로 먼저 볼 CDD 문서와 섹션
+- 요청한 CDD entrypoint 기준으로 먼저 볼 CDD 문서, 섹션, 가능하면 줄 범위
+- skill root인 경우 `SKILL.md` frontmatter와 `agents/openai.yaml` UI metadata 상태
 - 반드시 읽을 문서와 제외할 과거 기록
 - 400줄 또는 40KB를 넘는 기본 읽기 경로 문서
 - 1000줄 이상 누적 문서

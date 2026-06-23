@@ -24,6 +24,7 @@ from cdd_audit.model import (
 )
 from cdd_audit.pointer import missing_pointer_fields, pointer_details
 from cdd_audit.section_hints import located_section_hint
+from cdd_audit.skill_health import skill_health, skill_health_findings
 
 SECTION_HINT_LIMIT: Final[int] = 4
 COMMON_SECTION_KEYWORDS: Final[tuple[str, ...]] = (
@@ -69,11 +70,12 @@ def audit(root: Path, config: AuditConfig) -> AuditResult:
     excluded_non_sot = _excluded_non_sot(config, details.excluded_non_sot_references)
     section_hints = _section_hints(docs, required, config, details.section_hints)
     finding_context = FindingContext(pointer, missing, excluded_history, excluded_non_sot)
-    checks = checks_json(docs)
+    checks = checks_json(root, docs)
+    health = skill_health(root)
     oversized_count = len(oversized_hot_path(docs))
     findings = tuple(
         _sorted_findings(
-            _findings(docs, finding_context, section_hints)
+            _findings(docs, finding_context, section_hints, skill_health_findings(health))
         )
     )
     return AuditResult(
@@ -180,6 +182,7 @@ def _findings(
     docs: tuple[DocumentInfo, ...],
     context: FindingContext,
     section_hints: tuple[SectionHint, ...],
+    health_findings: tuple[Finding, ...],
 ) -> list[Finding]:
     findings: list[Finding] = []
     oversized = oversized_hot_path(docs)
@@ -194,6 +197,7 @@ def _findings(
         path = context.pointer.path if context.pointer else None
         findings.append(_finding("READ_PATH_CONTRACT_MISSING", "blocking", path, "반드시 읽을 문서와 제외할 기록이 분리되어 있지 않습니다.", ", ".join(context.missing_fields), "기본 읽기 경로 계약을 명시합니다.", "autoDeclareCurrentCriteria"))
     findings.extend(_section_hint_findings(section_hints))
+    findings.extend(health_findings)
     findings.extend(_size_and_mix_findings(docs, oversized, mixed))
     findings.extend(_classification_findings(docs, context.excluded_history, context.excluded_non_sot))
     if findings:

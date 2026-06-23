@@ -20,9 +20,9 @@
   "sectionHints": {
     "README.md": [
       "# CDD",
-      "## 호출되면 어떻게 시작하나",
-      "## CDD가 먼저 확인하는 것",
-      "## `cdd-audit` 문서 점검"
+      "## 어떻게 시작하나",
+      "## CDD가 막는 것",
+      "## cdd-audit"
     ],
     "SKILL.md": [
       "# CDD Skill",
@@ -37,6 +37,5 @@
     "_*.md": "non-sot-reference",
     "agents/openai.yaml": "non-sot-reference"
   },
-  "ignore": [".codegraph/**", "cdd_audit/**", "tests/**"],
-  "currentWorkPointer": "README.md"
+  "ignore": [".codegraph/**", "cdd_audit/**", "tests/**"]
 }
