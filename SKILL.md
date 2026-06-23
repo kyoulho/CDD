@@ -19,7 +19,7 @@ CDD는 승인된 기준 문서와 사용자 승인 지점이 준비된 작업만
 
 처음부터 모든 public entrypoint와 internal module을 읽지 않는다. 사용자 요청에 맞는 public entrypoint 하나를 고르고, 대상 프로젝트에 문서 구조가 있으면 `cdd-audit docs --root <project> --format brief --fail-on never`로 정확한 판단에 먼저 필요한 문서와 섹션을 좁힌다. `brief`에서 차단 항목이 있거나 상세 분리 이유가 필요할 때는 반드시 `--format text` 또는 `--format json`으로 확장한다.
 
-선택한 entrypoint와 `brief`가 가리킨 문서의 "먼저 볼 섹션"을 우선 확인한다. 섹션 힌트(section hint)는 문서 전체 판단을 대체하지 않는다. `.cdd-audit.json`의 `sectionHints`, current-work 문서의 `먼저 볼 섹션`, heading 추정 순서로 적용한다. 힌트가 없거나, 힌트 섹션만으로 기준/승인/gate를 판단할 수 없거나, 섹션끼리 충돌하면 해당 문서 전체 또는 상세 audit으로 확장한다. `_*.md` internal module은 해당 entrypoint가 요구하거나 판단이 막힌 경우에만 연다. 과거 task, completion, verification, old prompt, generated map, Codesight, agentmemory는 current pointer가 명시적으로 요구하지 않는 한 기본 읽기에서 제외한다.
+선택한 entrypoint와 `brief`가 가리킨 문서의 "먼저 볼 섹션"을 우선 확인한다. 섹션 힌트(section hint)는 문서 전체 판단을 대체하지 않는다. `.cdd-audit.json`의 `sectionHints`, current-work 문서의 `먼저 볼 섹션`, heading 추정 순서로 적용한다. `cdd-audit`가 줄 범위를 제공하면 해당 위치부터 읽되, 명시된 heading이 `missing`이거나 `SECTION_HINT_MISSING_HEADING` warning이 있으면 섹션 계약을 갱신해야 한다. 힌트가 없거나, 힌트 섹션만으로 기준/승인/gate를 판단할 수 없거나, 섹션끼리 충돌하면 해당 문서 전체 또는 상세 audit으로 확장한다. `_*.md` internal module은 해당 entrypoint가 요구하거나 판단이 막힌 경우에만 연다. 과거 task, completion, verification, old prompt, generated map, Codesight, agentmemory는 current pointer가 명시적으로 요구하지 않는 한 기본 읽기에서 제외한다.
 
 ## 핵심 용어
 
@@ -34,7 +34,7 @@ CDD는 승인된 기준 문서와 사용자 승인 지점이 준비된 작업만
 - 운영/품질 기준 확인: 성능, 보안, 권한, 조회, 재시도, 로그/감사, 운영 기준을 구현 전에 확인하는 절차.
 - 현재 작업 포인터: 다음 판단에 필요한 현재 gate, 다음 task, 반드시 읽을 문서, 읽지 않을 과거 기록을 짧게 가리키는 승인된 문서 또는 섹션.
 - 기본 읽기 경로 계약: 이번 작업에서 반드시 읽을 문서와 기본 읽기 경로에서 제외할 과거 기록/보조 자료를 고정하는 계약.
-- 섹션 힌트(section hint): 반드시 읽을 문서 안에서 먼저 확인할 heading 목록. 정확한 판단을 돕는 안내일 뿐, readiness gate나 문서 전체 확인을 대체하지 않는다.
+- 섹션 힌트(section hint): 반드시 읽을 문서 안에서 먼저 확인할 heading 목록과 가능하면 줄 범위. 정확한 판단을 돕는 안내일 뿐, readiness gate나 문서 전체 확인을 대체하지 않는다.
 
 ## Public Entry Points
 

@@ -90,14 +90,32 @@ class DocumentInfo:
 
 
 @dataclass(frozen=True, slots=True)
+class SectionLocation:
+    heading: str
+    start_line: int | None
+    end_line: int | None
+    exists: bool
+
+    def to_json(self) -> JsonObject:
+        return {
+            "heading": self.heading,
+            "startLine": self.start_line,
+            "endLine": self.end_line,
+            "exists": self.exists,
+        }
+
+
+@dataclass(frozen=True, slots=True)
 class SectionHint:
     path: str
     headings: tuple[str, ...]
+    sections: tuple[SectionLocation, ...] = ()
 
     def to_json(self) -> JsonObject:
         return {
             "path": self.path,
             "headings": list(self.headings),
+            "sections": [item.to_json() for item in self.sections],
         }
 
 

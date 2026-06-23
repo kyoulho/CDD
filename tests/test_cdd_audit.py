@@ -166,7 +166,7 @@ def test_brief_format_prints_section_hints() -> None:
 
         assert result.returncode == 0, result.stdout + result.stderr
         assert "- 먼저 볼 섹션:" in result.stdout
-        assert "  - docs/README.md > # Docs, ## Current Work, ## Required Read Documents" in result.stdout
+        assert "  - docs/README.md > # Docs (L1-L7), ## Current Work (L3-L4), ## Required Read Documents (L5-L6)" in result.stdout
         assert "Historical Notes" not in result.stdout
 
 

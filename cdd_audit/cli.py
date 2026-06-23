@@ -6,11 +6,17 @@ import json
 import sys
 
 from cdd_audit.config import ConfigError, load_config
-from cdd_audit.model import AuditOptions, AuditResult, JsonValue, SectionHint
+from cdd_audit.model import (
+    AuditOptions,
+    AuditResult,
+    JsonValue,
+    SectionHint,
+    SectionLocation,
+)
 from cdd_audit.root import detect_project_root
 from cdd_audit.scanner import audit
 
-VERSION = "0.4.0"
+VERSION = "0.5.0"
 USAGE = "\n".join(
     [
         "usage: cdd-audit docs [--root <path>] [--config <path>] [--format text|json|brief] [--fail-on blocking|never]",
@@ -158,8 +164,20 @@ def _section_hint_lines(section_hints: tuple[SectionHint, ...]) -> list[str]:
         return ["- 먼저 볼 섹션: 없음"]
     return [
         "- 먼저 볼 섹션:",
-        *(f"  - {item.path} > {_format_list(item.headings)}" for item in section_hints),
+        *(f"  - {item.path} > {_format_section_hint(item)}" for item in section_hints),
     ]
+
+
+def _format_section_hint(section_hint: SectionHint) -> str:
+    if not section_hint.sections:
+        return _format_list(section_hint.headings)
+    return ", ".join(_format_section_location(item) for item in section_hint.sections)
+
+
+def _format_section_location(section: SectionLocation) -> str:
+    if not section.exists:
+        return f"{section.heading} (missing)"
+    return f"{section.heading} (L{section.start_line}-L{section.end_line})"
 
 
 def _oversized_hot_path_documents(result: AuditResult) -> list[str]:

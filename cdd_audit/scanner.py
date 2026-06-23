@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Final
 from pathlib import Path
 
@@ -12,8 +13,16 @@ from cdd_audit.checks import (
 )
 from cdd_audit.config import AuditConfig
 from cdd_audit.documents import read_documents
-from cdd_audit.model import ACCUMULATED_LINES, SEVERITY_ORDER, AuditResult, DocumentInfo, Finding, SectionHint
+from cdd_audit.model import (
+    ACCUMULATED_LINES,
+    SEVERITY_ORDER,
+    AuditResult,
+    DocumentInfo,
+    Finding,
+    SectionHint,
+)
 from cdd_audit.pointer import missing_pointer_fields, pointer_details
+from cdd_audit.section_hints import located_section_hint
 
 SECTION_HINT_LIMIT: Final[int] = 4
 COMMON_SECTION_KEYWORDS: Final[tuple[str, ...]] = (
@@ -41,6 +50,14 @@ ROLE_SECTION_KEYWORDS: Final[dict[str, tuple[str, ...]]] = {
 }
 
 
+@dataclass(frozen=True, slots=True)
+class FindingContext:
+    pointer: DocumentInfo | None
+    missing_fields: tuple[str, ...]
+    excluded_history: tuple[str, ...]
+    excluded_non_sot: tuple[str, ...]
+
+
 def audit(root: Path, config: AuditConfig) -> AuditResult:
     docs = tuple(read_documents(root, config))
     pointer = _current_pointer(docs, config)
@@ -50,9 +67,14 @@ def audit(root: Path, config: AuditConfig) -> AuditResult:
     excluded_history = _excluded_history(config, details.excluded_historical_records)
     excluded_non_sot = _excluded_non_sot(config, details.excluded_non_sot_references)
     section_hints = _section_hints(docs, required, config, details.section_hints)
+    finding_context = FindingContext(pointer, missing, excluded_history, excluded_non_sot)
     checks = checks_json(docs)
     oversized_count = len(oversized_hot_path(docs))
-    findings = tuple(_sorted_findings(_findings(docs, pointer, missing, excluded_history, excluded_non_sot)))
+    findings = tuple(
+        _sorted_findings(
+            _findings(docs, finding_context, section_hints)
+        )
+    )
     return AuditResult(
         root=root,
         documents=docs,
@@ -119,14 +141,14 @@ def _section_hints(
     for path in required:
         hint = explicit.get(path)
         if hint is not None:
-            result.append(hint)
+            result.append(located_section_hint(hint, by_path.get(path)))
             continue
         item = by_path.get(path)
         if item is None:
             continue
         headings = _recommended_headings(item)
         if headings:
-            result.append(SectionHint(path, headings))
+            result.append(located_section_hint(SectionHint(path, headings), item))
     return tuple(result)
 
 
@@ -155,26 +177,46 @@ def _recommended_headings(document: DocumentInfo) -> tuple[str, ...]:
 
 def _findings(
     docs: tuple[DocumentInfo, ...],
-    pointer: DocumentInfo | None,
-    missing_fields: tuple[str, ...],
-    excluded_history: tuple[str, ...],
-    excluded_non_sot: tuple[str, ...],
+    context: FindingContext,
+    section_hints: tuple[SectionHint, ...],
 ) -> list[Finding]:
     findings: list[Finding] = []
     oversized = oversized_hot_path(docs)
     mixed = [item for item in docs if item.in_default_read_path and has_active_history_mix(item)]
     needs_pointer = bool(oversized or mixed)
-    if needs_pointer and pointer is None:
+    if needs_pointer and context.pointer is None:
         findings.append(_finding("CURRENT_WORK_POINTER_MISSING", "blocking", None, "문서가 커졌거나 active/history가 섞였지만 현재 작업 포인터가 없습니다.", "current work pointer not detected", "현재 작업 포인터 역할을 만들거나 기존 index에 추가합니다.", "autoDeclareCurrentCriteria"))
-    if pointer is not None and missing_fields:
+    if context.pointer is not None and context.missing_fields:
         severity = "blocking" if needs_pointer else "warning"
-        findings.append(_finding("CURRENT_WORK_POINTER_INCOMPLETE", severity, pointer.path, "현재 작업 포인터 필드가 부족합니다.", ", ".join(missing_fields), "누락 필드를 채웁니다.", "autoModifyReadmeOrIndexWithoutApproval"))
-    if needs_pointer and ("requiredReadDocuments" in missing_fields or "excludedHistoricalRecords" in missing_fields):
-        findings.append(_finding("READ_PATH_CONTRACT_MISSING", "blocking", pointer.path if pointer else None, "반드시 읽을 문서와 제외할 기록이 분리되어 있지 않습니다.", ", ".join(missing_fields), "기본 읽기 경로 계약을 명시합니다.", "autoDeclareCurrentCriteria"))
+        findings.append(_finding("CURRENT_WORK_POINTER_INCOMPLETE", severity, context.pointer.path, "현재 작업 포인터 필드가 부족합니다.", ", ".join(context.missing_fields), "누락 필드를 채웁니다.", "autoModifyReadmeOrIndexWithoutApproval"))
+    if needs_pointer and ("requiredReadDocuments" in context.missing_fields or "excludedHistoricalRecords" in context.missing_fields):
+        path = context.pointer.path if context.pointer else None
+        findings.append(_finding("READ_PATH_CONTRACT_MISSING", "blocking", path, "반드시 읽을 문서와 제외할 기록이 분리되어 있지 않습니다.", ", ".join(context.missing_fields), "기본 읽기 경로 계약을 명시합니다.", "autoDeclareCurrentCriteria"))
+    findings.extend(_section_hint_findings(section_hints))
     findings.extend(_size_and_mix_findings(docs, oversized, mixed))
-    findings.extend(_classification_findings(docs, excluded_history, excluded_non_sot))
+    findings.extend(_classification_findings(docs, context.excluded_history, context.excluded_non_sot))
     if findings:
         findings.append(_finding("README_INDEX_UPDATE_REQUIRED", "info", None, "문서 배치나 읽기 경로 변경 시 README/index 갱신 여부 확인이 필요합니다.", "audit produced document-structure findings", "수정 전 보고에 README/index 갱신 필요 여부를 포함합니다.", "autoModifyReadmeOrIndexWithoutApproval"))
+    return findings
+
+
+def _section_hint_findings(section_hints: tuple[SectionHint, ...]) -> list[Finding]:
+    findings: list[Finding] = []
+    for hint in section_hints:
+        missing = tuple(item.heading for item in hint.sections if not item.exists)
+        if not missing:
+            continue
+        findings.append(
+            _finding(
+                "SECTION_HINT_MISSING_HEADING",
+                "warning",
+                hint.path,
+                "먼저 볼 섹션으로 지정된 heading을 문서에서 찾을 수 없습니다.",
+                ", ".join(missing),
+                "섹션 힌트를 현재 문서 heading에 맞게 고치거나 current-work/read path 계약을 갱신합니다.",
+                "autoModifyReadmeOrIndexWithoutApproval",
+            )
+        )
     return findings
 
 
