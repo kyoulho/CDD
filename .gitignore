@@ -1,0 +1,28 @@
+# Python generated files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Python tool caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+
+# Local Python environments and build outputs
+.venv/
+venv/
+build/
+dist/
+*.egg-info/
+
+# Local editor, OS, and temporary files
+.DS_Store
+*.swp
+*.swo
+*.tmp
+*.log
+
+# Local code index
+.codegraph/
