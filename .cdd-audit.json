@@ -17,6 +17,20 @@
     "**/*search-index*.md",
     "**/*recall*.md"
   ],
+  "sectionHints": {
+    "README.md": [
+      "# CDD",
+      "## 호출되면 어떻게 시작하나",
+      "## CDD가 먼저 확인하는 것",
+      "## `cdd-audit` 문서 점검"
+    ],
+    "SKILL.md": [
+      "# CDD Skill",
+      "## 읽기 경로 최적화",
+      "## Routing",
+      "## Core Gates"
+    ]
+  },
   "roleOverrides": {
     "readme.md": "active-index",
     "skill.md": "active-index",

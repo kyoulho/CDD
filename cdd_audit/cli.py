@@ -98,6 +98,7 @@ def _format_text(result: AuditResult, exit_code: int) -> str:
         f"- 현재 gate: {result.current_gate or '없음'}",
         f"- 다음 task: {result.next_task or '없음'}",
         f"- 반드시 읽을 문서: {_format_list(result.required_read_documents)}",
+        *_section_hint_lines(result.section_hints),
         f"- 제외할 과거 기록: {_format_list(result.excluded_history)}",
         f"- 기본 읽기 경로에서 큰 문서: {_format_list(oversized)}",
         f"- 차단 항목: {blocking}",

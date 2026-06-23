@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from cdd_audit.model import CURRENT_POINTER_FIELDS, DocumentInfo
+from cdd_audit.model import CURRENT_POINTER_FIELDS, DocumentInfo, SectionHint
+
+SECTION_HINT_FIELDS = ("sectionhints", "section hints", "먼저 볼 섹션", "먼저볼섹션")
 
 
 @dataclass(frozen=True, slots=True)
@@ -13,10 +15,11 @@ class PointerDetails:
     required_read_documents: tuple[str, ...]
     excluded_historical_records: tuple[str, ...]
     excluded_non_sot_references: tuple[str, ...]
+    section_hints: tuple[SectionHint, ...]
 
 
 def empty_pointer_details() -> PointerDetails:
-    return PointerDetails(None, None, (), (), (), ())
+    return PointerDetails(None, None, (), (), (), (), ())
 
 
 def missing_pointer_fields(pointer: DocumentInfo | None) -> tuple[str, ...]:
@@ -39,6 +42,7 @@ def pointer_details(pointer: DocumentInfo | None) -> PointerDetails:
         required_read_documents=_field_values(pointer.text, CURRENT_POINTER_FIELDS["requiredReadDocuments"]),
         excluded_historical_records=_field_values(pointer.text, CURRENT_POINTER_FIELDS["excludedHistoricalRecords"]),
         excluded_non_sot_references=_field_values(pointer.text, ("excluded non-sot", "excludednonsot", "비-sot", "보조 자료")),
+        section_hints=_section_hints(pointer.text),
     )
 
 
@@ -50,6 +54,10 @@ def _field_scalar(text: str, patterns: tuple[str, ...]) -> str | None:
 
 
 def _field_values(text: str, patterns: tuple[str, ...]) -> tuple[str, ...]:
+    return tuple(_split_field_values(_raw_field_values(text, patterns)))
+
+
+def _raw_field_values(text: str, patterns: tuple[str, ...]) -> tuple[str, ...]:
     lines = text.splitlines()
     result: list[str] = []
     collecting = False
@@ -59,7 +67,7 @@ def _field_values(text: str, patterns: tuple[str, ...]) -> tuple[str, ...]:
             collecting = True
             inline = _inline_value(line)
             if inline:
-                result.extend(_split_values(inline))
+                result.append(inline)
             continue
         if collecting:
             if _looks_like_other_field(normalized):
@@ -68,6 +76,32 @@ def _field_values(text: str, patterns: tuple[str, ...]) -> tuple[str, ...]:
             if bullet:
                 result.append(bullet)
     return tuple(item for item in result if item and item != "없음")
+
+
+def _split_field_values(values: tuple[str, ...]) -> tuple[str, ...]:
+    result: list[str] = []
+    for value in values:
+        result.extend(_split_values(value))
+    return tuple(result)
+
+
+def _section_hints(text: str) -> tuple[SectionHint, ...]:
+    hints: list[SectionHint] = []
+    for value in _raw_field_values(text, SECTION_HINT_FIELDS):
+        parsed = _parse_section_hint(value)
+        if parsed is not None:
+            hints.append(parsed)
+    return tuple(hints)
+
+
+def _parse_section_hint(value: str) -> SectionHint | None:
+    if ">" not in value:
+        return None
+    path, raw_headings = value.split(">", 1)
+    headings = tuple(item.strip() for item in raw_headings.split(",") if item.strip())
+    if not path.strip() or not headings:
+        return None
+    return SectionHint(path.strip(), headings)
 
 
 def _starts_field(normalized_line: str, patterns: tuple[str, ...]) -> bool:

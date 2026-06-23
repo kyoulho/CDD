@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 import json
 
-from cdd_audit.model import JsonObject, JsonValue
+from cdd_audit.model import JsonValue, SectionHint
 
 
 @dataclass(frozen=True, slots=True)
@@ -19,6 +19,7 @@ class AuditConfig:
     required_read_documents: tuple[str, ...]
     excluded_historical_records: tuple[str, ...]
     excluded_non_sot_references: tuple[str, ...]
+    section_hints: tuple[SectionHint, ...]
     role_overrides: tuple[RoleOverride, ...]
     ignore_patterns: tuple[str, ...]
     current_work_pointer: str | None
@@ -31,7 +32,7 @@ class ConfigError:
 
 
 def empty_config() -> AuditConfig:
-    return AuditConfig((), (), (), (), (), (), None, None)
+    return AuditConfig((), (), (), (), (), (), (), None, None)
 
 
 def load_config(root: Path, explicit_path: Path | None) -> AuditConfig | ConfigError:
@@ -51,6 +52,7 @@ def load_config(root: Path, explicit_path: Path | None) -> AuditConfig | ConfigE
         required_read_documents=_string_tuple(parsed.get("requiredReadDocuments")),
         excluded_historical_records=_string_tuple(parsed.get("excludedHistoricalRecords")),
         excluded_non_sot_references=_string_tuple(parsed.get("excludedNonSotReferences")),
+        section_hints=_section_hints(parsed.get("sectionHints")),
         role_overrides=_role_overrides(parsed.get("roleOverrides")),
         ignore_patterns=_string_tuple(parsed.get("ignore")),
         current_work_pointer=_optional_string(parsed.get("currentWorkPointer")),
@@ -92,4 +94,15 @@ def _role_overrides(value: JsonValue | None) -> tuple[RoleOverride, ...]:
     for key, item in value.items():
         if isinstance(item, str):
             result.append(RoleOverride(key, item))
+    return tuple(result)
+
+
+def _section_hints(value: JsonValue | None) -> tuple[SectionHint, ...]:
+    if not isinstance(value, dict):
+        return ()
+    result: list[SectionHint] = []
+    for key, item in value.items():
+        headings = _string_tuple(item)
+        if headings:
+            result.append(SectionHint(key, headings))
     return tuple(result)

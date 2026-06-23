@@ -49,7 +49,7 @@ def audit(root: Path, config: AuditConfig) -> AuditResult:
     required = _required_documents(docs, config, details.required_read_documents)
     excluded_history = _excluded_history(config, details.excluded_historical_records)
     excluded_non_sot = _excluded_non_sot(config, details.excluded_non_sot_references)
-    section_hints = _section_hints(docs, required)
+    section_hints = _section_hints(docs, required, config, details.section_hints)
     checks = checks_json(docs)
     oversized_count = len(oversized_hot_path(docs))
     findings = tuple(_sorted_findings(_findings(docs, pointer, missing, excluded_history, excluded_non_sot)))
@@ -107,10 +107,20 @@ def _excluded_non_sot(config: AuditConfig, pointer_excluded: tuple[str, ...]) ->
     return config.excluded_non_sot_references
 
 
-def _section_hints(docs: tuple[DocumentInfo, ...], required: tuple[str, ...]) -> tuple[SectionHint, ...]:
+def _section_hints(
+    docs: tuple[DocumentInfo, ...],
+    required: tuple[str, ...],
+    config: AuditConfig,
+    pointer_hints: tuple[SectionHint, ...],
+) -> tuple[SectionHint, ...]:
     by_path = {item.path: item for item in docs}
+    explicit = _explicit_section_hints(config.section_hints, pointer_hints)
     result: list[SectionHint] = []
     for path in required:
+        hint = explicit.get(path)
+        if hint is not None:
+            result.append(hint)
+            continue
         item = by_path.get(path)
         if item is None:
             continue
@@ -118,6 +128,15 @@ def _section_hints(docs: tuple[DocumentInfo, ...], required: tuple[str, ...]) ->
         if headings:
             result.append(SectionHint(path, headings))
     return tuple(result)
+
+
+def _explicit_section_hints(
+    config_hints: tuple[SectionHint, ...],
+    pointer_hints: tuple[SectionHint, ...],
+) -> dict[str, SectionHint]:
+    result = {item.path: item for item in pointer_hints}
+    result.update({item.path: item for item in config_hints})
+    return result
 
 
 def _recommended_headings(document: DocumentInfo) -> tuple[str, ...]:
