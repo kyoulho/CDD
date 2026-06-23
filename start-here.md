@@ -8,12 +8,20 @@
 
 ## 빠른 탐색
 
-- CDD 전체 흐름을 처음 시작하면 "전체 지휘 흐름"을 본다.
-- public/internal 접근은 "Public/Internal 접근 정책"과 "Routing Table"을 본다.
-- 바로 적용할 금지/허용 규칙은 "즉시 적용할 규칙"을 본다.
+- 처음 시작하면 "Fast Path"와 "Routing Table"만 먼저 본다.
+- 요청이 애매하거나 권한이 불명확하면 "즉시 적용할 규칙"에서 중단 규칙만 확인한다.
+- 작업 성격이 정해졌으면 해당 public entrypoint로 이동하고, 이 파일의 나머지 세부 규칙은 필요할 때만 본다.
 - 기준 문서 권위와 변경 요청은 "Source of Truth 권위 순서", "Source of Truth 변경 라우팅"을 본다.
 - 선행 작업, artifact 정합성, CLI 사용은 각 gate 섹션을 본다.
 - 사용자 보고는 "User-Facing Language"와 "중단 조건"을 본다.
+
+## Fast Path
+
+처음부터 모든 internal module을 열지 않는다. 먼저 사용자 요청만으로 작업 성격을 다음 중 하나로 분류한다: 설명/판단, 계획, 구현 지시서, 구현, cleanup/delete, 검증, 수정, 완료, 기준 문서 변경. 하나로 확정되지 않으면 파일을 수정하지 말고 자연어로 확인한다.
+
+작업 성격이 확정되면 Routing Table의 public entrypoint 하나로 이동한다. 대상 프로젝트에 문서 구조가 있으면 `cdd-audit docs --root <project> --format brief --fail-on never`로 먼저 읽을 문서만 좁힌다. `brief` 결과에 차단 항목이 있거나 분리 이유가 필요할 때만 text 또는 JSON으로 확장한다.
+
+`_work-mode.md`, `_sot-packet.md`, `_readiness-gates.md`, `_authority-boundary.md`, `_artifact-*.md`, `_status-machine.md`, `_approval-reference.md`, `_user-facing-language.md`는 항상 먼저 읽는 파일이 아니다. 선택한 entrypoint가 요구하거나 판단이 막힌 경우에만 연다.
 
 ## 핵심 용어
 
@@ -62,7 +70,7 @@ Internal module direct mention:
 
 ## 즉시 적용할 규칙
 
-- 모든 요청은 먼저 `_work-mode.md`를 읽고 작업 모드를 판별하라.
+- 모든 요청은 먼저 사용자 문장만으로 작업 성격을 간단히 분류하고, 모호하거나 권한 해석이 필요할 때만 `_work-mode.md`를 읽어 작업 모드를 판별하라.
 - 사용자 요청이 설명, 설계, 문서 수정, 구현, 삭제, 검증 중 무엇인지 애매하면 바로 작업하지 말고 먼저 질문한다.
 - 애매하면 먼저 질문한다.
 - 애매한 요청을 임의로 해석하지 않는다.
@@ -70,9 +78,9 @@ Internal module direct mention:
 - 애매한 요청을 파일 수정 승인으로 해석하지 않는다.
 - 애매한 요청을 삭제 승인으로 해석하지 않는다.
 - "정리해줘", "이거 진행해", "구조 잡아줘", "다음 단계로 가자", "고쳐줘", "문서 반영해", "설계해", "구현해도 될까?"처럼 작업 성격을 하나로 확정할 수 없는 요청은 가장 제한적인 방식으로 멈추고 사용자에게 자연어로 묻는다.
-- 작업 방식을 판별한 뒤 `_sot-packet.md`를 확인하고, 이번 작업 기준 묶음이 있는지 확인하라.
-- `_readiness-gates.md`를 확인하고 제품 기준 준비 상태, 기술 설계 준비 상태, 구현 시작 가능 여부를 판정하라.
-- 작업 시작 전 `_sot-packet.md`의 형식으로 작업 방식, 이번 작업 기준, 가능한 작업, 금지된 작업, 진행 전 필요한 승인, 검증 방법을 선언하라.
+- 작업 방식이 구현, 작업 기준서, 구현 지시서, 검증, 완료로 이어질 때만 `_sot-packet.md`를 열고 이번 작업 기준 묶음이 있는지 확인하라.
+- 제품/설계/구현 가능 여부가 불명확하거나 작업 기준서/구현 지시서를 만들 때만 `_readiness-gates.md`를 열어 판정하라.
+- 작업 시작 전 선언은 필요한 경우에만 `_sot-packet.md` 형식으로 작성한다. 단순 설명이나 read-only 판단에서는 사용자-facing 요약으로 충분하다.
 - 작업 모드는 `CLARIFICATION_NEEDED`, `ANALYSIS_ONLY`, `PROPOSAL_ONLY`, `PATCH_AUTHORIZED`, `APPLY_AUTHORIZED`, `IMPLEMENTATION`, `DOCUMENT_ONLY`, `CLEANUP_DELETE` 중 하나로 분류한다.
 - 사용자가 "분석만", "수정하지 마", "원인만", "검토만", "제안만"이라고 말하면 `ANALYSIS_ONLY`로 처리하고 파일을 생성, 수정, 삭제하지 마라.
 - `ANALYSIS_ONLY`에서는 rollback도 파일 수정이므로 수행하지 마라.
@@ -80,9 +88,9 @@ Internal module direct mention:
 - 분석/제안에서 패치로 전환하려면 "위 분석에 따라 CDD skill 파일 수정을 승인합니다"처럼 범위가 분명한 명시 승인이 필요하다.
 - "좋아", "진행해", "다음", "반영해" 같은 말만으로 구현, 문서 수정, 파일 수정, 삭제/정리를 시작하지 마라.
 - 사용자 요청을 바로 구현하지 마라.
-- 먼저 `_authority-boundary.md`를 읽고 판단 권한 경계를 확인하라.
-- V2 표준인 `_artifact-metadata.md`, `_artifact-templates.md`, `_status-machine.md`, `_approval-reference.md`, `_user-facing-language.md`를 확인하라.
-- 새 프로젝트를 시작하거나 프로젝트 성격이 불명확하면 `_project-context.md`를 읽고 Project Context를 먼저 확인하라.
+- 권한 경계, 문서 수정, 삭제, 승인, 완료 판단이 걸릴 때만 `_authority-boundary.md`를 읽는다.
+- artifact를 만들거나 승인 문장을 제시할 때만 `_artifact-metadata.md`, `_artifact-templates.md`, `_status-machine.md`, `_approval-reference.md`, `_user-facing-language.md`를 확인한다.
+- 새 프로젝트를 시작하거나 프로젝트 성격이 불명확할 때만 `_project-context.md`를 읽고 Project Context를 확인한다.
 - 새 프로젝트를 시작할 때는 사용자의 자연스러운 의도에서 Project Context를 먼저 추론하라.
 - 사용자가 이미 "연습용", "실서비스 출시 목적 아님", "로컬에서 해보면 됨"이라고 말했으면 이를 Project Context 초안으로 받아들이고 같은 목적을 다시 묻지 마라.
 - 사용자-facing 질문에서 "CDD test bed", "weakness discovery", "skill validation", "prompt governance validation"을 선택지로 노출하지 마라.
@@ -151,18 +159,18 @@ Internal module direct mention:
 
 ## 전체 지휘 흐름
 
-1. `_work-mode.md`를 읽고 사용자 요청의 작업 모드를 판별한다.
+1. 사용자 요청만으로 작업 성격을 먼저 분류한다. 모호하거나 권한 해석이 필요하면 `_work-mode.md`를 읽고 작업 모드를 판별한다.
 2. 작업 성격이 하나로 확정되지 않으면 파일을 수정하지 않고 사용자가 원하는 단계를 질문한다.
 3. 사용자 개입이 필요한지 판정한다. 필요하면 선택지, 추천, 바로 답할 수 있는 문장을 제공하고 멈춘다.
 4. 사용자 개입이 필요 없으면 현재 요청이 허용한 다음 단계까지 진행한다.
-5. `_sot-packet.md`를 확인하고 이번 작업 기준 묶음의 존재 여부와 부족한 필드를 확인한다.
+5. 구현, 작업 기준서, 구현 지시서, 검증, 완료로 이어지는 요청이면 `_sot-packet.md`를 확인하고 이번 작업 기준 묶음의 존재 여부와 부족한 필드를 확인한다.
 6. 현재 작업 포인터와 기본 읽기 경로 계약을 확인한다. 없거나 불완전해 과거 기록을 함께 훑어야 하면 먼저 정리 후보를 보고한다.
-7. `_readiness-gates.md`를 확인하고 준비 상태 판정 형식을 준비한다.
+7. 제품/설계/구현 가능 여부가 불명확하거나 작업 기준서/구현 지시서를 만들 때만 `_readiness-gates.md`를 확인하고 준비 상태 판정 형식을 준비한다.
 8. 작업 시작 전 작업 방식, 이번 작업 기준, 가능한 작업, 금지된 작업, 진행 전 필요한 승인, 검증 방법을 선언한다.
 9. `ANALYSIS_ONLY` 또는 `PROPOSAL_ONLY`이면 읽기, 분석, 제안만 수행하고 파일 수정 없이 다음 승인 문구를 포함해 보고한다.
-10. `_authority-boundary.md`를 읽고 AI가 판단할 수 있는 영역과 금지된 판단 영역을 확인한다.
-11. `_artifact-metadata.md`, `_artifact-templates.md`, `_status-machine.md`, `_approval-reference.md`, `_user-facing-language.md`를 확인한다.
-12. 새 프로젝트이거나 프로젝트 성격이 불명확하면 `_project-context.md`로 Project Context를 확인한다.
+10. 권한 경계, 문서 수정, 삭제, 승인, 완료 판단이 걸릴 때만 `_authority-boundary.md`를 읽고 AI가 판단할 수 있는 영역과 금지된 판단 영역을 확인한다.
+11. artifact를 만들거나 승인 문장을 제시할 때만 `_artifact-metadata.md`, `_artifact-templates.md`, `_status-machine.md`, `_approval-reference.md`, `_user-facing-language.md`를 확인한다.
+12. 새 프로젝트이거나 프로젝트 성격이 불명확할 때만 `_project-context.md`로 Project Context를 확인한다.
 13. 사용자 요청에서 실제 서비스 여부, 연습용 여부, 사용자 유형, 도메인 위험, 운영 전제를 추론할 수 있으면 Project Context 초안으로 받아들인다.
 14. Project Context가 없으면 사용자에게 프로젝트 자체의 목적, 사용자, 운영 전제, 위험도, 단순화 경계를 질문한다. 하네스 내부 평가 목적은 묻지 않는다.
 15. 사용자 요청을 Goal로 해석한다.

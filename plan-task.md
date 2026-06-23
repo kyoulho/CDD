@@ -57,6 +57,7 @@ DB table, column, migration, repository, API DTO를 계획하려면 Storage Inte
 
 ## 빠른 탐색
 
+- 처음에는 "Fast Path", "시작 조건", "다음 단계"만 먼저 본다.
 - Plan/Task 시작 가능 여부는 "시작 조건"을 본다.
 - 작업 기준서에 반드시 들어갈 내용은 "작업 기준서 필수 항목"을 본다.
 - readiness 예시는 "작업 기준서 readinessCheck 예시"를 본다.
@@ -64,6 +65,12 @@ DB table, column, migration, repository, API DTO를 계획하려면 Storage Inte
 - Task와 Plan 작성 규칙은 "Task 작성 규칙", "Plan 작성 규칙"을 본다.
 - Project Context, identifier, test DB, dependency coverage는 각 coverage 예시를 본다.
 - 후속 단계와 승인 전 브리핑은 "다음 단계"를 본다.
+
+## Fast Path
+
+작업 기준서 작성 요청이면 먼저 `cdd-audit docs --root <project> --format brief --fail-on never` 결과와 현재 작업 포인터가 가리킨 문서만 읽는다. 시작 조건이 충족되고 새 정책 결정이 없으면 바로 작업 기준서 초안 또는 수정까지 진행한다.
+
+시작 조건이 막히거나 table/API/status/상호작용/운영 기준 판단이 필요할 때만 `_document-readiness.md`, `_readiness-gates.md`, `_sot-packet.md`, `_artifact-templates.md`, `_user-facing-language.md`를 연다.
 
 ## 시작 조건
 

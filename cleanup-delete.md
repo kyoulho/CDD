@@ -12,12 +12,19 @@
 
 ## 빠른 탐색
 
+- 처음에는 "Fast Path", "사용 시점", "금지되는 오해", "사람 확인 지점"만 먼저 본다.
 - cleanup/delete로 분류할지 먼저 보려면 "사용 시점"과 "금지되는 오해"를 본다.
 - 삭제 전 기준 확인은 "작업 전 확인"을 본다.
 - 보존/비-SOT/삭제 분류는 "Keep List", "Stale 문서 분류", "Delete List"를 본다.
 - 의존성과 삭제 방식은 "의존성 확인", "삭제 전략"을 본다.
 - 사용자 승인이 필요한 지점은 "사람 확인 지점"을 본다.
 - 검증과 완료 보고는 "검증 항목", "완료 보고 형식"을 본다.
+
+## Fast Path
+
+cleanup/delete 요청이면 먼저 삭제인지 보존/비-SOT 표시인지 분류하고, `cdd-audit docs --root <project> --format brief --fail-on never`로 현재 기준과 제외할 과거 기록을 확인한다. 삭제 후보 목록, 보존 후보, 비-SOT 표시 후보와 추천을 브리핑하기 전에는 파일을 삭제하지 않는다.
+
+실제 삭제, public API 제거, migration, 데이터 삭제, 되돌리기 어려운 변경이 포함될 때만 `_authority-boundary.md`, `_artifact-templates.md`, `_approval-reference.md`, `_implementation-rules.md`, `_user-facing-language.md`를 연다.
 
 ## 사용 시점
 

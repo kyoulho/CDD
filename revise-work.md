@@ -32,11 +32,18 @@ Revision prompt artifact는 `_artifact-metadata.md`, `_artifact-templates.md`의
 
 ## 빠른 탐색
 
+- 처음에는 "Fast Path", "시작 조건", "중단 조건"만 먼저 본다.
 - 수정 지시서 시작 조건은 "시작 조건"을 본다.
 - revision agent의 책임과 규칙은 "역할", "규칙"을 본다.
 - 수정 지시서에 들어갈 내용은 "수정 prompt에 포함할 내용"을 본다.
 - verification 상태별 허용 행동은 "Verification 상태별 허용 행동"을 본다.
 - revision을 멈춰야 하는 경우는 "중단 조건"을 본다.
+
+## Fast Path
+
+수정 요청이면 먼저 verification finding, 승인된 작업 기준서, 현재 작업 포인터가 가리킨 기준 문서만 읽는다. finding이 기존 Task 범위 안에서 구체적으로 고칠 수 있고 새 정책 결정이 없으면 수정 지시서 작성까지 진행한다.
+
+수정 범위가 Task 밖으로 나가거나 source of truth 변경, approval, prompt metadata, artifact legitimacy 판단이 필요할 때만 `_source-of-truth-manager.md`, `_artifact-metadata.md`, `_artifact-templates.md`, `_approval-reference.md`, `_implementation-rules.md`, `_user-facing-language.md`를 연다.
 
 ## 시작 조건
 
