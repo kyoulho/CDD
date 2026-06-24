@@ -597,7 +597,7 @@ prompt:
 
 Task Contract는 구현 가능성보다 먼저 readiness를 고정해야 한다.
 
-사용자에게 Task Contract 승인을 요청할 때는 내부 YAML이나 readiness 표를 먼저 보여주지 않는다. `_user-facing-language.md`의 "승인 전 브리핑 형식"에 따라 먼저 확인할 정책/작업 결정, 각 결정에 대한 추천, 허용 범위, 제외 범위, 위험, 승인 후 진행할 일을 사용자 언어로 요약한 뒤 승인 문장을 제시한다.
+사용자에게 Task Contract 승인을 요청할 때는 내부 YAML이나 readiness 표를 먼저 보여주지 않는다. `_approval-briefing-language.md`의 "승인 전 브리핑 형식"에 따라 먼저 확인할 정책/작업 결정, 각 결정에 대한 추천, 허용 범위, 제외 범위, 위험, 승인 후 진행할 일을 사용자 언어로 요약한 뒤 승인 문장을 제시한다.
 
 ```yaml
 taskContract:

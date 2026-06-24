@@ -16,7 +16,7 @@
 
 Revision prompt artifact는 `_artifact-metadata.md`, `_artifact-templates.md`의 `Prompt Artifact Template`, `_status-machine.md`, `_approval-reference.md`를 따른다. 사용자-facing 응답에서는 "수정 지시서"처럼 쉬운 표현을 우선 사용한다.
 
-수정 지시서 승인 요청 전에는 `_user-facing-language.md`의 "승인 전 브리핑 형식"을 반드시 사용한다. 브리핑은 먼저 확인할 수정 결정과 추천을 제시해야 한다. 승인 문장은 이 승인이 허용하는 수정 작업, 아직 허용하지 않는 작업, 승인하면 고정되는 결정, 위험/중단 조건, 승인 후 실제로 진행할 일을 브리핑한 뒤에만 제시한다. 브리핑 없이 수정 지시서 승인 문장만 출력하지 않는다.
+수정 지시서 승인 요청 전에는 `_approval-briefing-language.md`의 "승인 전 브리핑 형식"을 반드시 사용한다. 브리핑은 먼저 확인할 수정 결정과 추천을 제시해야 한다. 승인 문장은 이 승인이 허용하는 수정 작업, 아직 허용하지 않는 작업, 승인하면 고정되는 결정, 위험/중단 조건, 승인 후 실제로 진행할 일을 브리핑한 뒤에만 제시한다. 브리핑 없이 수정 지시서 승인 문장만 출력하지 않는다.
 
 수정 불가 사유는 내부 status 목록이 아니라 먼저 해결해야 할 행동으로 안내한다.
 
@@ -163,7 +163,7 @@ If TEST_STRATEGY is missing, do not remove H2 or change tests yet. Stop with BLO
 
 사용자-facing 보고에서는 내부 status만 말하지 않고, "이 문제는 현재 작업 범위 안에서 고칠 수 없습니다. 먼저 기준 문서나 선행 작업 상태를 정리해야 합니다."처럼 설명한다.
 
-수정 지시서를 만들 수 없을 때는 다음 형식을 우선 사용한다. 수정 지시서 승인 요청이 포함되면 승인 문장 앞에 `_user-facing-language.md`의 승인 전 브리핑을 붙인다.
+수정 지시서를 만들 수 없을 때는 다음 형식을 우선 사용한다. 수정 지시서 승인 요청이 포함되면 승인 문장 앞에 `_approval-briefing-language.md`의 승인 전 브리핑을 붙인다.
 
 ```text
 지금은 수정 지시서를 만들 수 없습니다.

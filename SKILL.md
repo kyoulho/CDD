@@ -73,6 +73,7 @@ CDD는 승인된 기준 문서와 사용자 승인 지점이 준비된 작업만
 - `_artifact-templates.md`
 - `_status-machine.md`
 - `_approval-reference.md`
+- `_approval-briefing-language.md`
 - `_user-facing-language.md`
 - `_user-facing-work-modes.md`
 
@@ -96,7 +97,7 @@ Internal module을 task entrypoint로 직접 실행하지 마라. Internal modul
 
 문서 배치, 현재 작업 포인터, 기본 읽기 경로 계약, active/history 분리, `cdd-audit` 실행 기준은 `_source-of-truth-manager.md`에 둔다. artifact metadata와 저장 전 보고 형식은 `_artifact-templates.md`를 따른다.
 
-사용자-facing 보고는 `_user-facing-language.md`를 따른다. 기본 응답에서는 내부 판정 용어를 먼저 노출하지 않고, "지금 가능한가 / 왜 멈춰야 하는가 / 무엇을 먼저 정해야 하는가 / 다음에 할 일"을 자연어로 말한다.
+사용자-facing 보고는 `_user-facing-language.md`를 따른다. 승인 전 브리핑과 승인 문장 출력은 `_approval-briefing-language.md`를 따른다. 기본 응답에서는 내부 판정 용어를 먼저 노출하지 않고, "지금 가능한가 / 왜 멈춰야 하는가 / 무엇을 먼저 정해야 하는가 / 다음에 할 일"을 자연어로 말한다.
 
 자동 진행과 승인 연계는 `_approval-reference.md` 및 선택한 public entrypoint의 "최소 읽기 경로"를 따른다. 새 미확정 결정, 정책 충돌, 위험 변경, 범위 확대가 있으면 멈추고 사용자에게 선택지를 제시한다.
 

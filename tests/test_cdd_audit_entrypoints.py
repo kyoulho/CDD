@@ -12,7 +12,7 @@ def main() -> None:
         test_entrypoint_option_prints_cdd_read_path,
         test_entrypoint_sections_include_line_ranges,
         test_entrypoint_sections_report_missing_heading_candidates,
-        test_complete_work_sections_match_user_facing_headings,
+        test_complete_work_sections_match_briefing_and_user_facing_headings,
         test_entrypoint_section_hints_cover_primary_documents,
         test_invalid_entrypoint_exits_one,
     ]
@@ -33,10 +33,11 @@ def test_entrypoint_option_prints_cdd_read_path() -> None:
 
         assert result.returncode == 0, result.stdout + result.stderr
         assert "- 요청 기준 entrypoint: plan-task" in result.stdout
-        assert "- CDD에서 먼저 볼 문서: plan-task.md, _readiness-gates.md, _artifact-templates.md, _user-facing-language.md" in result.stdout
+        assert "- CDD에서 먼저 볼 문서: plan-task.md, _readiness-gates.md, _artifact-templates.md, _approval-briefing-language.md, _user-facing-language.md" in result.stdout
         assert "  - plan-task.md > # Plan Task Skill (L1-" in result.stdout
         assert "## 최소 읽기 경로 (L" in result.stdout
         assert "  - _artifact-templates.md > # Artifact Templates V2.1 (L" in result.stdout
+        assert "  - _approval-briefing-language.md > # Approval Briefing Language (L" in result.stdout
         assert "  - _user-facing-language.md > # User-Facing Language Layer (L" in result.stdout
         assert "- 필요하면 확장할 CDD 문서: _source-of-truth-manager.md, _approval-reference.md" in result.stdout
         assert entrypoint["entrypoint"] == "plan-task"
@@ -45,6 +46,7 @@ def test_entrypoint_option_prints_cdd_read_path() -> None:
             "plan-task.md",
             "_readiness-gates.md",
             "_artifact-templates.md",
+            "_approval-briefing-language.md",
             "_user-facing-language.md",
         ]
         assert entrypoint["expansionDocuments"] == ["_source-of-truth-manager.md", "_approval-reference.md"]
@@ -88,15 +90,23 @@ def test_entrypoint_sections_report_missing_heading_candidates() -> None:
         assert missing.suggested_headings == ("## 다음 단계 후보",)
 
 
-def test_complete_work_sections_match_user_facing_headings() -> None:
+def test_complete_work_sections_match_briefing_and_user_facing_headings() -> None:
     guide = located_entrypoint_guide("complete-work")
     assert guide is not None
-    user_facing_hint = guide.section_hints[3]
+    briefing_hint = guide.section_hints[3]
+    briefing_sections = briefing_hint.sections
+
+    assert tuple(item.heading for item in briefing_sections) == (
+        "# Approval Briefing Language",
+        "## 후속 작업 승인 요청 브리핑",
+    )
+    assert all(item.exists is True for item in briefing_sections)
+
+    user_facing_hint = guide.section_hints[4]
     sections = user_facing_hint.sections
 
     assert tuple(item.heading for item in sections) == (
         "# User-Facing Language Layer",
-        "## 후속 작업 승인 요청 브리핑",
         "## 응답 종료 형식",
         "### 완료한 경우",
         "## 사용자 보고와 내부 보고 분리",

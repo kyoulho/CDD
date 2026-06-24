@@ -188,6 +188,8 @@ PYTHONDONTWRITEBYTECODE=1 ./bin/cdd-audit docs --root . --format brief --fail-on
 PYTHONDONTWRITEBYTECODE=1 python3.12 tests/test_cdd_audit.py
 ```
 
+Codex skill 기본 형식은 `cdd-audit`의 skill health 검사로도 확인한다. `skill-creator`의 `quick_validate.py`는 실행 환경에 `PyYAML`이 없으면 실패할 수 있으므로, CDD 자체 검증에서는 외부 패키지 설치를 요구하지 않는 `cdd-audit docs`와 `tests/test_cdd_audit_skill_health.py`를 우선 사용한다.
+
 관련 기능을 바꿨다면 해당 테스트도 함께 실행한다.
 
 ```sh
