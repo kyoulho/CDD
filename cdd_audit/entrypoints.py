@@ -50,7 +50,7 @@ ENTRYPOINT_GUIDES: Final[dict[str, EntrypointGuide]] = {
             SectionHint("write-implementation-prompt.md", ("# Write Implementation Prompt Skill", "## 최소 읽기 경로", "## 시작 조건", "## 금지 조건")),
             SectionHint("_implementation-rules.md", ("# Implementation Rules Module", "## 시작 조건", "## 구현 규칙", "## 임의 결정 금지 항목")),
             SectionHint("_artifact-templates.md", ("# Artifact Templates V2.1", "## 5. Prompt Artifact Template", "## Document Placement Check Template")),
-            SectionHint("_user-facing-language.md", ("# User-Facing Language Layer", "## 승인 전 브리핑 형식", "## 기본 사용자 보고 금지 표현")),
+            SectionHint("_user-facing-language.md", ("# User-Facing Language Layer", "## 승인 전 브리핑 형식", "## 후속 작업 승인 요청 브리핑", "## 기본 사용자 보고 금지 표현")),
         ),
         expansion_documents=("_readiness-gates.md", "_approval-reference.md"),
     ),
@@ -99,7 +99,13 @@ ENTRYPOINT_GUIDES: Final[dict[str, EntrypointGuide]] = {
             SectionHint("_artifact-templates.md", ("# Artifact Templates V2.1", "## 6. Verification Result Metadata Template", "## Completion Report Example")),
             SectionHint(
                 "_user-facing-language.md",
-                ("# User-Facing Language Layer", "## 응답 종료 형식", "### 완료한 경우", "## 사용자 보고와 내부 보고 분리"),
+                (
+                    "# User-Facing Language Layer",
+                    "## 후속 작업 승인 요청 브리핑",
+                    "## 응답 종료 형식",
+                    "### 완료한 경우",
+                    "## 사용자 보고와 내부 보고 분리",
+                ),
             ),
         ),
         expansion_documents=("_approval-reference.md", "_source-of-truth-manager.md"),

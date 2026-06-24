@@ -96,6 +96,7 @@ def test_complete_work_sections_match_user_facing_headings() -> None:
 
     assert tuple(item.heading for item in sections) == (
         "# User-Facing Language Layer",
+        "## 후속 작업 승인 요청 브리핑",
         "## 응답 종료 형식",
         "### 완료한 경우",
         "## 사용자 보고와 내부 보고 분리",
