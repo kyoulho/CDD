@@ -77,6 +77,10 @@ def test_follow_up_approval_briefing_blocks_bare_action_lists() -> None:
 
     assert "승인하면 내가 진행할 일\"만 나열하는 것은 승인 전 브리핑이 아니다" in approval
     assert "승인하면 내가 진행할 일:\" 또는 \"승인하면 진행할 일:\"만 나열" in text
+    assert "일반 선택지 목록을 승인 전 브리핑 대신 사용할 수 없다" in approval
+    assert "현재 포인터가 단일 다음 task를 가리키는데 \"선택지\" 목록을 먼저 보여주고 승인 대상 브리핑을 생략" in text
+    assert "나쁜 예:" in text
+    assert "좋은 예:" in text
 
 
 if __name__ == "__main__":
