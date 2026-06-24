@@ -25,7 +25,7 @@ ENTRYPOINT_GUIDES: Final[dict[str, EntrypointGuide]] = {
         primary_documents=("start-here.md", "_work-mode.md", "_user-facing-language.md"),
         section_hints=(
             SectionHint("start-here.md", ("# Start Here Skill", "## 최소 읽기 경로", "## Routing Table", "## 즉시 적용할 규칙")),
-            SectionHint("_work-mode.md", ("# Work Mode Gate Skill", "## 사용자 개입 필요 여부", "## 작업 모드")),
+            SectionHint("_work-mode.md", ("# Work Mode Skill", "## 사용자 개입 필요 여부", "## 작업 모드")),
             SectionHint("_user-facing-language.md", ("# User-Facing Language Layer", "## 기본 사용자 보고 형식", "## 응답 종료 형식")),
         ),
         expansion_documents=("_source-of-truth-manager.md", "_approval-reference.md", "_approval-briefing-language.md"),
@@ -36,7 +36,7 @@ ENTRYPOINT_GUIDES: Final[dict[str, EntrypointGuide]] = {
         primary_documents=("plan-task.md", "_readiness-gates.md", "_artifact-templates.md", "_approval-briefing-language.md", "_user-facing-language.md"),
         section_hints=(
             SectionHint("plan-task.md", ("# Plan Task Skill", "## 최소 읽기 경로", "## 시작 조건", "## 작업 기준서 필수 항목")),
-            SectionHint("_readiness-gates.md", ("# Readiness Gates", "## 제품 기준 준비 상태", "## 기술 설계 준비 상태", "## 구조 제안 전 의미 확인")),
+            SectionHint("_readiness-gates.md", ("# Readiness Checks", "## 제품 기준 준비 상태", "## 기술 설계 준비 상태", "## 구조 제안 전 의미 확인")),
             SectionHint("_artifact-templates.md", ("# Artifact Templates V2.1", "## Document Placement Check Template", "## Task Contract Template")),
             SectionHint("_approval-briefing-language.md", ("# Approval Briefing Language", "## 승인 전 브리핑 형식", "## 후속 작업 승인 요청 브리핑")),
             SectionHint("_user-facing-language.md", ("# User-Facing Language Layer", "## 문서 정합성 / 분리 검토 보고 형식")),

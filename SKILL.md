@@ -17,7 +17,7 @@ CDD는 승인된 기준 문서와 사용자 승인 지점이 준비된 작업만
 
 ## 읽기 경로 최적화
 
-목표는 정확한 판단을 유지하면서 반복 읽기 비용을 줄이는 것이다. 이 규칙은 제품 기준, 설계 기준, 사용자 승인, 문서 정합성, readiness gate를 생략하거나 약화하는 규칙이 아니다.
+목표는 정확한 판단을 유지하면서 반복 읽기 비용을 줄이는 것이다. 이 규칙은 제품 기준, 설계 기준, 사용자 승인, 문서 정합성, 진행 전 확인 기준을 생략하거나 약화하는 규칙이 아니다.
 
 처음부터 모든 public entrypoint와 internal module을 읽지 않는다. 사용자 요청에 맞는 public entrypoint 하나를 고르고, 대상 프로젝트에 문서 구조가 있으면 `cdd-audit`로 정확한 판단에 먼저 필요한 프로젝트 문서와 CDD 문서 섹션을 좁힌다.
 
@@ -25,7 +25,7 @@ CDD는 승인된 기준 문서와 사용자 승인 지점이 준비된 작업만
 
 `--entrypoint`가 CDD 문서 섹션의 줄 범위를 제공하면 그 위치부터 읽고, CDD heading이 `missing`이면 후보 heading을 보고한 뒤 현재 문서 구조에 맞게 섹션 계약을 고친다. `brief`에서 차단 항목이 있거나 상세 분리 이유가 필요할 때는 반드시 `--format text` 또는 `--format json`으로 확장한다.
 
-선택한 entrypoint와 `brief`가 가리킨 문서의 "먼저 볼 섹션"을 우선 확인한다. 섹션 힌트(section hint)는 문서 전체 판단을 대체하지 않는다. `.cdd-audit.json`의 `sectionHints`, current-work 문서의 `먼저 볼 섹션`, heading 추정 순서로 적용한다. `cdd-audit`가 줄 범위를 제공하면 해당 위치부터 읽되, 명시된 heading이 `missing`이거나 `SECTION_HINT_MISSING_HEADING` 차단 항목이 있으면 섹션 계약을 갱신해야 한다. 후보 heading이 함께 표시되면 현재 문서 구조에 맞게 고칠 후보로 보고한다. 힌트가 없거나, 힌트 섹션만으로 기준/승인/gate를 판단할 수 없거나, 섹션끼리 충돌하면 해당 문서 전체 또는 상세 audit으로 확장한다. `_*.md` internal module은 해당 entrypoint가 요구하거나 판단이 막힌 경우에만 연다. 과거 task, completion, verification, old prompt, generated map, Codesight, agentmemory는 current pointer가 명시적으로 요구하지 않는 한 기본 읽기에서 제외한다.
+선택한 entrypoint와 `brief`가 가리킨 문서의 "먼저 볼 섹션"을 우선 확인한다. 섹션 힌트(section hint)는 문서 전체 판단을 대체하지 않는다. `.cdd-audit.json`의 `sectionHints`, current-work 문서의 `먼저 볼 섹션`, heading 추정 순서로 적용한다. `cdd-audit`가 줄 범위를 제공하면 해당 위치부터 읽되, 명시된 heading이 `missing`이거나 `SECTION_HINT_MISSING_HEADING` 차단 항목이 있으면 섹션 계약을 갱신해야 한다. 후보 heading이 함께 표시되면 현재 문서 구조에 맞게 고칠 후보로 보고한다. 힌트가 없거나, 힌트 섹션만으로 기준/승인/진행 전 확인 기준을 판단할 수 없거나, 섹션끼리 충돌하면 해당 문서 전체 또는 상세 audit으로 확장한다. `_*.md` internal module은 해당 entrypoint가 요구하거나 판단이 막힌 경우에만 연다. 과거 task, completion, verification, old prompt, generated map, Codesight, agentmemory는 current pointer가 명시적으로 요구하지 않는 한 기본 읽기에서 제외한다.
 
 `cdd-audit` warning은 무시하지 않는다. warning이 있으면 해결 / 보류 / 진행 사유 중 하나를 사용자 보고에 포함한다. 먼저 볼 섹션 heading이 `missing`인 경우는 읽기 경로 신뢰가 깨진 것이므로 차단 항목으로 보고하고, 섹션 계약을 고치기 전에는 다음 작업 판단으로 넘어가지 않는다.
 
@@ -42,9 +42,9 @@ CDD는 승인된 기준 문서와 사용자 승인 지점이 준비된 작업만
 - 프론트엔드 UX 확인: 웹/모바일 UI 작업에서 화면 상태, 정보 구조, 접근성, 반응형 동작, 시각 검증 기준을 먼저 확인하는 절차.
 - 저장 의미 확인: table, column, migration, repository, API DTO를 말하기 전에 무엇을 왜 저장하는지 확인하는 절차.
 - 운영/품질 기준 확인: 성능, 보안, 권한, 조회, 재시도, 로그/감사, 운영 기준을 구현 전에 확인하는 절차.
-- 현재 작업 포인터: 다음 판단에 필요한 현재 gate, 다음 task, 반드시 읽을 문서, 읽지 않을 과거 기록을 짧게 가리키는 승인된 문서 또는 섹션.
+- 현재 작업 포인터: 다음 판단에 필요한 현재 상태, 다음 task, 반드시 읽을 문서, 읽지 않을 과거 기록을 짧게 가리키는 승인된 문서 또는 섹션.
 - 기본 읽기 경로 계약: 이번 작업에서 반드시 읽을 문서와 기본 읽기 경로에서 제외할 과거 기록/보조 자료를 고정하는 계약.
-- 섹션 힌트(section hint): 반드시 읽을 문서 안에서 먼저 확인할 heading 목록과 가능하면 줄 범위. 정확한 판단을 돕는 안내일 뿐, readiness gate나 문서 전체 확인을 대체하지 않는다.
+- 섹션 힌트(section hint): 반드시 읽을 문서 안에서 먼저 확인할 heading 목록과 가능하면 줄 범위. 정확한 판단을 돕는 안내일 뿐, 진행 전 확인 기준이나 문서 전체 확인을 대체하지 않는다.
 
 ## Public Entry Points
 
@@ -92,11 +92,11 @@ Internal module을 task entrypoint로 직접 실행하지 마라. Internal modul
 - 검증 실패 후 수정 -> `revise-work.md`
 - 완료 보고 -> `complete-work.md`
 
-## Core Gates
+## Core Checks
 
 구현 전에는 제품 기준 준비 상태, 기술 설계 준비 상태, 구현 시작 가능 여부, 승인된 작업 기준 묶음, 사용자 승인 지점이 모두 준비되어야 한다. 내부 판정에서 하나라도 `NOT READY`이면 구현하지 말고 아직 필요한 결정을 먼저 묻는다. 세부 판정은 `_readiness-gates.md`와 각 public entrypoint의 시작 조건을 따른다.
 
-요청이 애매하면 `_work-mode.md`의 작업 성격 판단 규칙을 적용하고, 구현 요청이나 파일 수정 승인으로 승격하지 않는다. 사용자 또는 운영자가 접하는 기능의 상호작용, UI/UX, 저장 의미, 동작 계약, 상태 의미, 운영/품질 기준은 `_readiness-gates.md`의 gate를 따른다.
+요청이 애매하면 `_work-mode.md`의 작업 성격 판단 규칙을 적용하고, 구현 요청이나 파일 수정 승인으로 승격하지 않는다. 사용자 또는 운영자가 접하는 기능의 상호작용, UI/UX, 저장 의미, 동작 계약, 상태 의미, 운영/품질 기준은 `_readiness-gates.md`의 진행 전 확인 기준을 따른다.
 
 문서 배치, 현재 작업 포인터, 기본 읽기 경로 계약, active/history 분리, `cdd-audit` 실행 기준은 `_source-of-truth-manager.md`에 둔다. artifact metadata와 저장 전 보고 형식은 `_artifact-templates.md`를 따른다.
 

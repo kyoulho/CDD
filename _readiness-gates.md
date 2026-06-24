@@ -1,4 +1,4 @@
-# Readiness Gates
+# Readiness Checks
 
 > Access: Internal chain module.
 > 내부용 chain module이다. task entrypoint로 직접 호출하지 마라.

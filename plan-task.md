@@ -312,7 +312,7 @@ documentCoverage:
 - 후속 Task는 모든 dependsOn Task가 COMPLETE가 되기 전까지 write-implementation-prompt으로 넘어갈 수 없다고 명시한다.
 - Plan completion criteria에는 테스트 통과와 verification 통과를 포함한다.
 
-## Dependency Gate 규칙
+## 선행 작업 확인 규칙
 
 다음 상태의 선행 Task가 하나라도 있으면 후속 Task prompt 생성과 implementation을 허용하지 않는다.
 

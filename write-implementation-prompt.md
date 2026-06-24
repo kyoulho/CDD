@@ -465,7 +465,7 @@ artifact:
 "추천안대로 선행 작업과 테스트 방식을 정리할 질문을 먼저 만들어라."
 ```
 
-기본 응답에서는 metadata, approvalRefs, legitimacy check, dependsOn gate, `Product Readiness`, `Engineering Readiness`, `Implementation Readiness`, `READY`, `NOT READY`, `Storage Intent Check`, `Behavior Contract Check`, `State Meaning Check` 같은 내부 진단표를 먼저 보여주지 않는다. 사용자가 "자세히" 또는 "내부 판정도 보여줘"라고 요청하면 그때 상세 표를 제공한다.
+기본 응답에서는 metadata, approvalRefs, legitimacy check, dependsOn gate, `current gate`, `next gate`, `readiness gate`, `Product Readiness`, `Engineering Readiness`, `Implementation Readiness`, `READY`, `NOT READY`, `Storage Intent Check`, `Behavior Contract Check`, `State Meaning Check` 같은 내부 진단표를 먼저 보여주지 않는다. `현재 gate`나 `다음 gate`는 "현재 상태", "다음 단계", "다음에 필요한 승인"으로 바꿔 말한다. 사용자가 "자세히" 또는 "내부 판정도 보여줘"라고 요청하면 그때 상세 표를 제공한다.
 
 사용자 개입 없이 진행 가능한 경우에는 다음 형식으로 말한 뒤 실제로 구현 지시서 작성과 검증까지 수행한다.
 

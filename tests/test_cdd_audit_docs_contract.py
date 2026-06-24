@@ -16,6 +16,7 @@ def main() -> None:
         test_forward_testing_covers_briefing_and_environment_regressions,
         test_cdd_commands_do_not_write_python_bytecode,
         test_cdd_audit_warning_gate_is_documented,
+        test_gate_terms_are_hidden_in_user_facing_reports,
     ]
     for test in tests:
         test()
@@ -144,6 +145,24 @@ def test_cdd_audit_warning_gate_is_documented() -> None:
         text = (ROOT / path).read_text(encoding="utf-8")
         for snippet in snippets:
             assert snippet in text, path
+
+
+def test_gate_terms_are_hidden_in_user_facing_reports() -> None:
+    user_facing = (ROOT / "_user-facing-language.md").read_text(encoding="utf-8")
+    briefing = (ROOT / "_approval-briefing-language.md").read_text(encoding="utf-8")
+    complete = (ROOT / "complete-work.md").read_text(encoding="utf-8")
+    implementation_prompt = (ROOT / "write-implementation-prompt.md").read_text(encoding="utf-8")
+
+    assert "일반 사용자 보고에서 `gate`를 상태명이나 제목으로 쓰지 않는다" in user_facing
+    assert "| current gate / 현재 gate | 현재 상태 |" in user_facing
+    assert "| next gate / 다음 gate | 다음 단계 / 다음에 필요한 승인 |" in user_facing
+    assert "| gate passed / gate 통과 | 기준 충족 |" in user_facing
+    assert "| gate blocked / gate 차단 | 아직 진행하면 안 됨 |" in user_facing
+    assert "| readiness gate | 진행 전 확인 기준 |" in user_facing
+    assert "현재 작업 포인터:\n- 위치:\n- 현재 상태:" in user_facing
+    assert "현재 gate`, `다음 gate`, `gate 통과`, `gate 차단`, `readiness gate`" in briefing
+    assert "현재 gate" in complete
+    assert "다음 gate" in implementation_prompt
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-# Work Mode Gate Skill
+# Work Mode Skill
 
 > Access: Internal chain module.
 > 내부용 chain module이다. task entrypoint로 직접 호출하지 마라.

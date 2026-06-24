@@ -12,16 +12,16 @@
 - 요청이 애매하거나 권한이 불명확하면 "즉시 적용할 규칙"에서 중단 규칙만 확인한다.
 - 작업 성격이 정해졌으면 해당 public entrypoint로 이동하고, 이 파일의 나머지 세부 규칙은 필요할 때만 본다.
 - 기준 문서 권위와 변경 요청은 "Source of Truth 권위 순서", "Source of Truth 변경 라우팅"을 본다.
-- 선행 작업, artifact 정합성, CLI 사용은 각 gate 섹션을 본다.
+- 선행 작업, artifact 정합성, CLI 사용은 각 진행 전 확인 기준 섹션을 본다.
 - 사용자 보고는 "User-Facing Language"와 "중단 조건"을 본다.
 
 ## 최소 읽기 경로
 
-목표는 정확한 판단에 필요한 문서를 먼저 좁히는 것이다. 제품 기준, 설계 기준, 사용자 승인, 문서 정합성, readiness gate를 건너뛰기 위한 경로가 아니다.
+목표는 정확한 판단에 필요한 문서를 먼저 좁히는 것이다. 제품 기준, 설계 기준, 사용자 승인, 문서 정합성, 진행 전 확인 기준을 건너뛰기 위한 경로가 아니다.
 
 처음부터 모든 internal module을 열지 않는다. 먼저 사용자 요청만으로 작업 성격을 다음 중 하나로 분류한다: 상태/다음 작업 조회, 설명/판단, 계획, 구현 지시서, 구현, cleanup/delete, 검증, 수정, 완료, 기준 문서 변경. 하나로 확정되지 않으면 파일을 수정하지 말고 자연어로 확인한다.
 
-작업 성격이 확정되면 Routing Table의 public entrypoint 하나로 이동한다. 대상 프로젝트에 문서 구조가 있으면 `cdd-audit` 실행 경로 규칙에 따라 먼저 읽을 문서와 먼저 볼 섹션을 좁힌다. 사용자가 `cdd-audit`를 PATH에 등록했다고 가정하지 말고, PATH 명령이 없으면 CDD skill root 기준 `<cdd-root>/bin/cdd-audit docs --root <project> --format brief --fail-on never`를 시도한다. 먼저 볼 섹션은 `.cdd-audit.json`, current-work 문서, heading 추정 순서로 정해지는 문서 안의 진입점일 뿐이며, 줄 범위가 있으면 그 위치부터 확인한다. heading이 `missing`으로 표시되거나 기준/승인/gate 판단이 불충분하면 해당 문서 전체 또는 text/JSON audit으로 확장한다. `brief` 결과에 차단 항목이 있거나 분리 이유가 필요하면 반드시 text 또는 JSON으로 확장한다.
+작업 성격이 확정되면 Routing Table의 public entrypoint 하나로 이동한다. 대상 프로젝트에 문서 구조가 있으면 `cdd-audit` 실행 경로 규칙에 따라 먼저 읽을 문서와 먼저 볼 섹션을 좁힌다. 사용자가 `cdd-audit`를 PATH에 등록했다고 가정하지 말고, PATH 명령이 없으면 CDD skill root 기준 `<cdd-root>/bin/cdd-audit docs --root <project> --format brief --fail-on never`를 시도한다. 먼저 볼 섹션은 `.cdd-audit.json`, current-work 문서, heading 추정 순서로 정해지는 문서 안의 진입점일 뿐이며, 줄 범위가 있으면 그 위치부터 확인한다. heading이 `missing`으로 표시되거나 기준/승인/진행 전 확인 판단이 불충분하면 해당 문서 전체 또는 text/JSON audit으로 확장한다. `brief` 결과에 차단 항목이 있거나 분리 이유가 필요하면 반드시 text 또는 JSON으로 확장한다.
 
 `cdd-audit` warning을 조용히 무시하지 않는다. warning이 있으면 해결 / 보류 / 진행 사유 중 하나를 사용자 보고에 남긴다. 먼저 볼 섹션 heading이 `missing`이면 읽기 경로 신뢰가 깨진 것이므로 차단 항목으로 다루고, 후보 heading과 섹션 계약 수정 후보를 먼저 보고한다.
 
@@ -199,7 +199,7 @@ Files Proposed for Apply 전체를 실제로 수정하려면 다음 문장으로
 "CR-001 정합 묶음 적용을 승인합니다."
 ```
 
-## Task Dependency Gate
+## 선행 작업 확인 규칙
 
 후속 Task prompt 생성은 권한 있는 행동이다. prompt 생성은 단순 문서 작성이 아니라 후속 구현을 여는 확인 지점이다.
 

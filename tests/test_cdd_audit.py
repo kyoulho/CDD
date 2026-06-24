@@ -29,6 +29,7 @@ def main() -> None:
         test_symlinked_command_runs_from_any_directory,
         test_root_is_detected_from_nested_directory,
         test_current_work_pointer_fields_are_extracted,
+        test_text_and_brief_reports_hide_gate_label,
         test_brief_format_prints_only_minimal_read_path,
         test_brief_format_prints_section_hints,
         test_config_overrides_document_roles_and_default_read_path,
@@ -143,6 +144,22 @@ def test_current_work_pointer_fields_are_extracted() -> None:
         assert current["activeTasks"] == ["TASK-001"]
         assert contract["requiredReadDocuments"] == ["docs/README.md"]
         assert contract["excludedHistoricalRecords"] == ["docs/archive/*"]
+
+
+def test_text_and_brief_reports_hide_gate_label() -> None:
+    with TemporaryDirectory() as temp:
+        root = Path(temp)
+        write(root / "docs/project/current-work.md", current_work_pointer())
+
+        text_result = run_direct("docs", "--root", str(root), "--format", "text")
+        brief_result = run_direct("docs", "--root", str(root), "--format", "brief")
+
+        assert text_result.returncode == 0, text_result.stdout + text_result.stderr
+        assert brief_result.returncode == 0, brief_result.stdout + brief_result.stderr
+        assert "- 현재 상태: planning" in text_result.stdout
+        assert "- 현재 상태: planning" in brief_result.stdout
+        assert "- 현재 gate:" not in text_result.stdout
+        assert "- 현재 gate:" not in brief_result.stdout
 
 
 def test_brief_format_prints_only_minimal_read_path() -> None:
@@ -292,7 +309,7 @@ def test_task_contract_split_recommendation_prefers_active_index_and_history() -
                 "role": "task-contract",
                 "reason": "405 lines, 11229 bytes",
                 "recommendedStructure": "현재 진행 가능한 task만 active index에 남기고 완료/검증/과거 task는 history로 분리합니다.",
-                "keepInEntrypoint": "현재 gate, 다음 task, 현재 진행 가능한 task, 반드시 읽을 문서",
+                "keepInEntrypoint": "현재 상태, 다음 task, 현재 진행 가능한 task, 반드시 읽을 문서",
                 "moveToPacketOrHistory": "완료된 task, 과거 구현 지시서, 검증 결과, 완료 기록",
                 "readmeOrIndexUpdateRequired": True,
             }

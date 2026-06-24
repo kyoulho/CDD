@@ -46,7 +46,7 @@ def _split_recommendation(item: DocumentInfo) -> JsonObject:
             "role": item.role,
             "reason": reason,
             "recommendedStructure": "현재 진행 가능한 task만 active index에 남기고 완료/검증/과거 task는 history로 분리합니다.",
-            "keepInEntrypoint": "현재 gate, 다음 task, 현재 진행 가능한 task, 반드시 읽을 문서",
+            "keepInEntrypoint": "현재 상태, 다음 task, 현재 진행 가능한 task, 반드시 읽을 문서",
             "moveToPacketOrHistory": "완료된 task, 과거 구현 지시서, 검증 결과, 완료 기록",
             "readmeOrIndexUpdateRequired": True,
         }
@@ -66,7 +66,7 @@ def _split_recommendation(item: DocumentInfo) -> JsonObject:
             "role": item.role,
             "reason": reason,
             "recommendedStructure": "현재 작업 포인터는 짧게 유지하고 상세 작업 기록은 별도 task/history 문서로 내립니다.",
-            "keepInEntrypoint": "현재 gate, 다음 task, active task, required/excluded read path",
+            "keepInEntrypoint": "현재 상태, 다음 task, active task, required/excluded read path",
             "moveToPacketOrHistory": "완료 기록, 긴 검증 로그, 과거 task 설명",
             "readmeOrIndexUpdateRequired": True,
         }
