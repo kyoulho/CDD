@@ -90,6 +90,11 @@ def test_follow_up_approval_briefing_blocks_bare_action_lists() -> None:
     assert "반복된 같은 요청이어도 브리핑 필수 항목을 승인 문장만 남기는 방식으로 줄이지 않는다" in work_mode
     assert "반복 요청이라는 이유로 \"승인 대상은 하나입니다\"와 승인 문장만 남기고" in briefing
     assert "일반 사용자 보고에서 `PROMPT_DRAFT_APPROVAL`, `PROMPT_EXECUTION_APPROVAL`, `PATCH_APPROVAL`, `APPLY_APPROVAL` 같은 내부 approval enum" in briefing
+    assert "구현 지시서 초안 작성 승인 요청" in briefing
+    assert "구현 지시서에 담길 주요 섹션" in briefing
+    assert "각 섹션에서 고정할 판단" in briefing
+    assert "구현자에게 금지할 행동" in briefing
+    assert "초안 작성 중 다시 멈출 조건" in briefing
     assert "승인하면 내가 진행할 일\"만 나열하는 것은 승인 전 브리핑이 아니다" in approval
     assert "승인하면 내가 진행할 일:\" 또는 \"승인하면 진행할 일:\"만 나열" in briefing
     assert "일반 선택지 목록을 승인 전 브리핑 대신 사용할 수 없다" in approval
