@@ -7,9 +7,11 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMAND = ROOT / "bin" / "cdd-audit"
+TEST_COMMAND = ROOT / "bin" / "cdd-test"
 sys.path.insert(0, str(ROOT))
 
-from cdd_audit.model import JsonObject, JsonValue
+JsonValue = object
+JsonObject = dict[str, object]
 
 
 def run_audit(root: Path, *arguments: str) -> subprocess.CompletedProcess[str]:

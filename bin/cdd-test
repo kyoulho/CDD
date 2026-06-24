@@ -17,17 +17,49 @@ PYTHONPATH=$CDD_ROOT${PYTHONPATH:+:$PYTHONPATH}
 PYTHONDONTWRITEBYTECODE=1
 export PYTHONPATH PYTHONDONTWRITEBYTECODE
 
+run_tests() {
+	PYTHON=$1
+	shift
+	if [ "$#" -gt 0 ]; then
+		for TEST in "$@"; do
+			case "$TEST" in
+				/*) TEST_PATH=$TEST ;;
+				*) TEST_PATH=$CDD_ROOT/$TEST ;;
+			esac
+			"$PYTHON" "$TEST_PATH"
+		done
+		return
+	fi
+	for TEST in "$CDD_ROOT"/tests/test_*.py; do
+		"$PYTHON" "$TEST"
+	done
+}
+
 for PYTHON in python3.13 python3.12 python3.11 python3; do
 	if command -v "$PYTHON" >/dev/null 2>&1; then
 		if "$PYTHON" -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 11) else 1)' >/dev/null 2>&1; then
-			exec "$PYTHON" -m cdd_audit "$@"
+			run_tests "$PYTHON" "$@"
+			exit 0
 		fi
 	fi
 done
 
 if command -v uv >/dev/null 2>&1; then
-	exec uv run --python 3.12 python -m cdd_audit "$@"
+	if [ "$#" -gt 0 ]; then
+		for TEST in "$@"; do
+			case "$TEST" in
+				/*) TEST_PATH=$TEST ;;
+				*) TEST_PATH=$CDD_ROOT/$TEST ;;
+			esac
+			uv run --python 3.12 python "$TEST_PATH"
+		done
+	else
+		for TEST in "$CDD_ROOT"/tests/test_*.py; do
+			uv run --python 3.12 python "$TEST"
+		done
+	fi
+	exit 0
 fi
 
-printf '%s\n' 'cdd-audit requires Python 3.11+ or uv.' >&2
+printf '%s\n' 'cdd-test requires Python 3.11+ or uv.' >&2
 exit 1

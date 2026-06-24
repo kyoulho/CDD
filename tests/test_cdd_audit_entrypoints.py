@@ -14,6 +14,7 @@ def main() -> None:
         test_entrypoint_sections_report_missing_heading_candidates,
         test_complete_work_sections_match_briefing_and_user_facing_headings,
         test_entrypoint_section_hints_cover_primary_documents,
+        test_large_entrypoint_documents_have_specific_section_hints,
         test_invalid_entrypoint_exits_one,
     ]
     for test in tests:
@@ -121,6 +122,23 @@ def test_entrypoint_section_hints_cover_primary_documents() -> None:
         hinted_paths = {item.path for item in guide.section_hints}
 
         assert set(guide.primary_documents) <= hinted_paths
+
+
+def test_large_entrypoint_documents_have_specific_section_hints() -> None:
+    for name in ENTRYPOINT_NAMES:
+        guide = located_entrypoint_guide(name)
+        assert guide is not None
+        for hint in guide.section_hints:
+            path = Path(hint.path)
+            if not path.is_file():
+                continue
+            line_count = len(path.read_text(encoding="utf-8").splitlines())
+            if line_count <= 400:
+                continue
+
+            assert len(hint.headings) >= 2, f"{name}: {hint.path}"
+            assert hint.sections, f"{name}: {hint.path}"
+            assert all(item.exists is True for item in hint.sections), f"{name}: {hint.path}"
 
 
 def test_invalid_entrypoint_exits_one() -> None:

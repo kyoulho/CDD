@@ -12,6 +12,9 @@ def main() -> None:
         test_user_facing_examples_are_discoverable_from_main_rule,
         test_user_facing_work_mode_examples_are_split_from_hot_path,
         test_follow_up_approval_briefing_blocks_bare_action_lists,
+        test_self_verification_command_is_standardized,
+        test_forward_testing_covers_briefing_and_environment_regressions,
+        test_cdd_commands_do_not_write_python_bytecode,
     ]
     for test in tests:
         test()
@@ -101,6 +104,32 @@ def test_follow_up_approval_briefing_blocks_bare_action_lists() -> None:
     assert "현재 포인터가 단일 다음 task를 가리키는데 \"선택지\" 목록을 먼저 보여주고 승인 대상 브리핑을 생략" in briefing
     assert "나쁜 예:" in briefing
     assert "좋은 예:" in briefing
+
+
+def test_self_verification_command_is_standardized() -> None:
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    skill = (ROOT / "SKILL.md").read_text(encoding="utf-8")
+
+    assert "./bin/cdd-verify" in readme
+    assert "python3.12 tests/test_cdd_audit.py" not in readme
+    assert "표준 자체 검증" in skill
+    assert "bin/cdd-verify" in skill
+
+
+def test_forward_testing_covers_briefing_and_environment_regressions() -> None:
+    forward = (ROOT / "references/forward-testing.md").read_text(encoding="utf-8")
+
+    assert "구현 지시서 초안 승인 브리핑" in forward
+    assert "구현 지시서를 어떻게 작성할지" in forward
+    assert "검증 환경이 PATH 또는 Python 버전에 의존하는 경우" in forward
+    assert "bin/cdd-verify" in forward
+
+
+def test_cdd_commands_do_not_write_python_bytecode() -> None:
+    for path in ("bin/cdd-audit", "bin/cdd-test", "bin/cdd-verify"):
+        text = (ROOT / path).read_text(encoding="utf-8")
+
+        assert "PYTHONDONTWRITEBYTECODE=1" in text, path
 
 
 if __name__ == "__main__":

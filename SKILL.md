@@ -13,6 +13,7 @@ CDD는 승인된 기준 문서와 사용자 승인 지점이 준비된 작업만
 - `_*.md`는 "Internal Modules"의 접근 정책을 따른다.
 - CDD 핵심 용어가 필요하면 "핵심 용어"를 먼저 본다.
 - CDD 자체를 forward-test할 때만 `references/forward-testing.md`를 연다.
+- CDD 자체 변경 후 표준 자체 검증은 `bin/cdd-verify`로 실행한다.
 
 ## 읽기 경로 최적화
 

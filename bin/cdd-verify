@@ -1,0 +1,26 @@
+#!/bin/sh
+set -eu
+
+SOURCE=$0
+while [ -L "$SOURCE" ]; do
+	DIR=$(CDPATH= cd -P -- "$(dirname -- "$SOURCE")" && pwd)
+	TARGET=$(readlink "$SOURCE")
+	case "$TARGET" in
+		/*) SOURCE=$TARGET ;;
+		*) SOURCE=$DIR/$TARGET ;;
+	esac
+done
+
+SCRIPT_DIR=$(CDPATH= cd -P -- "$(dirname -- "$SOURCE")" && pwd)
+CDD_ROOT=$(CDPATH= cd -P -- "$SCRIPT_DIR/.." && pwd)
+PYTHONDONTWRITEBYTECODE=1
+export PYTHONDONTWRITEBYTECODE
+
+if command -v git >/dev/null 2>&1 && git -C "$CDD_ROOT" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+	git -C "$CDD_ROOT" diff --check
+fi
+
+"$CDD_ROOT/bin/cdd-audit" docs --root "$CDD_ROOT" --format text --fail-on blocking --entrypoint start-here
+"$CDD_ROOT/bin/cdd-test"
+
+printf '%s\n' 'CDD verification passed.'

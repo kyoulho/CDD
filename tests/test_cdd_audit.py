@@ -8,6 +8,7 @@ from tempfile import TemporaryDirectory
 
 from cdd_audit_support import (
     COMMAND,
+    TEST_COMMAND,
     audit_json,
     current_work_pointer,
     documents_by_path,
@@ -24,6 +25,7 @@ def main() -> None:
     tests: list[Callable[[], None]] = [
         test_complete_pointer_exits_zero_and_does_not_write,
         test_direct_command_runs_with_supported_python,
+        test_cdd_test_selects_supported_python,
         test_symlinked_command_runs_from_any_directory,
         test_root_is_detected_from_nested_directory,
         test_current_work_pointer_fields_are_extracted,
@@ -70,6 +72,19 @@ def test_direct_command_runs_with_supported_python() -> None:
 
         assert result.returncode == 0, result.stdout + result.stderr
         assert summary["blockingCount"] == 0
+
+
+def test_cdd_test_selects_supported_python() -> None:
+    result = subprocess.run(
+        [str(TEST_COMMAND), "tests/test_cdd_audit_docs_contract.py"],
+        cwd=COMMAND.parents[1],
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "docs contract tests passed" in result.stdout
 
 
 def test_symlinked_command_runs_from_any_directory() -> None:

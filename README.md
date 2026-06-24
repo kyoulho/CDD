@@ -184,19 +184,20 @@ CDD 변경 후에는 다음을 우선 실행한다.
 
 ```sh
 git diff --check
-PYTHONDONTWRITEBYTECODE=1 ./bin/cdd-audit docs --root . --format brief --fail-on never --entrypoint start-here
-PYTHONDONTWRITEBYTECODE=1 python3.12 tests/test_cdd_audit.py
+./bin/cdd-verify
 ```
 
-Codex skill 기본 형식은 `cdd-audit`의 skill health 검사로도 확인한다. `skill-creator`의 `quick_validate.py`는 실행 환경에 `PyYAML`이 없으면 실패할 수 있으므로, CDD 자체 검증에서는 외부 패키지 설치를 요구하지 않는 `cdd-audit docs`와 `tests/test_cdd_audit_skill_health.py`를 우선 사용한다.
+`bin/cdd-verify`는 `git diff --check`, CDD skill health를 포함한 `cdd-audit docs`, 전체 테스트를 같은 방식으로 실행한다. 내부적으로 Python 3.11 이상을 찾고, 없으면 `uv`를 사용하므로 사용자가 `python3.12` 같은 특정 명령을 직접 맞출 필요가 없다.
+
+Codex skill 기본 형식은 `cdd-audit`의 skill health 검사로 확인한다. `skill-creator`의 `quick_validate.py`는 실행 환경에 `PyYAML`이 없으면 실패할 수 있으므로, CDD 자체 검증에서는 외부 패키지 설치를 요구하지 않는 `./bin/cdd-verify`를 우선 사용한다.
 
 관련 기능을 바꿨다면 해당 테스트도 함께 실행한다.
 
 ```sh
-PYTHONDONTWRITEBYTECODE=1 python3.12 tests/test_cdd_audit_entrypoints.py
-PYTHONDONTWRITEBYTECODE=1 python3.12 tests/test_cdd_audit_skill_health.py
-PYTHONDONTWRITEBYTECODE=1 python3.12 tests/test_cdd_audit_section_hints.py
-PYTHONDONTWRITEBYTECODE=1 python3.12 tests/test_cdd_audit_section_suggestions.py
+./bin/cdd-test tests/test_cdd_audit_entrypoints.py
+./bin/cdd-test tests/test_cdd_audit_skill_health.py
+./bin/cdd-test tests/test_cdd_audit_section_hints.py
+./bin/cdd-test tests/test_cdd_audit_section_suggestions.py
 ```
 
 ## 유지보수 메모
