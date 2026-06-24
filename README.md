@@ -94,6 +94,8 @@ UI/UX 기준은 특정 파일 경로를 강제하지 않는다. `docs/ui-ux/*`, 
 - 큰 문서, active/history 혼재, 비-SOT 자료 혼입
 - CDD skill root인 경우 `SKILL.md` frontmatter와 `agents/openai.yaml` 상태
 
+사용자가 `cdd-audit`를 PATH에 직접 등록해야 CDD를 쓸 수 있는 것은 아니다. CDD를 skill로 호출한 에이전트는 skill root를 알고 있으므로 먼저 `cdd-audit` 명령을 시도하고, 없으면 `<cdd-root>/bin/cdd-audit` 절대 경로로 실행해야 한다. 둘 다 실행할 수 없을 때만 문서를 직접 읽어 수동 확인으로 대체하고, 보고에 실행하지 못한 이유를 남긴다.
+
 반복 읽기를 줄이려면 먼저 `brief`를 사용한다.
 
 ```sh
@@ -104,13 +106,15 @@ UI/UX 기준은 특정 파일 경로를 강제하지 않는다. `docs/ui-ux/*`, 
 
 큰 CDD 문서는 가능한 한 섹션 단위로 먼저 읽는다. `cdd-audit`가 `L시작-L끝` 줄 범위를 보여주면 그 위치부터 확인하고, 판단이 막힐 때만 전체 문서로 확장한다. heading을 찾을 수 없으면 `missing`과 후보 heading을 함께 표시한다.
 
-PATH에 걸어두기:
+PATH에 걸어두기, 선택 사항:
 
 ```sh
 mkdir -p ~/.local/bin
 ln -s /path/to/cdd/bin/cdd-audit ~/.local/bin/cdd-audit
 cdd-audit docs --root /path/to/project --format brief --fail-on never --entrypoint plan-task
 ```
+
+이 설정은 사람이 터미널에서 짧게 실행하기 위한 편의 설정이다. CDD 에이전트는 PATH 설정을 사용자에게 요구하지 말고 skill root의 `bin/cdd-audit`를 fallback으로 사용한다.
 
 프로젝트 하위 디렉터리에서 실행하면 `docs/README.md`, `docs/project/current-work.md`, `document-registry.yml`, `AGENTS.md`, `.git` 같은 marker를 기준으로 root를 자동 탐지한다.
 

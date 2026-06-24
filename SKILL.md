@@ -18,7 +18,11 @@ CDD는 승인된 기준 문서와 사용자 승인 지점이 준비된 작업만
 
 목표는 정확한 판단을 유지하면서 반복 읽기 비용을 줄이는 것이다. 이 규칙은 제품 기준, 설계 기준, 사용자 승인, 문서 정합성, readiness gate를 생략하거나 약화하는 규칙이 아니다.
 
-처음부터 모든 public entrypoint와 internal module을 읽지 않는다. 사용자 요청에 맞는 public entrypoint 하나를 고르고, 대상 프로젝트에 문서 구조가 있으면 `cdd-audit docs --root <project> --format brief --fail-on never --entrypoint <entrypoint>`로 정확한 판단에 먼저 필요한 프로젝트 문서와 CDD 문서 섹션을 좁힌다. entrypoint가 아직 애매하면 `--entrypoint` 없이 실행하고, `_work-mode.md` 기준으로 작업 성격을 먼저 확인한다. `--entrypoint`가 CDD 문서 섹션의 줄 범위를 제공하면 그 위치부터 읽고, CDD heading이 `missing`이면 후보 heading을 보고한 뒤 현재 문서 구조에 맞게 섹션 계약을 고친다. `brief`에서 차단 항목이 있거나 상세 분리 이유가 필요할 때는 반드시 `--format text` 또는 `--format json`으로 확장한다.
+처음부터 모든 public entrypoint와 internal module을 읽지 않는다. 사용자 요청에 맞는 public entrypoint 하나를 고르고, 대상 프로젝트에 문서 구조가 있으면 `cdd-audit`로 정확한 판단에 먼저 필요한 프로젝트 문서와 CDD 문서 섹션을 좁힌다.
+
+사용자가 `cdd-audit`를 PATH에 등록했다고 가정하지 않는다. 에이전트는 먼저 `cdd-audit docs --root <project> --format brief --fail-on never --entrypoint <entrypoint>`를 시도하고, 실행 파일을 찾지 못하면 CDD skill root 기준 `<cdd-root>/bin/cdd-audit docs --root <project> --format brief --fail-on never --entrypoint <entrypoint>`를 시도한다. entrypoint가 아직 애매하면 `--entrypoint` 없이 실행하고, `_work-mode.md` 기준으로 작업 성격을 먼저 확인한다. 둘 다 실행할 수 없을 때만 같은 항목을 수동 확인으로 대체하고, 사용자 보고에 실행하지 못한 이유를 남긴다. PATH 등록은 사람의 편의용 선택 사항이지 CDD 사용자의 필수 선행 작업이 아니다.
+
+`--entrypoint`가 CDD 문서 섹션의 줄 범위를 제공하면 그 위치부터 읽고, CDD heading이 `missing`이면 후보 heading을 보고한 뒤 현재 문서 구조에 맞게 섹션 계약을 고친다. `brief`에서 차단 항목이 있거나 상세 분리 이유가 필요할 때는 반드시 `--format text` 또는 `--format json`으로 확장한다.
 
 선택한 entrypoint와 `brief`가 가리킨 문서의 "먼저 볼 섹션"을 우선 확인한다. 섹션 힌트(section hint)는 문서 전체 판단을 대체하지 않는다. `.cdd-audit.json`의 `sectionHints`, current-work 문서의 `먼저 볼 섹션`, heading 추정 순서로 적용한다. `cdd-audit`가 줄 범위를 제공하면 해당 위치부터 읽되, 명시된 heading이 `missing`이거나 `SECTION_HINT_MISSING_HEADING` warning이 있으면 섹션 계약을 갱신해야 한다. 후보 heading이 함께 표시되면 현재 문서 구조에 맞게 고칠 후보로 보고한다. 힌트가 없거나, 힌트 섹션만으로 기준/승인/gate를 판단할 수 없거나, 섹션끼리 충돌하면 해당 문서 전체 또는 상세 audit으로 확장한다. `_*.md` internal module은 해당 entrypoint가 요구하거나 판단이 막힌 경우에만 연다. 과거 task, completion, verification, old prompt, generated map, Codesight, agentmemory는 current pointer가 명시적으로 요구하지 않는 한 기본 읽기에서 제외한다.
 

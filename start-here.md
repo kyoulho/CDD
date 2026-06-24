@@ -21,7 +21,7 @@
 
 처음부터 모든 internal module을 열지 않는다. 먼저 사용자 요청만으로 작업 성격을 다음 중 하나로 분류한다: 설명/판단, 계획, 구현 지시서, 구현, cleanup/delete, 검증, 수정, 완료, 기준 문서 변경. 하나로 확정되지 않으면 파일을 수정하지 말고 자연어로 확인한다.
 
-작업 성격이 확정되면 Routing Table의 public entrypoint 하나로 이동한다. 대상 프로젝트에 문서 구조가 있으면 `cdd-audit docs --root <project> --format brief --fail-on never`로 먼저 읽을 문서와 먼저 볼 섹션을 좁힌다. 먼저 볼 섹션은 `.cdd-audit.json`, current-work 문서, heading 추정 순서로 정해지는 문서 안의 진입점일 뿐이며, 줄 범위가 있으면 그 위치부터 확인한다. heading이 `missing`으로 표시되거나 기준/승인/gate 판단이 불충분하면 해당 문서 전체 또는 text/JSON audit으로 확장한다. `brief` 결과에 차단 항목이 있거나 분리 이유가 필요하면 반드시 text 또는 JSON으로 확장한다.
+작업 성격이 확정되면 Routing Table의 public entrypoint 하나로 이동한다. 대상 프로젝트에 문서 구조가 있으면 `cdd-audit` 실행 경로 규칙에 따라 먼저 읽을 문서와 먼저 볼 섹션을 좁힌다. 사용자가 `cdd-audit`를 PATH에 등록했다고 가정하지 말고, PATH 명령이 없으면 CDD skill root 기준 `<cdd-root>/bin/cdd-audit docs --root <project> --format brief --fail-on never`를 시도한다. 먼저 볼 섹션은 `.cdd-audit.json`, current-work 문서, heading 추정 순서로 정해지는 문서 안의 진입점일 뿐이며, 줄 범위가 있으면 그 위치부터 확인한다. heading이 `missing`으로 표시되거나 기준/승인/gate 판단이 불충분하면 해당 문서 전체 또는 text/JSON audit으로 확장한다. `brief` 결과에 차단 항목이 있거나 분리 이유가 필요하면 반드시 text 또는 JSON으로 확장한다.
 
 `_work-mode.md`, `_sot-packet.md`, `_readiness-gates.md`, `_authority-boundary.md`, `_artifact-*.md`, `_status-machine.md`, `_approval-reference.md`, `_user-facing-language.md`는 항상 먼저 읽는 파일이 아니다. 선택한 entrypoint가 요구하거나 판단이 막힌 경우에만 연다.
 
@@ -75,7 +75,7 @@ Internal module direct mention:
 - 요청이 설명, 설계, 문서 수정, 구현, 삭제, 검증 중 무엇인지 애매하면 바로 작업하지 말고 자연어로 확인한다. 애매한 요청은 구현, 파일 수정, 삭제 승인으로 승격하지 않는다. 세부 분류는 `_work-mode.md`를 따른다.
 - 파일 생성/수정/삭제는 사용자가 허용한 범위 안에서만 수행한다. "좋아", "진행해", "다음", "반영해" 같은 말만으로 더 높은 권한을 추정하지 않는다.
 - 구현, 작업 기준서, 구현 지시서, 검증, 완료로 이어지는 요청이면 `_sot-packet.md`와 `_readiness-gates.md`가 요구하는 기준 준비 상태를 확인한다. 기준이 비어 있으면 table, API, status, UI, CLI, 배치 실행 방식, 저장 구조를 먼저 제안하지 않는다.
-- 문서 구조, 현재 작업 포인터, 기본 읽기 경로, active/history 분리, `cdd-audit` 실행은 `_source-of-truth-manager.md`를 따른다. 대상 프로젝트에 문서 구조가 있으면 먼저 `cdd-audit docs --root <project> --format brief --fail-on never`로 최소 읽기 경로를 확인한다.
+- 문서 구조, 현재 작업 포인터, 기본 읽기 경로, active/history 분리, `cdd-audit` 실행은 `_source-of-truth-manager.md`를 따른다. 대상 프로젝트에 문서 구조가 있으면 PATH 명령 또는 CDD skill root의 `bin/cdd-audit`로 최소 읽기 경로를 확인한다. `cdd-audit`를 실행할 수 없으면 같은 항목을 수동 확인으로 대체하고 실행 불가 이유를 보고한다.
 - artifact 작성, 저장 위치, metadata, status, approval, 승인 전 브리핑은 `_artifact-templates.md`, `_artifact-metadata.md`, `_status-machine.md`, `_approval-reference.md`, `_user-facing-language.md`를 따른다.
 - cleanup/delete는 일반 리팩토링이 아니다. 삭제/보존/비-SOT 표시 후보와 이유를 먼저 브리핑하고, 되돌리기 어려운 변경은 사람 확인 지점을 통과해야 한다.
 - 사용자-facing 응답은 내부 차단 사유 목록이 아니라 사용자가 먼저 해야 할 행동 목록으로 번역한다. 모든 응답은 "다음에 할 일"을 포함한다.

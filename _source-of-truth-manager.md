@@ -124,7 +124,7 @@ current-work 문서에서 섹션 계약을 보완할 때는 다음 형식을 사
 - docs/project/implementation-task-contract.md > # Current Tasks, ## TASK-002
 ```
 
-`cdd-audit`가 PATH에 없으면 CDD skill root를 알 수 있을 때 `<cdd-root>/bin/cdd-audit docs --root <project> --format brief --fail-on never --entrypoint <entrypoint>`를 시도한다. entrypoint가 확정되지 않았으면 `--entrypoint`를 생략한다. 실행할 수 없거나 실패하면 동일한 항목을 수동으로 확인하고 사용자 보고에 "cdd-audit 실행 불가, 수동 확인으로 대체"와 실패 이유를 남긴다.
+`cdd-audit`가 PATH에 없다는 이유만으로 사용자에게 설치를 요구하지 않는다. PATH 등록은 사람의 편의용 선택 사항이다. CDD skill root를 알 수 있을 때는 `<cdd-root>/bin/cdd-audit docs --root <project> --format brief --fail-on never --entrypoint <entrypoint>`를 시도한다. entrypoint가 확정되지 않았으면 `--entrypoint`를 생략한다. 실행할 수 없거나 실패하면 동일한 항목을 수동으로 확인하고 사용자 보고에 "cdd-audit 실행 불가, 수동 확인으로 대체"와 실패 이유를 남긴다.
 
 `cdd-audit` 결과에 차단 항목이 있으면 current pointer, 기본 읽기 경로, active/history 분리, README/index 갱신, 비-SOT 표시 후보를 먼저 보고한다. 차단 항목이 없더라도 warning은 사용자 보고에 근거로 포함하고, CDD 판단을 대체하지 않는다.
 

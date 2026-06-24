@@ -56,7 +56,7 @@ DB table, column, migration, repository, API DTO를 계획하려면 Storage Inte
 
 ## 최소 읽기 경로
 
-작업 기준서 작성 요청이면 먼저 `cdd-audit docs --root <project> --format brief --fail-on never` 결과와 현재 작업 포인터가 가리킨 문서만 읽는다. 이 경로는 시작 조건을 대체하지 않는다. 시작 조건이 충족되고 새 정책 결정이 없으면 바로 작업 기준서 초안 또는 수정까지 진행한다.
+작업 기준서 작성 요청이면 먼저 `cdd-audit` 실행 경로 규칙에 따라 brief 결과와 현재 작업 포인터가 가리킨 문서만 읽는다. 사용자가 PATH를 설정했다고 가정하지 말고, PATH 명령이 없으면 CDD skill root의 `bin/cdd-audit` 절대 경로를 시도한다. 이 경로는 시작 조건을 대체하지 않는다. 시작 조건이 충족되고 새 정책 결정이 없으면 바로 작업 기준서 초안 또는 수정까지 진행한다.
 
 시작 조건이 막히거나 table/API/status/상호작용/운영 기준 판단이 필요할 때만 `_document-readiness.md`, `_readiness-gates.md`, `_sot-packet.md`, `_artifact-templates.md`, `_user-facing-language.md`를 연다.
 
