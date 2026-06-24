@@ -65,6 +65,7 @@ def test_follow_up_approval_briefing_blocks_bare_action_lists() -> None:
 
     for snippet in (
         "이번 승인의 목적",
+        "현재 기준",
         "포함되는 것",
         "제외되는 것",
         "승인하면 고정되는 결정",
@@ -75,6 +76,9 @@ def test_follow_up_approval_briefing_blocks_bare_action_lists() -> None:
         assert snippet in text
         assert snippet in complete
 
+    assert "승인 여부를 판단하는 검토 표면" in text
+    assert "사람도 과거 task 히스토리와 현재 기준을 모두 기억하지 못할 수 있으므로" in text
+    assert "사람이 과거 작업 흐름을 기억하지 않아도 승인 범위를 판단" in approval
     assert "승인하면 내가 진행할 일\"만 나열하는 것은 승인 전 브리핑이 아니다" in approval
     assert "승인하면 내가 진행할 일:\" 또는 \"승인하면 진행할 일:\"만 나열" in text
     assert "일반 선택지 목록을 승인 전 브리핑 대신 사용할 수 없다" in approval
