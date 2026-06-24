@@ -12,6 +12,8 @@ def main() -> None:
         test_user_facing_examples_are_discoverable_from_main_rule,
         test_user_facing_work_mode_examples_are_split_from_hot_path,
         test_follow_up_approval_briefing_blocks_bare_action_lists,
+        test_combined_task_contract_and_prompt_draft_approval_requires_two_briefings,
+        test_prompt_briefing_execution_approval_can_continue_without_second_stop,
         test_self_verification_command_is_standardized,
         test_forward_testing_covers_briefing_and_environment_regressions,
         test_cdd_commands_do_not_write_python_bytecode,
@@ -106,6 +108,53 @@ def test_follow_up_approval_briefing_blocks_bare_action_lists() -> None:
     assert "현재 포인터가 단일 다음 task를 가리키는데 \"선택지\" 목록을 먼저 보여주고 승인 대상 브리핑을 생략" in briefing
     assert "나쁜 예:" in briefing
     assert "좋은 예:" in briefing
+
+
+def test_combined_task_contract_and_prompt_draft_approval_requires_two_briefings() -> None:
+    briefing = (ROOT / "_approval-briefing-language.md").read_text(encoding="utf-8")
+    plan = (ROOT / "plan-task.md").read_text(encoding="utf-8")
+    approval = (ROOT / "_approval-reference.md").read_text(encoding="utf-8")
+
+    for text in (briefing, plan, approval):
+        assert "몇 번째 승인 요청이든" in text
+        assert "브리핑 없이 승인 요청 금지" in text
+        assert "작업 기준서 승인과 구현 지시서 초안 작성 승인을 한 문장으로 묶는 경우" in text
+        assert "두 개의 승인 대상" in text
+        assert "작업 기준서 승인 브리핑" in text
+        assert "구현 지시서 초안 작성 브리핑" in text
+        assert "결합 승인 문장만" in text
+
+    assert "작업 기준서가 무엇을 고정하는지" in briefing
+    assert "구현 지시서를 어떻게 작성할지" in briefing
+
+
+def test_prompt_briefing_execution_approval_can_continue_without_second_stop() -> None:
+    approval = (ROOT / "_approval-reference.md").read_text(encoding="utf-8")
+    briefing = (ROOT / "_approval-briefing-language.md").read_text(encoding="utf-8")
+    implementation_prompt = (ROOT / "write-implementation-prompt.md").read_text(encoding="utf-8")
+    user_facing = (ROOT / "_user-facing-language.md").read_text(encoding="utf-8")
+
+    assert "구현 지시서 브리핑 후에 사용자가 구현까지 승인했다면" in approval
+    assert "브리핑 승인 후 실행 연계" in approval
+    assert "초안 작성 후 실행 연계" not in approval
+    assert "초안 작성만 승인받은 경우에는 실행 승인으로 해석하지 않는다" in approval
+    assert "`구현 지시서 초안 작성을 승인합니다`, `브리핑 확인했습니다`, `다음 단계 진행`, `진행 후보 확인` 같은 표현은 실제 실행 승인으로 보지 않는다" in approval
+    assert "구현 지시서 초안 작성과 실제 구현을 함께 승인합니다" in approval
+    assert "승인 문장이 구현 지시서 초안 작성만 허용하고 실제 실행을 허용하지 않았다" in approval
+    assert "실제 실행 승인 문장에는 구현, 문서 수정, cleanup/delete 실행, revision 실행 중 무엇을 허용하는지 명시되어야 한다" in approval
+    assert "`구현 지시서 초안 작성을 승인합니다`는 초안 작성만 허용한다" in briefing
+    assert "사용자가 실제 실행까지 승인했고 새로 결정할 사항이 없습니다." in approval
+    assert "사용자가 실제 실행까지 승인했고 새로 결정할 사항이 없습니다." in implementation_prompt
+    assert "사용자가 실제 실행까지 승인했고 새로 결정할 사항이 없습니다." in user_facing
+    assert "작업 지시서는 내부 실행 기준으로 작성하고, 새로 결정할 사항이 없으므로 같은 요청 범위 안에서 바로 실행합니다." not in approval
+    assert "작업 지시서는 내부 실행 기준으로 작성하고, 새로 결정할 사항이 없으므로 같은 요청 범위 안에서 바로 실행합니다." not in implementation_prompt
+    assert "작업 지시서는 내부 실행 기준으로 작성하고, 새로 결정할 사항이 없으므로 같은 요청 범위 안에서 바로 실행합니다." not in user_facing
+    assert "구현 지시서 브리핑 후 사용자가 실제 구현까지 승인했고" in implementation_prompt
+    assert "사용자가 구현 지시서 초안 작성만 승인했고 실제 실행은 승인하지 않았다" in implementation_prompt
+    assert "`구현 지시서 초안 작성을 승인합니다`, `브리핑 확인`, `다음 단계 진행`은 실제 실행 승인으로 승격하지 않는다" in implementation_prompt
+    assert "구현 지시서 브리핑 후 사용자가 실제 구현까지 승인했고 새 미확정 결정이나 위험 변경이 없으면" in user_facing
+    assert "구현 지시서 초안 작성만 승인받았고 실제 실행 승인은 받지 않았다" in user_facing
+    assert "조회형 응답의 \"진행하려면 이렇게 말할 수 있습니다\" 문장은 진행 후보를 안내하는 선택 문장이지 실제 실행 승인 요청이 아니다" in user_facing
 
 
 def test_self_verification_command_is_standardized() -> None:
