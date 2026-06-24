@@ -10,6 +10,17 @@ from cdd_audit.config import AuditConfig
 from cdd_audit.model import ACTIVE_SIGNALS, HISTORY_SIGNALS, NON_SOT_SIGNALS, DocumentInfo
 
 HEADING_PATTERN = re.compile(r"^(#{1,3})\s+(.+?)\s*$")
+CDD_PUBLIC_ENTRYPOINTS = frozenset(
+    {
+        "start-here.md",
+        "plan-task.md",
+        "write-implementation-prompt.md",
+        "cleanup-delete.md",
+        "verify-work.md",
+        "revise-work.md",
+        "complete-work.md",
+    }
+)
 
 IGNORED_DIRS = frozenset(
     {
@@ -40,6 +51,7 @@ class ParsedDocument:
 
 def read_documents(root: Path, config: AuditConfig) -> list[DocumentInfo]:
     result: list[DocumentInfo] = []
+    cdd_skill_root = _is_cdd_skill_root(root)
     for path in sorted(root.rglob("*")):
         if not _readable_document(path, root, config):
             continue
@@ -55,7 +67,7 @@ def read_documents(root: Path, config: AuditConfig) -> list[DocumentInfo]:
         signals = _signals(path_lower, lowered)
         status = _status(lowered, metadata)
         parsed = ParsedDocument(path_lower, lowered, metadata, signals, status)
-        role = _role(parsed, config)
+        role = _role(parsed, config, cdd_skill_root)
         result.append(
             DocumentInfo(
                 path=rel,
@@ -99,7 +111,7 @@ def _headings(text: str) -> tuple[str, ...]:
     return tuple(result)
 
 
-def _role(parsed: ParsedDocument, config: AuditConfig) -> str:
+def _role(parsed: ParsedDocument, config: AuditConfig, cdd_skill_root: bool) -> str:
     override = _role_override(parsed.path, config)
     if override is not None:
         return override
@@ -110,6 +122,10 @@ def _role(parsed: ParsedDocument, config: AuditConfig) -> str:
         return declared
     if config.current_work_pointer == parsed.path:
         return "active-index"
+    if cdd_skill_root:
+        cdd_role = _cdd_skill_role(parsed.path)
+        if cdd_role is not None:
+            return cdd_role
     if any(signal in parsed.path for signal in NON_SOT_SIGNALS) or "role: non-sot-reference" in parsed.text:
         return "non-sot-reference"
     if (
@@ -125,6 +141,27 @@ def _role(parsed: ParsedDocument, config: AuditConfig) -> str:
     if "task" in parsed.path:
         return "task-contract"
     return "unknown"
+
+
+def _is_cdd_skill_root(root: Path) -> bool:
+    skill_path = root / "SKILL.md"
+    if not skill_path.is_file():
+        return False
+    try:
+        metadata = _frontmatter(skill_path.read_text(encoding="utf-8"))
+    except OSError:
+        return False
+    return metadata.get("name") == "cdd"
+
+
+def _cdd_skill_role(path: str) -> str | None:
+    if path in CDD_PUBLIC_ENTRYPOINTS:
+        return "cdd-public-entrypoint"
+    if path.startswith("_") and path.endswith(".md"):
+        return "cdd-internal-module"
+    if path.startswith("references/"):
+        return "cdd-reference"
+    return None
 
 
 def _role_override(path: str, config: AuditConfig) -> str | None:
