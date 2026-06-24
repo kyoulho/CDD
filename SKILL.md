@@ -99,6 +99,8 @@ Internal module을 task entrypoint로 직접 실행하지 마라. Internal modul
 
 자동 진행과 승인 연계는 `_approval-reference.md` 및 선택한 public entrypoint의 "최소 읽기 경로"를 따른다. 새 미확정 결정, 정책 충돌, 위험 변경, 범위 확대가 있으면 멈추고 사용자에게 선택지를 제시한다.
 
+구현은 코드 변경만으로 끝나지 않는다. 구현 후에는 작업 기준서 기준 검증과 완료 가능 여부 판단까지 이어져야 하며, 필수 검증이 비어 있으면 `verify-work.md` 또는 `complete-work.md`에서 멈추고 필요한 증거와 다음 행동을 보고한다.
+
 CDD 문서는 제품 기준 문서가 아니다. 실제 구현 기준은 대상 프로젝트의 제품 기준 문서, 기술 설계 기준 문서, 승인된 작업 기준 묶음이다.
 
 CDD 개선 후 실제 요청에서 멈춤/진행 판단을 검증해야 하면 `references/forward-testing.md`의 케이스를 사용한다. 이 reference는 일반 작업 수행 중에는 읽지 않는다.

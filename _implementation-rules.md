@@ -140,6 +140,8 @@
 - 승인된 구현 prompt만 기준으로 코드와 테스트를 작성한다.
 - 승인된 SOT Packet의 allowedScope 안에서만 작업한다.
 - 실행 전 구현 지시서 metadata, requiredDocuments, dependsOnSnapshot, approvalRefs를 확인한다.
+- 구현 후 작업 기준서의 allowedScope, forbiddenScope, acceptanceCriteria, testRequirements, verificationCommands와 변경 결과를 대조한다.
+- 구현 후 검증과 완료 가능 여부 판단으로 이어진다. 코드 변경만 끝내고 작업을 완료한 것처럼 보고하지 않는다.
 - source of truth 파일을 수정하지 않는다.
 - document registry, Plan, Task Contract, prompt, verification result를 수정하지 않는다.
 - Task 범위 밖 작업을 하지 않는다.
@@ -184,6 +186,10 @@
 - forbiddenApproaches를 위반하지 않는다.
 - acceptanceCriteria를 충족하는 최소 범위로 구현한다.
 - testRequirements를 충족한다.
+- 구현 뒤 작업 기준서의 verificationCommands를 실행하거나, 실행하지 못한 명령과 이유를 보고한다.
+- 작업 기준서 기준 검증이 끝나지 않았으면 완료 처리로 가지 않는다.
+- 구현 요청이 명확하고 사용자 개입이 필요한 새 결정이나 위험 변경이 없으면, 구현 후 사용자에게 다시 묻지 말고 `verify-work.md`의 검증 판단까지 이어간다.
+- 검증이 통과하고 완료 기록 정합성만 남았으며 현재 요청 범위에서 문서 정리가 허용되면 `complete-work.md`의 완료 가능 여부 판단까지 이어간다.
 - Missing Context가 발견되면 즉시 중단하고 사용자 질문으로 돌린다.
 - Missing Context가 해결되기 전에는 코드를 수정하지 않는다.
 - Missing Context가 해결되기 전에는 revision을 실행하지 않는다.
@@ -393,10 +399,16 @@ metadata, approvalRefs, legitimacy check, dependsOn, unresolved Missing Context 
 구현 후 다음을 보고한다.
 
 - 변경한 파일
+- 작업 기준서 기준으로 확인한 항목
 - 충족한 acceptance criteria
-- 실행한 테스트와 결과
+- 실행한 테스트와 검증 명령 결과
+- 실행하지 못한 검증과 이유
+- 작업 기준서 기준 충족 여부
+- 완료 처리 가능 여부
 - 남은 위험
 - suggestions
 - 다음에 할 일
 
-사용자 개입이 필요 없으면 완료 보고 후 `verify-work.md`로 이동한다. 사용자 review나 정책 결정이 필요하면 멈추고 선택지, 제 추천, 바로 답할 수 있는 문장을 제공한다.
+구현 보고는 "구현했습니다"로 끝나면 안 된다. 작업 기준서 기준 검증 상태와 완료 처리 상태를 함께 말해야 한다.
+
+사용자 개입이 필요 없으면 완료 보고 후 `verify-work.md`로 이동하고, 검증이 통과하면 `complete-work.md`의 완료 가능 여부 판단까지 이어간다. 사용자 review나 정책 결정이 필요하면 멈추고 선택지, 제 추천, 바로 답할 수 있는 문장을 제공한다.

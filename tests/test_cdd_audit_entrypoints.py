@@ -12,6 +12,7 @@ def main() -> None:
         test_entrypoint_option_prints_cdd_read_path,
         test_entrypoint_sections_include_line_ranges,
         test_entrypoint_sections_report_missing_heading_candidates,
+        test_complete_work_sections_match_user_facing_headings,
         test_entrypoint_section_hints_cover_primary_documents,
         test_invalid_entrypoint_exits_one,
     ]
@@ -85,6 +86,21 @@ def test_entrypoint_sections_report_missing_heading_candidates() -> None:
         assert missing.heading == "## 다음 단계"
         assert missing.exists is False
         assert missing.suggested_headings == ("## 다음 단계 후보",)
+
+
+def test_complete_work_sections_match_user_facing_headings() -> None:
+    guide = located_entrypoint_guide("complete-work")
+    assert guide is not None
+    user_facing_hint = guide.section_hints[3]
+    sections = user_facing_hint.sections
+
+    assert tuple(item.heading for item in sections) == (
+        "# User-Facing Language Layer",
+        "## 응답 종료 형식",
+        "### 완료한 경우",
+        "## 사용자 보고와 내부 보고 분리",
+    )
+    assert all(item.exists is True for item in sections)
 
 
 def test_entrypoint_section_hints_cover_primary_documents() -> None:

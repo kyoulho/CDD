@@ -97,7 +97,10 @@ ENTRYPOINT_GUIDES: Final[dict[str, EntrypointGuide]] = {
             SectionHint("complete-work.md", ("# Complete Work Skill", "## 최소 읽기 경로", "## 완료 조건", "## 완료 기록에 포함할 내용")),
             SectionHint("verify-work.md", ("# Verify Work Skill", "## 결과 상태", "## User-Facing Reporting")),
             SectionHint("_artifact-templates.md", ("# Artifact Templates V2.1", "## 6. Verification Result Metadata Template", "## Completion Report Example")),
-            SectionHint("_user-facing-language.md", ("# User-Facing Language Layer", "## 완료한 경우", "## 사용자 보고와 내부 보고 분리")),
+            SectionHint(
+                "_user-facing-language.md",
+                ("# User-Facing Language Layer", "## 응답 종료 형식", "### 완료한 경우", "## 사용자 보고와 내부 보고 분리"),
+            ),
         ),
         expansion_documents=("_approval-reference.md", "_source-of-truth-manager.md"),
     ),
