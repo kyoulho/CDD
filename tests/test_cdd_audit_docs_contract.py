@@ -15,6 +15,7 @@ def main() -> None:
         test_self_verification_command_is_standardized,
         test_forward_testing_covers_briefing_and_environment_regressions,
         test_cdd_commands_do_not_write_python_bytecode,
+        test_cdd_audit_warning_gate_is_documented,
     ]
     for test in tests:
         test()
@@ -130,6 +131,19 @@ def test_cdd_commands_do_not_write_python_bytecode() -> None:
         text = (ROOT / path).read_text(encoding="utf-8")
 
         assert "PYTHONDONTWRITEBYTECODE=1" in text, path
+
+
+def test_cdd_audit_warning_gate_is_documented() -> None:
+    required = {
+        "SKILL.md": ("warning은 무시하지 않는다", "해결 / 보류 / 진행 사유"),
+        "README.md": ("주의 항목은 조용히 무시하지 않는다", "주의 항목 처리"),
+        "start-here.md": ("warning을 조용히 무시하지 않는다", "해결 / 보류 / 진행 사유"),
+        "_source-of-truth-manager.md": ("warning은 무시하지 않는다", "해결 / 보류 / 진행 사유"),
+    }
+    for path, snippets in required.items():
+        text = (ROOT / path).read_text(encoding="utf-8")
+        for snippet in snippets:
+            assert snippet in text, path
 
 
 if __name__ == "__main__":

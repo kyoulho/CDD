@@ -13,7 +13,7 @@ def main() -> None:
         test_current_work_section_hints_feed_brief_output,
         test_text_format_prints_section_hints,
         test_section_hints_include_line_ranges,
-        test_missing_section_hint_heading_reports_warning,
+        test_missing_section_hint_heading_blocks_progress,
     ]
     for test in tests:
         test()
@@ -148,7 +148,7 @@ def test_section_hints_include_line_ranges() -> None:
         ]
 
 
-def test_missing_section_hint_heading_reports_warning() -> None:
+def test_missing_section_hint_heading_blocks_progress() -> None:
     with TemporaryDirectory() as temp:
         root = Path(temp)
         write(root / "docs/project/current-work.md", current_work_pointer())
@@ -165,11 +165,13 @@ def test_missing_section_hint_heading_reports_warning() -> None:
             ),
         )
 
+        blocking_result = run_direct("docs", "--root", str(root), "--format", "text")
         result = run_direct("docs", "--root", str(root), "--format", "text", "--fail-on", "never")
         data = audit_json(run_direct("docs", "--root", str(root), "--format", "json", "--fail-on", "never"))
         contract = section(data, "readPathContract")
         findings = data["findings"]
 
+        assert blocking_result.returncode == 2, blocking_result.stdout + blocking_result.stderr
         assert result.returncode == 0, result.stdout + result.stderr
         assert isinstance(findings, list)
         assert "docs/README.md > # Docs (L1-L7), ## Missing Heading (missing)" in result.stdout
@@ -183,7 +185,7 @@ def test_missing_section_hint_heading_reports_warning() -> None:
         assert findings == [
             {
                 "id": "SECTION_HINT_MISSING_HEADING",
-                "severity": "warning",
+                "severity": "blocking",
                 "path": "docs/README.md",
                 "reason": "먼저 볼 섹션으로 지정된 heading을 문서에서 찾을 수 없습니다.",
                 "evidence": "## Missing Heading",

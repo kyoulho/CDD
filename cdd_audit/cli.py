@@ -126,6 +126,9 @@ def _format_text(result: AuditResult, exit_code: int, guide: EntrypointGuide | N
         "분리 후보:",
         *_split_recommendation_lines(result),
         "",
+        "주의 항목 처리:",
+        *_warning_handling_lines(result),
+        "",
         "findings:",
     ]
     if not result.findings:
@@ -158,7 +161,7 @@ def _format_brief(result: AuditResult, exit_code: int, guide: EntrypointGuide | 
             f"- exit code: {exit_code}",
             "",
             "다음에 할 일:",
-            _brief_next_step_line(blocking),
+            _brief_next_step_line(blocking, warning),
         ]
     )
 
@@ -247,6 +250,18 @@ def _split_recommendation_lines(result: AuditResult) -> list[str]:
     return lines or ["- 없음"]
 
 
+def _warning_handling_lines(result: AuditResult) -> list[str]:
+    warnings = [item for item in result.findings if item.severity == "warning"]
+    if not warnings:
+        return ["- 없음"]
+    lines: list[str] = []
+    for item in warnings:
+        target = f" ({item.path})" if item.path else ""
+        lines.append(f"- [warning] {item.id}{target}: 해결 / 보류 / 진행 사유 중 하나를 사용자 보고에 포함합니다.")
+        lines.append(f"  처리 기준: {item.recommended_action}")
+    return lines
+
+
 def _judgement_line(blocking: int) -> str:
     if blocking:
         return "- 문서 기준과 읽기 경로를 정리하기 전에는 다음 작업 판단으로 넘어가면 안 됩니다."
@@ -259,7 +274,9 @@ def _next_step_line(blocking: int) -> str:
     return "- 사용자 선택이 필요한 차단 항목은 없습니다. 요청 범위 안에서 다음 작업으로 이어갈 수 있습니다."
 
 
-def _brief_next_step_line(blocking: int) -> str:
+def _brief_next_step_line(blocking: int, warning: int) -> str:
     if blocking:
         return "- 전체 감사 보고로 차단 이유를 확인합니다: cdd-audit docs --format text --fail-on never"
+    if warning:
+        return "- 주의 항목은 무시하지 말고 text 감사 보고에서 해결 / 보류 / 진행 사유를 확인합니다."
     return "- 위 문서만 먼저 읽고, 필요한 경우에만 상세 기준 문서나 과거 기록을 추가로 엽니다."

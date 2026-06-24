@@ -23,6 +23,8 @@
 
 작업 성격이 확정되면 Routing Table의 public entrypoint 하나로 이동한다. 대상 프로젝트에 문서 구조가 있으면 `cdd-audit` 실행 경로 규칙에 따라 먼저 읽을 문서와 먼저 볼 섹션을 좁힌다. 사용자가 `cdd-audit`를 PATH에 등록했다고 가정하지 말고, PATH 명령이 없으면 CDD skill root 기준 `<cdd-root>/bin/cdd-audit docs --root <project> --format brief --fail-on never`를 시도한다. 먼저 볼 섹션은 `.cdd-audit.json`, current-work 문서, heading 추정 순서로 정해지는 문서 안의 진입점일 뿐이며, 줄 범위가 있으면 그 위치부터 확인한다. heading이 `missing`으로 표시되거나 기준/승인/gate 판단이 불충분하면 해당 문서 전체 또는 text/JSON audit으로 확장한다. `brief` 결과에 차단 항목이 있거나 분리 이유가 필요하면 반드시 text 또는 JSON으로 확장한다.
 
+`cdd-audit` warning을 조용히 무시하지 않는다. warning이 있으면 해결 / 보류 / 진행 사유 중 하나를 사용자 보고에 남긴다. 먼저 볼 섹션 heading이 `missing`이면 읽기 경로 신뢰가 깨진 것이므로 차단 항목으로 다루고, 후보 heading과 섹션 계약 수정 후보를 먼저 보고한다.
+
 `_work-mode.md`, `_sot-packet.md`, `_readiness-gates.md`, `_authority-boundary.md`, `_artifact-*.md`, `_status-machine.md`, `_approval-reference.md`, `_user-facing-language.md`는 항상 먼저 읽는 파일이 아니다. 선택한 entrypoint가 요구하거나 판단이 막힌 경우에만 연다.
 
 ## 핵심 용어

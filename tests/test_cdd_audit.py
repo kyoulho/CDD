@@ -35,6 +35,7 @@ def main() -> None:
         test_history_path_beats_active_keywords,
         test_oversized_hot_path_blocks_without_pointer,
         test_large_documents_report_actionable_split_recommendations,
+        test_text_report_requires_warning_handling,
         test_task_contract_split_recommendation_prefers_active_index_and_history,
         test_fail_on_never_keeps_findings_but_exits_zero,
         test_help_exits_zero,
@@ -254,6 +255,19 @@ def test_large_documents_report_actionable_split_recommendations() -> None:
         assert "docs/project/engineering-sot.md" in result.stdout
         assert "얇은 진입점" in result.stdout
         assert "세부 기준 packet" in result.stdout
+
+
+def test_text_report_requires_warning_handling() -> None:
+    with TemporaryDirectory() as temp:
+        root = Path(temp)
+        write(root / "docs/project/current-work.md", current_work_pointer())
+        write(root / "docs/project/engineering-sot.md", "\n".join(f"- criterion {index}" for index in range(405)))
+        result = run_audit(root, "--format", "text", "--fail-on", "never")
+
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert "주의 항목 처리:" in result.stdout
+        assert "[warning] HOT_PATH_OVERSIZED (docs/project/engineering-sot.md)" in result.stdout
+        assert "해결 / 보류 / 진행 사유 중 하나를 사용자 보고에 포함합니다." in result.stdout
 
 
 def test_task_contract_split_recommendation_prefers_active_index_and_history() -> None:

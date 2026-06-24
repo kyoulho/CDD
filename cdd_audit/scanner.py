@@ -214,7 +214,7 @@ def _section_hint_findings(section_hints: tuple[SectionHint, ...]) -> list[Findi
         findings.append(
             _finding(
                 "SECTION_HINT_MISSING_HEADING",
-                "warning",
+                "blocking",
                 hint.path,
                 "먼저 볼 섹션으로 지정된 heading을 문서에서 찾을 수 없습니다.",
                 ", ".join(_section_hint_evidence(item) for item in missing),

@@ -25,7 +25,9 @@ CDD는 승인된 기준 문서와 사용자 승인 지점이 준비된 작업만
 
 `--entrypoint`가 CDD 문서 섹션의 줄 범위를 제공하면 그 위치부터 읽고, CDD heading이 `missing`이면 후보 heading을 보고한 뒤 현재 문서 구조에 맞게 섹션 계약을 고친다. `brief`에서 차단 항목이 있거나 상세 분리 이유가 필요할 때는 반드시 `--format text` 또는 `--format json`으로 확장한다.
 
-선택한 entrypoint와 `brief`가 가리킨 문서의 "먼저 볼 섹션"을 우선 확인한다. 섹션 힌트(section hint)는 문서 전체 판단을 대체하지 않는다. `.cdd-audit.json`의 `sectionHints`, current-work 문서의 `먼저 볼 섹션`, heading 추정 순서로 적용한다. `cdd-audit`가 줄 범위를 제공하면 해당 위치부터 읽되, 명시된 heading이 `missing`이거나 `SECTION_HINT_MISSING_HEADING` warning이 있으면 섹션 계약을 갱신해야 한다. 후보 heading이 함께 표시되면 현재 문서 구조에 맞게 고칠 후보로 보고한다. 힌트가 없거나, 힌트 섹션만으로 기준/승인/gate를 판단할 수 없거나, 섹션끼리 충돌하면 해당 문서 전체 또는 상세 audit으로 확장한다. `_*.md` internal module은 해당 entrypoint가 요구하거나 판단이 막힌 경우에만 연다. 과거 task, completion, verification, old prompt, generated map, Codesight, agentmemory는 current pointer가 명시적으로 요구하지 않는 한 기본 읽기에서 제외한다.
+선택한 entrypoint와 `brief`가 가리킨 문서의 "먼저 볼 섹션"을 우선 확인한다. 섹션 힌트(section hint)는 문서 전체 판단을 대체하지 않는다. `.cdd-audit.json`의 `sectionHints`, current-work 문서의 `먼저 볼 섹션`, heading 추정 순서로 적용한다. `cdd-audit`가 줄 범위를 제공하면 해당 위치부터 읽되, 명시된 heading이 `missing`이거나 `SECTION_HINT_MISSING_HEADING` 차단 항목이 있으면 섹션 계약을 갱신해야 한다. 후보 heading이 함께 표시되면 현재 문서 구조에 맞게 고칠 후보로 보고한다. 힌트가 없거나, 힌트 섹션만으로 기준/승인/gate를 판단할 수 없거나, 섹션끼리 충돌하면 해당 문서 전체 또는 상세 audit으로 확장한다. `_*.md` internal module은 해당 entrypoint가 요구하거나 판단이 막힌 경우에만 연다. 과거 task, completion, verification, old prompt, generated map, Codesight, agentmemory는 current pointer가 명시적으로 요구하지 않는 한 기본 읽기에서 제외한다.
+
+`cdd-audit` warning은 무시하지 않는다. warning이 있으면 해결 / 보류 / 진행 사유 중 하나를 사용자 보고에 포함한다. 먼저 볼 섹션 heading이 `missing`인 경우는 읽기 경로 신뢰가 깨진 것이므로 차단 항목으로 보고하고, 섹션 계약을 고치기 전에는 다음 작업 판단으로 넘어가지 않는다.
 
 큰 CDD 문서는 `primaryDocuments`에만 넣지 않는다. entrypoint가 `_user-facing-language.md`, `_artifact-templates.md`, `_source-of-truth-manager.md`, `verify-work.md`처럼 큰 문서를 요구하면 반드시 "CDD에서 먼저 볼 섹션"과 줄 범위를 먼저 사용한다. 섹션 힌트가 없는 큰 문서는 전체 파일을 기본 읽기 경로처럼 취급하지 말고, 필요한 섹션을 먼저 정한다.
 

@@ -37,6 +37,7 @@ def test_missing_heading_suggests_similar_existing_heading() -> None:
             "suggestedHeadings": ["## Required Read Documents"],
         }
         assert findings[0]["id"] == "SECTION_HINT_MISSING_HEADING"
+        assert findings[0]["severity"] == "blocking"
         assert findings[0]["evidence"] == "## Required Read Document -> 후보: ## Required Read Documents"
 
 
