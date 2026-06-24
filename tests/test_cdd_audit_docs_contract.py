@@ -10,6 +10,8 @@ def main() -> None:
     tests = [
         test_cdd_audit_path_fallback_is_user_optional,
         test_user_facing_examples_are_discoverable_from_main_rule,
+        test_user_facing_work_mode_examples_are_split_from_hot_path,
+        test_follow_up_approval_briefing_blocks_bare_action_lists,
     ]
     for test in tests:
         test()
@@ -40,6 +42,41 @@ def test_user_facing_examples_are_discoverable_from_main_rule() -> None:
     assert "## 1. 아직 진행하면 안 되는 경우" in reference
     assert "## 2. 사용자 개입 없이 진행 가능한 경우" in reference
     assert "## 3. 완료한 경우" in reference
+
+
+def test_user_facing_work_mode_examples_are_split_from_hot_path() -> None:
+    text = (ROOT / "_user-facing-language.md").read_text(encoding="utf-8")
+    split = (ROOT / "_user-facing-work-modes.md").read_text(encoding="utf-8")
+    skill = (ROOT / "SKILL.md").read_text(encoding="utf-8")
+
+    assert "_user-facing-work-modes.md" in text
+    assert "- `_user-facing-work-modes.md`" in skill
+    assert len(text.splitlines()) < 1000
+    assert "## Project Context 질문 표현" not in text
+    assert "## Project Context 질문 표현" in split
+    assert "## ANALYSIS_ONLY" in split
+    assert "## PATCH_AUTHORIZED" in split
+
+
+def test_follow_up_approval_briefing_blocks_bare_action_lists() -> None:
+    text = (ROOT / "_user-facing-language.md").read_text(encoding="utf-8")
+    approval = (ROOT / "_approval-reference.md").read_text(encoding="utf-8")
+    complete = (ROOT / "complete-work.md").read_text(encoding="utf-8")
+
+    for snippet in (
+        "이번 승인의 목적",
+        "포함되는 것",
+        "제외되는 것",
+        "승인하면 고정되는 결정",
+        "주의할 점",
+        "승인 후 내가 진행할 일",
+        "바로 답할 수 있는 문장",
+    ):
+        assert snippet in text
+        assert snippet in complete
+
+    assert "승인하면 내가 진행할 일\"만 나열하는 것은 승인 전 브리핑이 아니다" in approval
+    assert "승인하면 내가 진행할 일:\" 또는 \"승인하면 진행할 일:\"만 나열" in text
 
 
 if __name__ == "__main__":

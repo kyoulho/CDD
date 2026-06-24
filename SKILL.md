@@ -74,6 +74,7 @@ CDD는 승인된 기준 문서와 사용자 승인 지점이 준비된 작업만
 - `_status-machine.md`
 - `_approval-reference.md`
 - `_user-facing-language.md`
+- `_user-facing-work-modes.md`
 
 Internal module을 task entrypoint로 직접 실행하지 마라. Internal module은 단독으로 implementation, cleanup/delete, SOT changes, completion을 승인할 수 없으며 `IMPLEMENTATION_ALLOWED`, `APPLY_AUTHORIZED`, `PATCH_AUTHORIZED`, `COMPLETE`를 만들 수 없다. 사용자가 internal module을 직접 지정하면 `start-here.md` 또는 가장 가까운 public entrypoint로 라우팅한다.
 
