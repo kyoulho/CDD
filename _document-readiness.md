@@ -466,6 +466,8 @@ Readiness 단계에서는 다음 정책이 필요한 작업인지 확인하고, 
 - runtime-exposed library 도입이 승인되어 있는가?
 - 승인 문서가 없을 때 기존 스택 안에서 구현하는 대안이 가능한가?
 - dependency를 추가하지 않는 기본 대안이 Task 범위와 testRequirements를 충족하는가?
+- dependency가 필요하지만 승인 문서가 없으면 사용자에게 목적, 범위, 대안, 영향, 검증 방법을 보고하고 승인 여부를 묻는가?
+- 기존 스택만으로 Task 범위와 검증 기준을 충족할 수 없는데도 "dependency 금지"를 이유로 부정확한 구현을 강행하지 않는가?
 
 Identifier type, key generation, API-visible id representation은 구현 세부사항이 아니라 문서화되어야 할 정책이다. 이 정책은 DATA_MODEL, API_CONTRACT, ARCHITECTURE_POLICY 또는 DECISION_LOG 문서에 의해 승인되어야 한다.
 
@@ -479,7 +481,7 @@ Do not classify test database choice, test profile strategy, test-specific migra
 
 테스트 DB 선택, 테스트 profile 전략, 테스트 전용 migration, Testcontainers, H2, mock/fake/stub 전략, DB dialect 대체는 구현 세부사항으로 분류하지 마라. 승인된 source of truth 결정이 필요한 정책이다.
 
-새 dependency, Gradle plugin, annotation processor, code generation tool, runtime-exposed library는 구현 세부사항으로 분류하지 마라. 승인된 source of truth 결정이 필요한 정책이다. 승인 문서가 없으면 기존 스택 안에서 구현한다.
+새 dependency, Gradle plugin, annotation processor, code generation tool, runtime-exposed library는 구현 세부사항으로 분류하지 마라. 승인된 source of truth 결정 또는 현재 작업의 명시적 approval record가 필요한 정책이다. 승인 문서가 없으면 기존 스택 안에서 구현하는 것이 기본 대안이다. 단, 기존 스택으로 Task 범위와 testRequirements를 충족할 수 없으면 dependency 승인 질문으로 돌아간다.
 
 ## 결과 상태
 
@@ -556,15 +558,15 @@ C for lightweight first harness validation, or A if DB fidelity is required.
 Missing Decision: Dependency addition is not approved.
 
 Reason:
-The task appears to require a new library or build tool change. Implementation Agent cannot add MapStruct, springdoc-openapi, QueryDSL, Testcontainers, Gradle plugins, annotation processors, or code generation tools without approved source of truth.
+The task appears to require a new library or build tool change. Implementation Agent cannot add a dependency, plugin, annotation processor, or code generation tool without an approved decision. If the dependency is necessary, report the purpose, scope, alternatives, impact, and verification plan before asking for approval.
 
 Options:
-A. Approve the named dependency and document its purpose/scope
+A. Approve the named dependency and document its purpose/scope/impact
 B. Implement within the existing stack
 C. Defer the feature that requires the dependency
 
 Recommended:
-B unless the dependency is required by product, architecture, or test strategy.
+B only if the existing stack can satisfy the task and verification requirements. A if the dependency is required by product, architecture, or test strategy.
 ```
 
 ## 다음 단계

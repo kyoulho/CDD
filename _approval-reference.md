@@ -80,6 +80,8 @@ V2.1의 실제 YAML 골격은 `_artifact-templates.md`의 `Approval Record Templ
 
 - 새 dependency, Gradle plugin, annotation processor, code generation tool, runtime-exposed library 변경 승인
 - 승인 범위와 목적이 명확해야 한다.
+- 승인 전 브리핑에는 dependency 이름, production/test/build/runtime 노출 여부, 기존 스택 대안과 한계, 영향 파일, 보안/라이선스/유지보수/bundle 영향, 검증 방법이 포함되어야 한다.
+- "필요하면 알아서 추가" 같은 포괄 승인은 dependency 변경 승인으로 기록하지 않는다.
 
 ## Approval Record 형식
 

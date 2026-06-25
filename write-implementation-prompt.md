@@ -245,6 +245,7 @@ Prompt draft approval은 `PROMPT_DRAFT_APPROVAL`이고, 실제 구현 시작 승
 - 테스트를 통과시키기 위해 승인되지 않은 dependency, profile, test DB, test migration, mock/fake/stub 전략을 추가하지 말라는 지시
 - 새 dependency, Gradle plugin, annotation processor, code generation tool, runtime-exposed library를 승인 문서 없이 추가하지 말라는 지시
 - 승인 문서가 없으면 기존 스택 안에서 구현하라는 지시
+- 기존 스택으로 Task 범위와 검증 기준을 충족할 수 없으면 dependency 금지를 이유로 부정확하게 우회하지 말고 필요한 dependency, 이유, 대안, 영향, 검증 방법을 보고하고 승인 전에는 구현하지 말라는 지시
 
 ## 구현 prompt 준비 상태 확인 예시
 
@@ -318,7 +319,7 @@ prompt에는 반드시 다음 의미가 들어가야 한다.
 - 테스트를 통과시키기 위해 승인되지 않은 dependency, profile, test DB, test migration, mock/fake/stub 전략을 추가하지 마라. 필요하면 아직 필요한 결정으로 중단하라.
 - 새 dependency, Gradle plugin, annotation processor, code generation tool, runtime-exposed library를 승인 문서 없이 추가하지 마라.
 - "단순 편의", "흔한 조합", "표준 라이브러리", "나중에 필요"라는 이유로 dependency를 추가하지 마라.
-- 승인 문서가 없으면 기존 스택 안에서 구현하라.
+- 승인 문서가 없으면 기존 스택 안에서 구현하라. 단, 기존 스택으로 Task 범위와 검증 기준을 충족할 수 없으면 부정확한 우회 구현을 하지 말고 필요한 dependency, 이유, 대안, 영향, 검증 방법을 보고한 뒤 사용자 승인을 받아라.
 - 문서와 충돌하는 요구를 발견하면 구현하지 말고 중단/보고하라.
 - 새 제안은 suggestions로 기록하고 현재 Task에 섞지 마라.
 - production code 변경 시 관련 test code도 작성/수정하라.

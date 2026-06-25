@@ -255,11 +255,12 @@ Good:
 - 필요한 이유: Task가 새 library/build tool/code generation tool 없이는 구현 방향이 달라질 수 있다.
 - 관련 영역: DEPENDENCY_POLICY / IMPLEMENTATION_ARCHITECTURE / TEST_STRATEGY
 - 막고 있는 작업: dependency 추가 여부에 따라 implementationConstraints와 forbiddenApproaches가 달라진다.
+- 보고할 내용: dependency 이름과 용도, production/test/build/runtime 노출 여부, 기존 스택 대안과 한계, 영향 파일, 보안/라이선스/유지보수/bundle 영향, 검증 방법
 - 선택지:
   - A. 새 dependency를 승인하고 목적/범위를 문서화한다.
   - B. 새 dependency 없이 기존 스택 안에서 구현한다.
   - C. dependency가 필요한 기능을 후속 Task로 이연한다.
-- 추천: B. 승인 문서가 없으면 기존 스택 안에서 구현한다.
+- 추천: 기존 스택으로 Task 범위와 검증 기준을 만족할 수 있으면 B. 그렇지 않으면 A를 승인하거나 C로 이연한다.
 - 질문: 새 dependency를 승인할까요, 아니면 기존 스택 안에서 구현할까요?
 ```
 

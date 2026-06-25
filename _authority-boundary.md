@@ -223,7 +223,21 @@ Goal 또는 Task가 DB, migration, repository, test, external integration, batch
 
 AI는 "단순 편의", "흔한 조합", "표준 라이브러리", "나중에 필요"라는 이유로 dependency를 추가할 수 없다.
 
-승인 문서가 없으면 기본 대안은 기존 스택 안에서 구현하는 것이다.
+이 규칙은 dependency 추가를 전면 금지하는 규칙이 아니다. 필요한 dependency는 사용자에게 보고하고 승인받아 사용할 수 있다. 다만 승인 전에는 package manager 설정, lockfile, build script, runtime import, test-only helper를 수정하지 않는다.
+
+승인 문서가 없으면 기본 대안은 기존 스택 안에서 구현하는 것이다. 단, 기존 스택으로 Task 범위와 검증 기준을 충족할 수 없으면 기존 스택 구현을 강행하지 말고 dependency 승인 질문으로 돌아간다.
+
+필요 dependency를 요청할 때는 최소한 다음을 사용자에게 보고한다.
+
+- 추가하려는 dependency 또는 build tool 이름과 용도
+- production / test / build-time / runtime 노출 여부
+- 기존 스택으로 충분하지 않은 이유
+- dependency 없이 가능한 대안과 그 한계
+- 보안, 라이선스, 유지보수, bundle/runtime 영향
+- 영향을 받는 파일과 검증 방법
+- 승인하면 이번 Task에서 허용되는 범위와 금지되는 범위
+
+사용자가 승인하면 해당 결정을 source of truth, 작업 기준서, 구현 지시서, approval record 중 현재 프로젝트 구조에 맞는 승인 문서에 기록한 뒤 구현한다.
 
 예:
 
