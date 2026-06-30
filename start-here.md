@@ -64,6 +64,8 @@ User intent:
 - "verify this result" -> `verify-work.md`
 - "revise after verification" -> `revise-work.md`
 - "complete/report" -> `complete-work.md`
+- "commit/push/branch/rebase/tag/PR" -> `start-here.md`에서 버전관리 확인 후 실행 또는 차단
+- "bug report/issue/repro report" -> `start-here.md`에서 버그리포트 확인 후 작성 또는 차단
 
 Internal module direct mention:
 
@@ -79,6 +81,8 @@ Internal module direct mention:
 - "다음 작업 진행하자", "다음 단계로 가자", "진행하자"처럼 실제 다음 단계 수행을 요청했고 현재 작업 포인터가 단일 다음 task를 가리키면 조회나 일반 선택지 목록으로 축소하지 않는다. 바로 실행할 수 없고 승인 문장이 필요하면 `_approval-briefing-language.md`의 "후속 작업 승인 요청 브리핑" 전체 형식을 사용한다.
 - 파일 생성/수정/삭제는 사용자가 허용한 범위 안에서만 수행한다. "좋아", "진행해", "다음", "반영해" 같은 말만으로 더 높은 권한을 추정하지 않는다.
 - 구현, 작업 기준서, 구현 지시서, 검증, 완료로 이어지는 요청이면 `_sot-packet.md`와 `_readiness-gates.md`가 요구하는 기준 준비 상태를 확인한다. 기준이 비어 있으면 table, API, status, UI, CLI, 배치 실행 방식, 저장 구조를 먼저 제안하지 않는다.
+- 버전관리 요청이면 포함할 변경, 제외할 변경, stage 방식, commit/push 대상, history rewrite 위험을 확인한다. 계약이 없으면 stage, commit, push, branch, PR, tag, rebase, amend, force-push를 먼저 실행하지 않는다.
+- 버그리포트 요청이면 대상 tracker, 재현 절차, 실제/기대 결과, 환경, 영향도, 증거, 비밀정보 제거 기준을 확인한다. 계약이 없으면 issue 작성, 외부 tracker 등록, bug report 게시를 먼저 실행하지 않는다.
 - 문서 구조, 현재 작업 포인터, 기본 읽기 경로, active/history 분리, `cdd-audit` 실행은 `_source-of-truth-manager.md`를 따른다. 대상 프로젝트에 문서 구조가 있으면 PATH 명령 또는 CDD skill root의 `bin/cdd-audit`로 최소 읽기 경로를 확인한다. `cdd-audit`를 실행할 수 없으면 같은 항목을 수동 확인으로 대체하고 실행 불가 이유를 보고한다.
 - artifact 작성, 저장 위치, metadata, status, approval, 승인 전 브리핑은 `_artifact-templates.md`, `_artifact-metadata.md`, `_status-machine.md`, `_approval-reference.md`, `_approval-briefing-language.md`, `_user-facing-language.md`를 따른다.
 - cleanup/delete는 일반 리팩토링이 아니다. 삭제/보존/비-SOT 표시 후보와 이유를 먼저 브리핑하고, 되돌리기 어려운 변경은 사람 확인 지점을 통과해야 한다.

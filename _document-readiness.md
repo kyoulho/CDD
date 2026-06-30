@@ -73,6 +73,8 @@ Product Readiness는 "무엇을 왜 만들 것인가"에 대한 기획자 관점
 - 사용자가 반드시 이해해야 하는 주요 문구와 결과
 - 웹/모바일 UI인 경우 화면 상태, 정보 우선순위, 주요 행동, 반응형 기준, 접근성, 텍스트 overflow, 시각 검증 방법
 - 웹/모바일 UI인 경우 분석 결과를 레이아웃, 정보 우선순위, 금지 패턴, 반응형, 브라우저/스크린샷 검증 기준으로 고정한 UI 구현 계약
+- Git 작업인 경우 포함할 변경, 제외할 변경, stage 방식, commit/push 대상, history rewrite 위험, recovery path를 고정한 버전관리 계약
+- 버그리포트 작업인 경우 재현 절차, 실제/기대 결과, 환경, 영향도, 증거, 비밀정보 제거 기준을 고정한 버그리포트 계약
 
 하나라도 작업 판단에 필요하지만 approved Product SOT에 없으면 `NOT READY`다.
 
@@ -235,24 +237,26 @@ DEPENDENCY_POLICY
 11. status enum, status column, state transition이 필요하면 State Meaning Check를 수행한다.
 12. 성능, 보안, 운영, 데이터 조회, 권한, 실패 처리, 로그/감사 판단이 필요하면 운영/품질 기준 확인을 수행한다.
 13. 구현 중 발견 가능한 성능 위험 후보를 다룰 작업이면 성능 위험 조사 범위와 허용된 수정 범위를 확인한다.
-14. 관련 cross-cutting policy domain을 자동 식별한다.
-15. `document-registry.yml`이 있으면 등록된 문서의 `type`, `status`, `owns`, `requiredFor`, `keywords`를 확인한다.
-16. registry가 없으면 필요한 문서 타입을 추론하되, registry 부재를 readiness 결과에 기록한다.
-17. 필요한 문서가 APPROVED 상태인지 확인한다.
-18. DRAFT 또는 DEPRECATED 문서는 readiness 충족 근거로 사용하지 않는다.
-19. 문서가 존재해도 구현 판단에 필요한 정책이 비어 있으면 부족하다고 판단한다.
-20. 사용할 artifact가 있으면 생성 단계, 승인, dependency, documentCoverage, source of truth validation, superseded 여부를 확인한다.
-21. legitimacy check를 통과하지 못한 artifact가 있으면 INVALID/QUARANTINED/SUPERSEDED 후보로 보고한다.
-22. 현재 기준으로 읽을 문서, 과거 기록으로만 볼 문서, 보조 자료로만 볼 문서를 분류한다.
-23. 현재 기준과 과거 기록 또는 보조 자료가 충돌하면 `READY_FOR_PLANNING`을 선언하지 않고 정합성 정리 질문으로 돌아간다.
-24. 기본 읽기 경로의 문서 크기와 hot path 여부를 확인하고 분리 후보, 유지 후보, README/index 갱신 필요 여부를 기록한다.
-25. 현재 작업 포인터와 기본 읽기 경로 계약이 있는지 확인한다. 없거나 불완전해 과거 기록까지 읽어야 하면 정합성 정리 질문으로 돌아간다.
-26. source of truth 변경 요청이 있으면 영향받는 문서, Task Contract, prompt, verification result를 식별한다.
-27. known conflict가 남는 partial source of truth update라면 Missing Context 또는 Source of Truth Change Request blocker로 보고한다.
-28. Product Readiness와 Engineering Readiness를 판정한다.
-29. Task Contract, SOT Packet, 승인 상태가 있으면 Implementation Readiness도 판정한다.
-30. 부족한 항목이 있으면 Product/Engineering/Implementation Missing Context로 분리한 Missing Context Report를 만든다.
-31. Product Readiness와 Engineering Readiness가 모두 `READY`이면 `READY_FOR_PLANNING`을 선언할 수 있다.
+14. Git 작업이 필요하면 버전관리 확인을 수행한다.
+15. 버그리포트 작업이 필요하면 버그리포트 확인을 수행한다.
+16. 관련 cross-cutting policy domain을 자동 식별한다.
+17. `document-registry.yml`이 있으면 등록된 문서의 `type`, `status`, `owns`, `requiredFor`, `keywords`를 확인한다.
+18. registry가 없으면 필요한 문서 타입을 추론하되, registry 부재를 readiness 결과에 기록한다.
+19. 필요한 문서가 APPROVED 상태인지 확인한다.
+20. DRAFT 또는 DEPRECATED 문서는 readiness 충족 근거로 사용하지 않는다.
+21. 문서가 존재해도 구현 판단에 필요한 정책이 비어 있으면 부족하다고 판단한다.
+22. 사용할 artifact가 있으면 생성 단계, 승인, dependency, documentCoverage, source of truth validation, superseded 여부를 확인한다.
+23. legitimacy check를 통과하지 못한 artifact가 있으면 INVALID/QUARANTINED/SUPERSEDED 후보로 보고한다.
+24. 현재 기준으로 읽을 문서, 과거 기록으로만 볼 문서, 보조 자료로만 볼 문서를 분류한다.
+25. 현재 기준과 과거 기록 또는 보조 자료가 충돌하면 `READY_FOR_PLANNING`을 선언하지 않고 정합성 정리 질문으로 돌아간다.
+26. 기본 읽기 경로의 문서 크기와 hot path 여부를 확인하고 분리 후보, 유지 후보, README/index 갱신 필요 여부를 기록한다.
+27. 현재 작업 포인터와 기본 읽기 경로 계약이 있는지 확인한다. 없거나 불완전해 과거 기록까지 읽어야 하면 정합성 정리 질문으로 돌아간다.
+28. source of truth 변경 요청이 있으면 영향받는 문서, Task Contract, prompt, verification result를 식별한다.
+29. known conflict가 남는 partial source of truth update라면 Missing Context 또는 Source of Truth Change Request blocker로 보고한다.
+30. Product Readiness와 Engineering Readiness를 판정한다.
+31. Task Contract, SOT Packet, 승인 상태가 있으면 Implementation Readiness도 판정한다.
+32. 부족한 항목이 있으면 Product/Engineering/Implementation Missing Context로 분리한 Missing Context Report를 만든다.
+33. Product Readiness와 Engineering Readiness가 모두 `READY`이면 `READY_FOR_PLANNING`을 선언할 수 있다.
 
 Readiness는 도메인/API 문서만 확인하면 안 된다. Goal 또는 Task가 DB, migration, repository, test, external integration, batch, infra, config를 포함하면 관련 cross-cutting policy를 반드시 점검한다.
 
@@ -315,6 +319,8 @@ Readiness Agent는 최소한 다음 질문에 답해야 한다.
 - 예상 데이터 양, 조회 방식, 정렬/검색/페이지 처리, 응답 속도 기대치가 정해져 있는가?
 - 성능 위험 후보를 구현 중 발견했을 때 제안으로 남길지, 승인된 범위 안에서 수정할지 정해져 있는가?
 - 성능 위험 판단 근거가 profiling, query plan, benchmark, production metric, 테스트 재현 중 무엇인지 정해져 있는가?
+- Git 작업이면 포함할 변경, 제외할 변경, stage 방식, commit grouping, push 대상, history rewrite 위험, recovery path가 정해져 있는가?
+- 버그리포트 작업이면 대상 tracker, 재현 절차, 실제/기대 결과, 환경, 영향도, 증거, 비밀정보 제거 기준이 정해져 있는가?
 - 권한 검증, 민감 정보 노출, 재시도, 멱등성, 로그/감사 기준이 정해져 있는가?
 - DB 통합 테스트를 어떤 방식으로 수행할 것인가?
 - 테스트 DB는 운영 DB와 같은 제품/방언을 사용하는가?
@@ -501,6 +507,8 @@ Do not classify test database choice, test profile strategy, test-specific migra
 - generated map, Codesight, agentmemory, search index, recall output, archive branch reference를 active 기준으로 사용하지 않았다.
 - 기본 읽기 경로의 문서 크기와 분리 후보가 보고되었다.
 - 현재 작업 포인터와 기본 읽기 경로 계약으로 이번 작업에 필요한 최소 읽기 문서를 식별할 수 있다.
+- Git 작업이면 버전관리 계약이 준비되었다.
+- 버그리포트 작업이면 버그리포트 계약이 준비되었다.
 - 필요한 artifact가 legitimacy check를 통과했다.
 
 ### BLOCKED_BY_MISSING_CONTEXT

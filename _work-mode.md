@@ -38,6 +38,8 @@
 - 데이터 삭제, public API 제거, migration, dependency 대량 변경처럼 위험한 변경이 있다.
 - 현재 요청이 실제 파일 수정을 허용하는지 불명확하다.
 - 현재 문서 기준만으로 안전하게 다음 단계로 갈 수 없다.
+- Git 작업 요청이 있는데 포함 변경, 제외 변경, 원격 대상, history rewrite 위험이 불명확하다.
+- 버그리포트 요청이 있는데 재현 절차, 실제/기대 결과, 환경, 증거, 비밀정보 제거 기준이 불명확하다.
 - 사용자가 "아직 수정하지 마라", "분석만", "제안만"처럼 제한을 걸었다.
 
 사용자 개입이 필요하면 멈추고 `_user-facing-language.md`의 "사용자 선택이 필요한 경우" 형식으로 선택지, 추천, 바로 답할 수 있는 문장을 제공한다.
@@ -48,6 +50,8 @@
 - 현재 작업 모드가 필요한 파일 수정 또는 실행을 허용한다.
 - 제품 기준과 설계 기준이 충분하다.
 - 저장, 동작, 상태, 상호작용, 운영 기준이 충분하다.
+- Git 작업이면 versionControlContract가 충분하다.
+- 버그리포트 작업이면 bugReportContract가 충분하다.
 - 작업 범위가 작고 명확하다.
 - 금지된 작업에 닿지 않는다.
 - 데이터 손실, public API 제거, migration 위험, dependency 대량 변경이 없다.
@@ -321,6 +325,44 @@ IMPLEMENTATION은 별도의 source of truth, Task Contract, prompt, approval gat
 - CLI/tools 구현
 - 문서 변경을 이유로 source of truth 승인 게이트 우회
 - SOT Packet의 allowedScope 밖 문서 수정
+
+### VERSION_CONTROL
+
+사용자가 stage, commit, push, branch, PR, tag, rebase, amend, force-push, git history 조사를 명확히 요청한 상태다.
+
+허용 행동:
+
+- 현재 branch, upstream, remote, worktree 상태 확인
+- diff와 staged diff 확인
+- 최근 commit message style 확인
+- versionControlContract가 충분하면 승인된 범위만 stage/commit/push/PR/tag 처리
+- 작업 후 status, latest commit, remote ref 또는 PR URL 확인
+
+금지 행동:
+
+- 사용자 요청 없이 commit/push/rebase/amend/force-push 수행
+- unrelated dirty work나 사용자 소유 변경 포함
+- 계약 없이 broad `git add .`로 stage
+- protected branch, history rewrite, force-push를 명시 승인 없이 수행
+- Git 작업 결과를 검증하지 않고 완료 보고
+
+### BUG_REPORT
+
+사용자가 bug report, issue 작성, external tracker 등록, PR comment용 재현 보고를 명확히 요청한 상태다.
+
+허용 행동:
+
+- 재현 절차, 실제/기대 결과, 환경, 영향도, 증거 확인
+- bugReportContract가 충분하면 초안 작성 또는 승인된 tracker 등록
+- 추정 원인과 확정 사실 분리
+- 비밀정보, token, cookie, credential, 개인정보, 내부 로그 원문 제거 확인
+
+금지 행동:
+
+- 재현 절차나 증거 없이 issue 등록
+- 추정 원인을 확정 사실처럼 작성
+- 비밀정보 redaction 없이 로그나 stack trace 게시
+- 대상 tracker 또는 저장소가 불명확한데 외부 등록
 
 ### CLEANUP_DELETE
 

@@ -142,6 +142,8 @@ BLOCKED_BY_MISSING_CONTEXT
 - "이 화면의 주요 사용자 행동, 빈 상태, 오류 상태, 반응형 기준, 접근성 기준은 무엇인가요?"
 - "분석 결과를 어떤 UI 구현 계약으로 고정할까요? 레이아웃, 정보 우선순위, 금지 패턴, 반응형, 브라우저 검증 기준을 짧게 정해야 합니다."
 - "성능 위험 후보는 이번 Task에서 조사/수정 범위인가요, 아니면 후속 제안으로만 남길까요?"
+- "Git 작업은 어떤 변경만 포함할까요? stage/commit/push 대상, 제외할 파일, 원격 branch, history rewrite 허용 여부를 정해야 합니다."
+- "버그리포트는 어디에 어떤 증거로 등록할까요? 재현 절차, 실제/기대 결과, 환경, 영향도, 비밀정보 제거 기준이 필요합니다."
 
 나쁜 질문:
 
@@ -308,4 +310,34 @@ UI 구현 계약:
   - C. 별도 성능 조사 Task를 만들고 데이터 양, 응답 속도, 허용 변경 범위를 먼저 승인한다.
 - 추천: A. 기준이 아직 없다면 구현 범위를 넓히지 않고 후속 판단으로 남기는 것이 안전하다.
 - 질문: 성능 위험 후보는 이번 Task에서 어디까지 다룰까요?
+```
+
+## Version Control Missing Context 예시
+
+```markdown
+### 1. Version control contract
+- 필요한 이유: stage, commit, push, rebase, tag, PR은 작업 결과를 히스토리나 원격에 고정한다. 포함 범위가 애매하면 사용자 변경이나 unrelated dirty work가 섞일 수 있다.
+- 관련 영역: VERSION_CONTROL / COMPLETION / RELEASE
+- 막고 있는 작업: Git stage, commit, push, branch, PR, tag, rebase, amend, force-push
+- 선택지:
+  - A. 현재 Task에서 변경한 파일만 path 단위로 stage하고 한 커밋으로 push한다.
+  - B. 관련 변경을 hunk 단위로 나눠 여러 커밋으로 만든다.
+  - C. 커밋하지 않고 diff와 검증 결과만 보고한다.
+- 추천: A. 변경 범위가 한 주제이고 원격 branch가 명확하면 가장 단순하다.
+- 질문: 이번 Git 작업은 어떤 파일/변경만 포함하고 어디로 push할까요?
+```
+
+## Bug Report Missing Context 예시
+
+```markdown
+### 1. Bug report contract
+- 필요한 이유: 버그리포트는 재현 가능한 문제 기록이어야 한다. 재현 절차, 실제/기대 결과, 환경, 증거, redaction 기준이 없으면 issue가 실행 가능한 작업으로 이어지지 않는다.
+- 관련 영역: BUG_REPORT / QA / SUPPORT
+- 막고 있는 작업: issue 작성, 외부 tracker 등록, bug report 게시
+- 선택지:
+  - A. 최소 재현 절차와 실패 명령/로그 요약을 포함한 issue 초안을 만든다.
+  - B. 먼저 로컬에서 재현 증거를 더 수집하고 issue는 만들지 않는다.
+  - C. 버그가 아니라 개선 제안으로 분리한다.
+- 추천: A. 이미 재현 증거가 있으면 바로 actionable issue가 된다. 증거가 없으면 B가 맞다.
+- 질문: 버그리포트 대상 저장소/tracker, 재현 절차, 실제 결과, 기대 결과, 환경, 영향도, 첨부할 증거를 어떻게 기록할까요?
 ```

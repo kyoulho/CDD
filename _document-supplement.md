@@ -140,6 +140,8 @@ document-registry.yml 업데이트 초안
 - Batch 답변: BATCH_OPERATION_POLICY 초안
 - Operation/Infra 답변: OPERATION 또는 INFRA_POLICY 초안
 - Dependency/build tool 답변: DEPENDENCY_POLICY 또는 IMPLEMENTATION_ARCHITECTURE 초안
+- Version control 답변: VERSION_CONTROL_POLICY 또는 TASK 수준 versionControlContract 초안
+- Bug report 답변: BUG_REPORT_POLICY 또는 TASK 수준 bugReportContract 초안
 
 각 초안에는 다음을 포함한다.
 
@@ -168,6 +170,36 @@ Frontend UI/UX 초안에는 다음을 포함한다.
 - 현재 사용자 화면 폭 우선 검증 기준
 - route/page/component/layout/styling/testRequirements에 반영할 항목
 - 아직 미결인 UI/UX 결정
+
+Version control 초안 또는 Task 계약에는 다음을 포함한다.
+
+- 요청된 Git 작업
+- 현재 branch와 upstream
+- 포함할 변경과 제외할 변경
+- 사용자 또는 다른 에이전트 변경으로 보이는 파일
+- stage 방식
+- commit grouping과 메시지 기준
+- push 대상과 보호 branch 여부
+- rebase, amend, force-push, tag, PR 생성 허용 여부
+- 작업 후 확인할 명령
+- recovery path
+- 아직 미결인 버전관리 결정
+
+Bug report 초안 또는 Task 계약에는 다음을 포함한다.
+
+- 대상 저장소 또는 tracker
+- 보고 대상 독자
+- 제목
+- 실제 결과와 기대 결과
+- 재현 절차와 최소 재현 범위
+- 환경: OS, browser, runtime, version, branch, commit
+- 영향도와 빈도
+- 증거: 로그, screenshot, stack trace, failing command, test output
+- 이미 시도한 조치와 임시 우회 방법
+- 추정 원인과 확정 사실 구분
+- 비밀정보, 토큰, 개인정보 제거 확인
+- 원하는 후속 조치
+- 아직 미결인 버그리포트 결정
 
 Frontend UI/UX 답변은 파일 경로가 아니라 판단 소유 역할에 따라 정리한다. 기본 후보로 `docs/user-flows/*.md`, `docs/ui-ux/*.md`, `docs/frontend/*.md`, `docs/design-system/*.md`를 제안할 수 있지만 강제하지 않는다. 프로젝트가 AI Agent 컨벤션에 맞춰 루트 `DESIGN.md` 같은 단일 기준 문서를 승인했다면 그 구조를 존중하고, 같은 파일 안의 명확한 섹션이나 metadata로 역할을 분리한다. 사용자 답변이 일부 영역만 다루면 해당 역할의 초안만 제안하고, 비어 있는 역할은 Missing Context 질문으로 남긴다.
 

@@ -20,6 +20,8 @@ CDD 구현은 다음 세 확인 지점이 모두 `READY`일 때만 가능하다.
 - 기술 설계 준비도는 "기술 설계 준비 상태"를 본다.
 - table/API/status 제안 전 차단은 "구조 제안 전 의미 확인"을 본다.
 - 성능/보안/운영 기준은 "운영/품질 기준 확인"을 본다.
+- Git 작업 기준은 "버전관리 확인"을 본다.
+- 버그리포트 기준은 "버그리포트 확인"을 본다.
 - 최종 구현 가능 여부와 출력은 "구현 시작 가능 여부", "판정 출력 형식"을 본다.
 
 ## 제품 기준 준비 상태
@@ -266,6 +268,61 @@ State Meaning Check:
 
 `설계 보류`이면 안전하다고 가정하지 않는다. performance, security, operation, retry, logging, audit, pagination, search, sorting, permission, validation 정책을 임의로 정하지 않고 Engineering Missing Context 질문으로 돌아간다. 구현 중 성능 위험 후보가 보여도 승인된 범위와 근거 기준 없이 cache, pagination, indexing, async, batching, query 변경, dependency 추가를 수행하지 않는다.
 
+## 버전관리 확인
+
+Git 작업은 작업 결과를 히스토리와 원격 저장소에 고정하는 행위다. 커밋, 푸시, 브랜치 생성, rebase, amend, tag, PR 생성은 단순 완료 보고가 아니며 별도 확인 없이 자동 실행하지 않는다.
+
+버전관리 확인:
+
+```text
+버전관리 확인:
+- 요청된 Git 작업: status / stage / commit / push / branch / PR / tag / rebase / amend / force-push / history inspection
+- 현재 브랜치와 upstream:
+- 원격 대상:
+- 작업트리 상태:
+- 사용자 또는 다른 에이전트의 변경으로 보이는 파일:
+- 포함할 변경 범위:
+- 제외할 변경 범위:
+- stage 방식: path / hunk / already-staged 유지
+- 커밋 단위와 메시지 기준:
+- push 대상과 보호 브랜치 여부:
+- history rewrite 또는 force-push 필요 여부:
+- 되돌릴 수 있는 경로:
+- 아직 정하지 못한 버전관리 결정:
+- 결론: VERSION_CONTROL_ALLOWED / VERSION_CONTROL_BLOCKED / 해당 없음
+```
+
+`VERSION_CONTROL_BLOCKED`이면 stage, commit, push, branch, PR, tag, rebase, amend, force-push를 수행하지 않는다. 특히 unrelated dirty work가 있거나, 어떤 변경을 포함할지 불명확하거나, protected branch/history rewrite/force-push 여부가 애매하면 먼저 질문한다.
+
+## 버그리포트 확인
+
+버그리포트는 막연한 불만이나 구현 추측이 아니라 재현 가능한 문제 기록이어야 한다. issue, PR comment, external tracker, bug report 문서를 작성하거나 등록하려면 최소 재현, 기대/실제 결과, 환경, 영향, 증거, 비밀정보 제거 기준이 필요하다.
+
+버그리포트 확인:
+
+```text
+버그리포트 확인:
+- 대상 저장소 또는 tracker:
+- 보고 대상 독자:
+- 문제 제목:
+- 실제 결과:
+- 기대 결과:
+- 재현 절차:
+- 최소 재현 범위:
+- 환경: OS / 브라우저 / runtime / version / branch / commit
+- 영향도와 빈도:
+- 증거: 로그 / screenshot / stack trace / failing command / test output
+- 이미 시도한 조치:
+- 임시 우회 방법:
+- 추정 원인과 확정 사실 구분:
+- 비밀정보, 토큰, 개인정보 제거 여부:
+- 원하는 후속 조치:
+- 아직 정하지 못한 버그리포트 결정:
+- 결론: BUG_REPORT_READY / BUG_REPORT_BLOCKED / 해당 없음
+```
+
+`BUG_REPORT_BLOCKED`이면 issue를 만들거나 외부에 게시하지 않는다. 재현 절차가 없거나, 실제/기대 결과가 분리되지 않았거나, 증거가 없거나, 비밀정보 제거 여부가 불명확하면 먼저 부족한 정보를 질문한다.
+
 ## 구현 시작 가능 여부
 
 구현 시작 가능 여부는 "이제 에이전트가 구현해도 되는가"에 대한 실행 준비도다. 내부명은 `Implementation Readiness`다.
@@ -287,6 +344,8 @@ State Meaning Check:
 - 기본 읽기 경로의 큰 문서와 누적 문서에 대해 분리 후보/유지 후보 보고 완료
 - 현재 작업 포인터로 현재 gate, 다음 task, 현재 진행 가능한 task, 반드시 읽을 문서, 읽지 않을 과거 기록을 식별할 수 있음
 - 기본 읽기 경로 계약으로 이번 작업에 필요한 최소 문서와 제외할 과거 기록/보조 자료가 분리됨
+- Git 작업이면 `versionControlContract`가 있으며 포함/제외 변경, stage 방식, commit/push 대상, history rewrite 위험이 고정됨
+- 버그리포트 작업이면 `bugReportContract`가 있으며 재현 절차, 실제/기대 결과, 환경, 영향도, 증거, 비밀정보 제거 기준이 고정됨
 
 `NOT READY` 예:
 
@@ -303,6 +362,8 @@ State Meaning Check:
 - 기본 읽기 경로의 큰 문서나 1000줄 이상 누적 문서가 있는데 분리 후보/유지 후보가 보고되지 않았다.
 - 현재 작업 포인터가 없어 다음 task와 반드시 읽을 문서를 식별하려면 큰 누적 문서 전체를 읽어야 한다.
 - 기본 읽기 경로 계약이 없어 완료된 task, 과거 verification, completion, old prompt가 현재 기준과 섞여 읽힌다.
+- Git 작업인데 포함할 변경, 제외할 변경, 원격 대상, push 여부, history rewrite 위험이 정해지지 않았다.
+- 버그리포트 작업인데 대상 tracker, 재현 절차, 기대/실제 결과, 환경, 증거, 비밀정보 제거 기준이 정해지지 않았다.
 
 ## 판정 출력 형식
 
@@ -324,6 +385,12 @@ Codex는 구현 전에 다음 형식으로 보고한다.
 - 부족한 결정:
 운영/품질 기준 확인:
 - 결론: 설계 가능 / 설계 보류 / 해당 없음
+- 부족한 결정:
+버전관리 확인:
+- 결론: VERSION_CONTROL_ALLOWED / VERSION_CONTROL_BLOCKED / 해당 없음
+- 부족한 결정:
+버그리포트 확인:
+- 결론: BUG_REPORT_READY / BUG_REPORT_BLOCKED / 해당 없음
 - 부족한 결정:
 구현 시작 가능 여부: READY / NOT READY
 - 근거:
@@ -358,7 +425,7 @@ Codex는 구현 전에 다음 형식으로 보고한다.
 
 - 제품 관련 미확정 결정: 제품 목표, 사용자, 시나리오, 범위, 하지 않을 것, 성공 기준, 상호작용 방식, 입력/출력, 실패와 피드백, 빈 상태, 권한 없음, 처리 중 피드백, vertical slice 경계 질문.
 - 기술 설계 관련 미확정 결정: 아키텍처, 도메인 모델, 데이터 흐름, API, 저장 정책, 상태 전이, 프론트엔드 UX 기준 문서, 디자인 시스템 또는 화면 패턴, 성능, 보안/권한, 운영/품질 기준, 외부 연동, 테스트 전략, 실패 처리, migration/data compatibility 질문.
-- 구현 시작 관련 미확정 결정: 작업 기준 묶음, 작업 기준서, allowed/forbidden scope, verification command, user approval, 선행 Task 완료 여부, archive/superseded 참조 여부 질문.
+- 구현 시작 관련 미확정 결정: 작업 기준 묶음, 작업 기준서, allowed/forbidden scope, verification command, user approval, 선행 Task 완료 여부, archive/superseded 참조 여부, 버전관리 계약, 버그리포트 계약 질문.
 
 예:
 

@@ -58,6 +58,8 @@
 - 웹/모바일 UI 작업이면 프론트엔드 UX 기준이 충분하고 승인 문서 안의 `FRONTEND_UX_CRITERIA`, `USER_FLOW` 또는 `INTERACTION_SPEC`, `DESIGN_SYSTEM` 또는 `UI_PATTERN`, `FRONTEND_ARCHITECTURE` 역할 coverage가 확인된다.
 - 웹/모바일 UI 작업이면 화면 단위 `uiImplementationContract`가 있으며 레이아웃, 정보 우선순위, 금지 패턴, 반응형 기준, 브라우저/스크린샷 검증 기준이 고정되어 있다.
 - 성능 위험 후보를 다룰 작업이면 조사 범위, 판단 근거, 허용된 수정 범위가 충분하다.
+- Git 작업이면 `versionControlContract`가 있으며 포함 변경, 제외 변경, stage 방식, commit grouping, push 대상, history rewrite 위험이 고정되어 있다.
+- 버그리포트 작업이면 `bugReportContract`가 있으며 재현 절차, 실제/기대 결과, 환경, 영향도, 증거, 비밀정보 제거 기준이 고정되어 있다.
 - 작업 범위가 작고 명확하다.
 - forbiddenScope에 닿지 않는다.
 - 데이터 손실, public API 제거, migration 위험, dependency 대량 변경이 없다.
@@ -75,6 +77,8 @@
 - 상태값 의미가 비어 있다.
 - 성능/보안/운영 기준이 비어 있다.
 - 성능 위험 후보를 찾거나 고치려는데 승인된 조사 범위와 판단 근거가 비어 있다.
+- Git 작업인데 포함 변경, 제외 변경, 원격 대상, push 여부, history rewrite 위험이 비어 있다.
+- 버그리포트 작업인데 대상 tracker, 재현 절차, 기대/실제 결과, 환경, 증거, 비밀정보 제거 기준이 비어 있다.
 - 삭제와 보존 중 선택이 필요하다.
 - migration, 데이터 삭제, public API 제거가 있다.
 - dependency 변경 영향이 크다.
@@ -134,6 +138,8 @@
 - requiredDocuments가 확인 가능하다.
 - 웹/모바일 UI 작업이면 requiredDocuments에 필요한 승인 문서가 포함되어 있고, 그 문서 안에서 `FRONTEND_UX_CRITERIA`, `USER_FLOW` 또는 `INTERACTION_SPEC`, `DESIGN_SYSTEM` 또는 `UI_PATTERN`, `FRONTEND_ARCHITECTURE` 역할 coverage가 확인된다.
 - 웹/모바일 UI 작업이면 Task Contract 또는 구현 지시서에 `uiImplementationContract`가 포함되어 있다.
+- Git 작업이면 Task Contract 또는 구현 지시서에 `versionControlContract`가 포함되어 있다.
+- 버그리포트 작업이면 Task Contract 또는 구현 지시서에 `bugReportContract`가 포함되어 있다.
 
 ## 역할
 
@@ -146,7 +152,8 @@
 - document registry, Plan, Task Contract, prompt, verification result를 수정하지 않는다.
 - Task 범위 밖 작업을 하지 않는다.
 - SOT Packet 밖 작업을 하지 않는다.
-- 커밋하지 않는다.
+- 버전관리 작업으로 명시 승인되지 않았으면 커밋하지 않는다.
+- `versionControlContract` 없이 push, branch, PR, tag, rebase, amend, force-push를 하지 않는다.
 - 새 제안은 suggestions로 기록한다.
 
 ## 구현 규칙
@@ -183,6 +190,13 @@
 - State Meaning Check가 `STATE_MODEL_ALLOWED`가 아니면 status enum, status column, state transition을 만들거나 제안하지 않는다.
 - 운영/품질 기준 확인이 `설계 가능`이 아니면 성능, 보안, 권한, 데이터 양, 조회 방식, 실패 처리, 재시도, 로그/감사 기준을 임의로 정하지 않는다.
 - 승인된 성능 위험 조사 범위가 없으면 구현 중 발견한 성능 위험 후보를 구현 범위로 승격하지 않는다. 근거, 영향 가능성, 필요한 승인만 suggestions로 남긴다.
+- 버전관리 확인이 `VERSION_CONTROL_ALLOWED`가 아니면 stage, commit, push, branch, PR, tag, rebase, amend, force-push를 수행하지 않는다.
+- `versionControlContract`의 includeChanges/excludeChanges, stagingMethod, commitGrouping, pushTarget, historyRewriteOrForcePush를 구현 편의로 완화하지 않는다.
+- unrelated dirty work, 사용자 소유 변경, 이미 staged 된 변경은 계약에 포함되지 않는 한 stage하거나 커밋하지 않는다.
+- rebase, amend, force-push, protected branch push, tag 생성, PR 생성은 계약에 명시되지 않으면 수행하지 않는다.
+- 버그리포트 확인이 `BUG_REPORT_READY`가 아니면 issue 작성, 외부 tracker 등록, bug report 게시를 수행하지 않는다.
+- `bugReportContract` 없이 버그리포트 제목, severity, 추정 원인, 재현 절차, 환경, evidence를 임의로 채우지 않는다.
+- bug report에는 추정 원인과 확정 사실을 분리하고, 토큰, cookie, credential, 개인정보, 내부 로그 원문 같은 민감 정보를 제거한다.
 - forbiddenApproaches를 위반하지 않는다.
 - acceptanceCriteria를 충족하는 최소 범위로 구현한다.
 - testRequirements를 충족한다.
@@ -276,6 +290,8 @@ Implementation Agent는 다음 항목을 임의로 정할 수 없다.
 - 정렬/검색/페이지 처리 기준
 - 응답 속도 기대치
 - 성능 위험 조사 범위와 수정 범위
+- stage/commit/push/branch/PR/tag/rebase/amend/force-push 작업 범위
+- 버그리포트 target tracker, severity, 제목, 재현 절차, 환경, evidence, redaction 기준
 - 권한 검증 위치
 - 민감 정보 노출 정책
 - 재시도/멱등성/중복 실행 방지 기준

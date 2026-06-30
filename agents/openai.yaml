@@ -1,6 +1,6 @@
 interface:
   display_name: "CDD"
   short_description: "기준 문서와 승인 흐름으로 작업을 안전하게 진행"
-  default_prompt: "$cdd를 사용해 기준 문서, 상호작용 방식, 저장/동작/상태 의미, 운영/품질 기준, 검증 흐름을 확인한 뒤 가능한 범위만 진행해라."
+  default_prompt: "$cdd를 사용해 기준 문서, 상호작용 방식, 저장/동작/상태 의미, 운영/품질 기준, Git 작업 계약, 버그리포트 재현 계약, 검증 흐름을 확인한 뒤 가능한 범위만 진행해라."
 policy:
   allow_implicit_invocation: true

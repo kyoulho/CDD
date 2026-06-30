@@ -358,7 +358,7 @@ sourceOfTruthSnapshot:
 
 ## Design Intent Checks Template
 
-저장 구조, API, 상태 모델을 산출물에 넣기 전에 의미 확인 결과를 기록한다.
+저장 구조, API, 상태 모델, Git 작업, 버그리포트를 산출물에 넣기 전에 의미 확인 결과를 기록한다.
 
 ```yaml
 designIntentChecks:
@@ -448,6 +448,44 @@ designIntentChecks:
     loggingAudit:
     missingDecisions:
       - "Operational quality criteria are not approved yet."
+  versionControl:
+    required: false
+    result: VERSION_CONTROL_BLOCKED
+    requestedOperation:
+    currentBranch:
+    upstream:
+    remoteTarget:
+    workingTreeState:
+    includeChanges: []
+    excludeChanges: []
+    stagingMethod:
+    commitGrouping:
+    commitMessageBasis:
+    pushTarget:
+    historyRewriteOrForcePush:
+    recoveryPath:
+    missingDecisions:
+      - "The Git operation scope is not approved yet."
+  bugReport:
+    required: false
+    result: BUG_REPORT_BLOCKED
+    targetTracker:
+    audience:
+    title:
+    actualResult:
+    expectedResult:
+    reproductionSteps: []
+    minimalReproductionScope:
+    environment: []
+    impact:
+    evidence: []
+    attemptedWorkarounds: []
+    suspectedCause:
+    confirmedFacts: []
+    redactionCheck:
+    requestedOutcome:
+    missingDecisions:
+      - "The bug report reproduction contract is not approved yet."
 ```
 
 Rules:
@@ -459,6 +497,8 @@ Rules:
 - `API_DESIGN_ALLOWED`가 아니면 API path, method, route, controller, request/response shape를 기록하지 않는다.
 - `STATE_MODEL_ALLOWED`가 아니면 status enum, status column, state transition을 기록하지 않는다.
 - `설계 가능`이 아니면 performance, security, operation, sorting, search, pagination, permission, retry, logging, audit 정책을 기록하지 않는다.
+- `VERSION_CONTROL_ALLOWED`가 아니면 stage, commit, push, branch, PR, tag, rebase, amend, force-push 작업을 기록하지 않는다.
+- `BUG_REPORT_READY`가 아니면 issue 작성, 외부 tracker 등록, bug report 게시 작업을 기록하지 않는다.
 - `required: false`이면 해당 작업이 그 구조를 다루지 않는다는 뜻이지, 필요한 check를 우회해도 된다는 뜻이 아니다.
 
 ## 5. Prompt Artifact Template
@@ -518,6 +558,9 @@ prompt:
       evidence:
         - "SOT Packet, Task Contract, allowedScope, forbiddenScope, verificationCommands, user approval gate, and predecessor Task status are ready."
       missingDecisions: []
+      workOperationChecks:
+        versionControl: VERSION_CONTROL_ALLOWED
+        bugReport: BUG_REPORT_READY
     conclusion: IMPLEMENTATION_ALLOWED
   sotPacketRef: SOT-PACKET-TASK-000
   allowedScope: []
@@ -565,6 +608,14 @@ prompt:
       required: false
       result: "설계 가능"
       missingDecisions: []
+    versionControl:
+      required: false
+      result: VERSION_CONTROL_ALLOWED
+      missingDecisions: []
+    bugReport:
+      required: false
+      result: BUG_REPORT_READY
+      missingDecisions: []
   implementationConstraints: []
   forbiddenApproaches: []
   uiImplementationContract:
@@ -577,6 +628,29 @@ prompt:
     browserVerification:
     currentViewportFirst: true
     screenLevelAcceptanceCriteria: []
+  versionControlContract:
+    required: false
+    requestedOperation:
+    includeChanges: []
+    excludeChanges: []
+    stagingMethod:
+    commitGrouping:
+    commitMessageBasis:
+    pushTarget:
+    historyRewriteOrForcePush:
+    recoveryPath:
+  bugReportContract:
+    required: false
+    targetTracker:
+    title:
+    actualResult:
+    expectedResult:
+    reproductionSteps: []
+    environment: []
+    impact:
+    evidence: []
+    redactionCheck:
+    requestedOutcome:
   acceptanceCriteria: []
   testRequirements: []
   executionRules:
@@ -629,6 +703,9 @@ taskContract:
       evidence: []
       missingDecisions:
         - "Prompt execution approval is not recorded yet."
+      workOperationChecks:
+        versionControl: VERSION_CONTROL_ALLOWED
+        bugReport: BUG_REPORT_READY
     conclusion: IMPLEMENTATION_BLOCKED
   requiredDocuments:
     product:
@@ -661,10 +738,41 @@ taskContract:
       required: false
       result: "설계 가능"
       missingDecisions: []
+    versionControl:
+      required: false
+      result: VERSION_CONTROL_ALLOWED
+      missingDecisions: []
+    bugReport:
+      required: false
+      result: BUG_REPORT_READY
+      missingDecisions: []
   allowedScope: []
   forbiddenScope: []
   implementationConstraints: []
   forbiddenApproaches: []
+  versionControlContract:
+    required: false
+    requestedOperation:
+    includeChanges: []
+    excludeChanges: []
+    stagingMethod:
+    commitGrouping:
+    commitMessageBasis:
+    pushTarget:
+    historyRewriteOrForcePush:
+    recoveryPath:
+  bugReportContract:
+    required: false
+    targetTracker:
+    title:
+    actualResult:
+    expectedResult:
+    reproductionSteps: []
+    environment: []
+    impact:
+    evidence: []
+    redactionCheck:
+    requestedOutcome:
   acceptanceCriteria: []
   testRequirements: []
   verificationCommands: []
@@ -720,6 +828,29 @@ sotPacket:
     browserVerification:
     currentViewportFirst: true
     screenLevelAcceptanceCriteria: []
+  versionControlContract:
+    required: false
+    requestedOperation:
+    includeChanges: []
+    excludeChanges: []
+    stagingMethod:
+    commitGrouping:
+    commitMessageBasis:
+    pushTarget:
+    historyRewriteOrForcePush:
+    recoveryPath:
+  bugReportContract:
+    required: false
+    targetTracker:
+    title:
+    actualResult:
+    expectedResult:
+    reproductionSteps: []
+    environment: []
+    impact:
+    evidence: []
+    redactionCheck:
+    requestedOutcome:
   verificationCommands: []
   userApprovalRequiredFor: []
 ```

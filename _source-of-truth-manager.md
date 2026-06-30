@@ -548,6 +548,11 @@ Change Request status는 `_status-machine.md`를 따른다. `APPLIED`는 아직 
 - `UNAPPROVED_FRONTEND_UX_DECISION`: 승인된 프론트엔드 UX 기준 문서 없이 route, page, component, layout, styling, motion, visual QA 기준을 결정하는 행위
 - `UI_IMPLEMENTATION_CONTRACT_MISSING`: 웹/모바일 UI 구현이 화면 단위 UI 구현 계약 없이 컴포넌트별 수정 목록으로 진행되는 행위
 - `SCREENSHOT_CONTRACT_COMPARISON_MISSING`: 브라우저/스크린샷 결과를 UI 구현 계약과 대조하지 않고 완료 또는 검증 통과로 판단하는 행위
+- `VERSION_CONTROL_CONTRACT_MISSING`: stage, commit, push, branch, PR, tag, rebase, amend, force-push가 버전관리 계약 없이 진행되는 행위
+- `GIT_SCOPE_POLICY_VIOLATION`: 승인된 include/exclude 범위 밖 변경이나 사용자 소유 변경을 Git 작업에 포함하는 행위
+- `UNAPPROVED_HISTORY_REWRITE`: 명시 승인 없이 rebase, amend, force-push 같은 history rewrite를 수행하는 행위
+- `BUG_REPORT_CONTRACT_MISSING`: 재현 절차, 실제/기대 결과, 환경, 증거가 고정되지 않은 bug report를 작성하거나 등록하는 행위
+- `BUG_REPORT_REDACTION_MISSING`: 비밀정보, credential, 개인정보, 내부 로그 원문 제거 확인 없이 bug report를 게시하는 행위
 - `ARTIFACT_EXISTS_BUT_NOT_VALID`: 파일이 디스크에 존재한다는 이유만으로 유효한 artifact라고 판단하는 행위
 - `LEGITIMACY_CHECK_SKIPPED`: artifact 사용 전에 필요한 legitimacy check를 생략하는 행위
 - `PARTIAL_SOURCE_OF_TRUTH_UPDATE_ATTEMPT`: 사용자가 특정 파일만 수정하라고 했다는 이유로 영향받는 다른 source of truth 문서나 Task Contract를 수정하지 않고 일부 문서만 바꾸려는 시도
