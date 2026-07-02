@@ -20,7 +20,7 @@
 - 기준 문서 묶음은 "4. Source Of Truth Snapshot Template"과 "SOT Packet Template"을 본다.
 - 저장/동작/상태/상호작용/운영 기준 확인은 "Design Intent Checks Template"을 본다.
 - 구현 지시서는 "5. Prompt Artifact Template"을, 작업 기준서는 "Task Contract Template"을 본다.
-- 검증과 완료 산출물은 "6. Verification Result Metadata Template"과 "Completion Report Example"을 본다.
+- 검증과 완료 산출물은 "6. Verification Result Metadata Template"과 "Completion Report Example"을 본다. 긴 예시는 `references/artifact-verification-completion-templates.md`를 필요할 때만 연다.
 
 ## 1. Artifact Metadata Template
 
@@ -900,118 +900,16 @@ Rules:
 
 ## 6. Verification Result Metadata Template
 
-검증 결과의 metadata와 verification matrix를 함께 기록한다.
+검증 결과는 artifact metadata와 `verification` matrix를 함께 기록한다. 상세 YAML 예시는 `references/artifact-verification-completion-templates.md`의 `Verification Result Metadata Template`을 본다.
 
-```yaml
-artifact:
-  id: VERIFY-TASK-000-001
-  type: verification-result
-  status: BLOCKED
-  schemaVersion: cdd.v2.1
-  projectId: project-id
-  projectContextRef: PROJECT-CONTEXT-001
-  taskId: TASK-000
-  createdAt: "2026-06-08T00:00:00Z"
-  createdByRole: verify-work
-  sourceOfTruthSnapshot: SOT-SNAPSHOT-000
-  requiredDocuments:
-    - DOC-001
-  dependsOnSnapshot:
-    - taskId: TASK-001
-      requiredStatus: COMPLETE
-      actualStatus: COMPLETE
-  approvalRefs:
-    - APPROVAL-PROMPT-EXECUTION-000
-  generatedFrom:
-    - prompts/TASK-000.md
-    - runs/TASK-000/check-result.yml
-  knownConflicts: []
-  supersedes: []
-  supersededBy: null
-  userFacingSummary: "TASK-000 구현 결과 검증 기록입니다."
+필수 포함 항목:
 
-verification:
-  status: BLOCKED_BY_MISSING_CONTEXT
-  verifiedAt: "2026-06-08T00:00:00Z"
-  verifiedByRole: verification
-  implementationRef: runs/TASK-000/implementation-summary.md
-  promptRef: prompts/TASK-000.md
-  taskContractRef: tasks/TASK-000.yml
-  readinessRecheck:
-    productSotMatched: true
-    engineeringSotMatched: true
-    implementationScopeRespected: true
-    forbiddenScopeViolated: false
-    archiveSupersededMaterialUsedAsActiveSot: false
-    readinessWasNotReadyButImplementationOccurred: false
-  legitimacyReportRefs:
-    - LEGITIMACY-000
-  matrix:
-    - check: taskContractSatisfied
-      result: PASS
-      source: tasks/TASK-000.yml
-      evidence: "acceptance criteria implemented"
-    - check: requiredDocumentsFollowed
-      result: PASS
-      source: SOT-SNAPSHOT-000
-      evidence: "no conflicting behavior found"
-    - check: productSotMatched
-      result: PASS
-      source: PRODUCT-SOT-001
-      evidence: "implemented behavior matches Product SOT"
-    - check: engineeringSotMatched
-      result: PASS
-      source: ENGINEERING-SOT-001
-      evidence: "implemented structure matches Engineering SOT"
-    - check: readinessAllowedImplementation
-      result: BLOCKED
-      source: tasks/TASK-000.yml
-      evidence: "Implementation Readiness was NOT_READY"
-    - check: documentCoverageReady
-      result: PASS
-      source: tasks/TASK-000.yml
-      evidence: "documentCoverage.status is READY"
-    - check: interactionDesignAllowedBeforeInterfaceDesign
-      result: BLOCKED
-      source: tasks/TASK-000.yml
-      evidence: "interface design appeared while interaction design was not approved"
-    - check: storageIntentAllowedBeforeDbDesign
-      result: BLOCKED
-      source: tasks/TASK-000.yml
-      evidence: "DB design appeared while Storage Intent Check was DB_DESIGN_BLOCKED"
-    - check: behaviorContractAllowedBeforeApiDesign
-      result: PASS
-      source: tasks/TASK-000.yml
-      evidence: "API design was backed by Behavior Contract Check"
-    - check: stateMeaningAllowedBeforeStatusModel
-      result: PASS
-      source: tasks/TASK-000.yml
-      evidence: "status model was backed by State Meaning Check"
-    - check: operationalQualityAllowedBeforeDesign
-      result: BLOCKED
-      source: tasks/TASK-000.yml
-      evidence: "performance/security/operation design appeared while operational quality criteria were not approved"
-    - check: forbiddenApproachesViolated
-      result: FAIL
-      source: prompts/TASK-000.md
-      evidence: "unapproved test profile introduced"
-    - check: testRequirementsSatisfied
-      result: BLOCKED
-      source: tasks/TASK-000.yml
-      evidence: "test strategy is missing"
-  findings:
-    - id: FINDING-001
-      severity: high
-      type: BLOCKED_BY_MISSING_CONTEXT
-      summary: "Test strategy is not approved."
-      requiredUserDecision: "Choose the test database/profile/migration strategy."
-  allowedActions:
-    - "ask Missing Context question"
-  blockedActions:
-    - "revision"
-    - "complete"
-  userFacingSummary: "구현 결과를 바로 완료 처리할 수 없습니다. 먼저 테스트 방식을 정해야 합니다."
-```
+- artifact metadata: `id`, `type`, `status`, `schemaVersion`, `projectId`, `projectContextRef`, `taskId`, `createdAt`, `createdByRole`, `sourceOfTruthSnapshot`, `requiredDocuments`, `approvalRefs`.
+- verification status: `VERIFIED`, `NEEDS_REVISION`, `BLOCKED_BY_MISSING_CONTEXT`, `BLOCKED_BY_POLICY_CONFLICT`, `NEEDS_SOURCE_OF_TRUTH_CHANGE`, `BLOCKED_BY_PREDECESSOR`, `BLOCKED_BY_INVALID_ARTIFACT` 중 하나.
+- implementation, prompt, task contract, 기준 문서 참조.
+- readiness recheck: 제품 기준 일치, 설계 기준 일치, 허용 범위 준수, 금지 범위 위반 여부, archive/superseded 자료 사용 여부.
+- matrix: 작업 기준서 충족, 필수 문서 준수, 제품 기준 일치, 설계 기준 일치, 구현 시작 가능 여부, 문서 coverage, 상호작용/저장/API/status/운영 기준, 금지 접근, 테스트 요구사항.
+- findings, allowedActions, blockedActions, userFacingSummary.
 
 목적:
 
@@ -1020,76 +918,18 @@ verification:
 
 ## Completion Report Example
 
-사용자에게 보여주는 완료 보고는 verification 결과와 바로 완료 가능한지 여부를 자연어로 짧게 요약한다. 내부 completion record나 에이전트 간 전달물에는 `readinessCheck`, `Product SOT`, `Engineering SOT` 같은 내부 필드를 사용할 수 있지만, 기본 사용자 보고의 제목으로 먼저 쓰지 않는다.
+사용자에게 보여주는 완료 보고는 verification 결과와 바로 완료 가능한지 여부를 자연어로 짧게 요약한다. 상세 예시는 `references/artifact-verification-completion-templates.md`의 `Completion Report Example`을 본다.
 
-```text
-확인한 기준:
-- ...
+기본 완료 보고는 다음을 우선 포함한다.
 
-현재 판단:
-- 바로 완료 가능 / 아직 결정 필요 / 수정 필요
+- 확인한 기준
+- 현재 판단: 바로 완료 가능 / 아직 결정 필요 / 수정 필요
+- 이유
+- 변경 범위
+- 검증 결과
+- 남은 위험
+- 다음에 할 일
 
-이유:
-- ...
-
-변경 범위:
-- ...
-
-검증 결과:
-- ...
-
-남은 위험:
-- ...
-
-다음에 할 일:
-- ...
-```
-
-사용자 선택이 필요한 경우에는 다음 블록을 포함한다.
-
-```text
-다음에 할 일:
-아직 직접 진행하면 안 됩니다. 먼저 아래 중 하나를 선택해야 합니다.
-
-선택지:
-1. ...
-2. ...
-3. ...
-
-제 추천:
-- ...
-
-바로 답할 수 있는 문장:
-"..."
-```
-
-사용자 개입 없이 진행 가능한 경우에는 다음 블록을 포함하고, 실제로 다음 단계까지 진행한다.
-
-```text
-다음에 할 일:
-사용자 선택이 필요한 부분은 없습니다.
-현재 기준으로 안전하게 진행할 수 있으므로, 요청 범위 안에서 다음 작업까지 진행합니다.
-
-진행할 작업:
-- ...
-
-진행하지 않을 작업:
-- ...
-```
-
-완료한 경우에는 다음 블록을 포함한다.
-
-```text
-다음에 할 일:
-이번 작업은 완료되었습니다.
-
-다음 후보:
-1. ...
-2. ...
-3. ...
-
-제 추천:
-- ...
-```
+사용자 선택이 필요한 경우에는 선택지, 제 추천, 바로 답할 수 있는 문장을 포함한다. 사용자 개입 없이 진행 가능한 경우에는 진행할 작업과 진행하지 않을 작업을 함께 밝히고 실제로 다음 단계까지 진행한다. 완료한 경우에는 다음 후보와 제 추천을 포함한다.
 
 cleanup/delete 작업은 `cleanup-delete.md`의 완료 보고 형식을 우선할 수 있지만, 바로 완료 가능한지와 남은 결정은 생략하지 않는다.

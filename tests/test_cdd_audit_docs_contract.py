@@ -19,6 +19,7 @@ def main() -> None:
         test_cdd_commands_do_not_write_python_bytecode,
         test_cdd_audit_warning_gate_is_documented,
         test_gate_terms_are_hidden_in_user_facing_reports,
+        test_artifact_template_examples_are_split_from_large_internal_module,
     ]
     for test in tests:
         test()
@@ -212,6 +213,18 @@ def test_gate_terms_are_hidden_in_user_facing_reports() -> None:
     assert "현재 gate`, `다음 gate`, `gate 통과`, `gate 차단`, `readiness gate`" in briefing
     assert "현재 gate" in complete
     assert "다음 gate" in implementation_prompt
+
+
+def test_artifact_template_examples_are_split_from_large_internal_module() -> None:
+    artifact_templates = (ROOT / "_artifact-templates.md").read_text(encoding="utf-8")
+    reference = (ROOT / "references/artifact-verification-completion-templates.md").read_text(encoding="utf-8")
+
+    assert len(artifact_templates.splitlines()) < 1000
+    assert "references/artifact-verification-completion-templates.md" in artifact_templates
+    assert "## Verification Result Metadata Template" in reference
+    assert "## Completion Report Example" in reference
+    assert "readinessRecheck:" in reference
+    assert "다음 후보:" in reference
 
 
 if __name__ == "__main__":
