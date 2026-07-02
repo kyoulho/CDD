@@ -157,11 +157,47 @@ documentPlacementCheck:
 - decision log가 커졌다면 현재 적용 중인 결정, 최근 변경 결정, 과거 결정 기록, superseded 결정을 나눠 읽게 한다.
 - generated map, Codesight, agentmemory, search index, recall output, archive branch reference는 기본적으로 `nonSotReferences`에 분류하고 기본 읽기 경로에서 제외한다.
 - 과거 task completion, verification, prompt, old task 문서는 `historicalRecords`로 분류한다. active 기준으로 쓰려면 active 기준 문서나 registry의 승격 근거가 필요하다.
+- 완료 TASK, old prompt, verification, completion 전문은 기본적으로 영구 hot path 보존 대상이 아니다. version/milestone마다 현재 기준으로 승격할 결정, 요약으로 압축할 기록, 최소 보존할 기록, 삭제 후보, 보류 항목으로 분류한다.
+- active 문서에는 현재 작업, 다음 작업, 최근 완료 요약, 후속 의존성 요약만 남기는 것을 기본 추천으로 둔다. 프로젝트가 전문 보존 정책을 승인했다면 기본 읽기 경로 제외 위치와 README/index 갱신 기준을 함께 기록한다.
 - 현재 기준과 과거 산출물이 충돌하면 `currentVsHistoryConflicts`에 기록하고, 저장 또는 후속 작업으로 진행하기 전에 사용자에게 정합성 정리 선택지를 제시한다.
 - 새 문서 파일을 만들기 전에는 왜 기존 문서에 추가하지 않고 새 파일이 필요한지 사용자에게 보고한다.
 - 기존 구조와 다른 파일 배치를 하려면 일부 파일만 다르게 만들지 말고 전체 문서 구조 변경안으로 제안하고 사용자 승인을 받는다.
 - `matchesExistingStructure: false` 또는 `structureChangeRequired: true`이면 auto-stop하고 사용자 확인 전에는 저장하지 않는다.
 - 저장 전 사용자 보고에는 수정할 파일, 새로 만들 파일, 기존 문서 구조와 맞는지, 현재 작업 포인터 갱신 필요 여부, 기본 읽기 경로 계약 변경 여부, 분리 후보, 유지 후보, 삭제/보존/비-SOT 분류 후보, README/index 갱신 필요 여부를 포함한다.
+
+## TASK Rollup / Prune Report Template
+
+완료 TASK 산출물을 정리하기 전에는 다음 브리핑을 사용자에게 보여준다. 이 템플릿은 삭제 승인이 아니라 정리안 검토 표면이다.
+
+```text
+TASK 정리 브리핑:
+
+active에 남길 것:
+- ...
+
+기준으로 승격할 것:
+- ...
+
+요약으로 압축할 것:
+- ...
+
+삭제 후보:
+- ...
+
+그대로 보존할 것:
+- ...
+
+README/index 갱신 필요:
+- 예 / 아니오
+
+제 추천:
+- ...
+
+승인 문장:
+"TASK 기록 정리안을 승인합니다."
+```
+
+승인 문장은 브리핑 뒤에만 둔다. 사용자가 승인하기 전에는 삭제, archive 이동, 요약 대체, 비-SOT 표시, 현재 기준 승격을 실행하지 않는다. 승인 범위 밖 기록이나 위험 변경 근거가 발견되면 멈추고 다시 브리핑한다.
 
 ## Read-only Audit Tool Contract
 
@@ -188,6 +224,7 @@ cdd-audit docs [--root <path>] [--config <path>] [--format text|json|brief] [--f
 - 요청한 CDD entrypoint 기준으로 먼저 볼 CDD 문서, 섹션, 가능하면 줄 범위
 - skill root인 경우 `SKILL.md` frontmatter와 `agents/openai.yaml` UI metadata 상태
 - 반드시 읽을 문서와 제외할 과거 기록
+- TASK 정리 후보: 완료 TASK rollup, 완료 TASK hot path 잔존, 과거 TASK 정책 노출, old prompt/verification/completion prune 후보
 - 400줄 또는 40KB를 넘는 기본 읽기 경로 문서
 - 1000줄 이상 누적 문서
 - active/history 혼재 후보

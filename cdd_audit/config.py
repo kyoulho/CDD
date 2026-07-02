@@ -19,6 +19,7 @@ class AuditConfig:
     required_read_documents: tuple[str, ...]
     excluded_historical_records: tuple[str, ...]
     excluded_non_sot_references: tuple[str, ...]
+    task_retention: TaskRetentionConfig
     section_hints: tuple[SectionHint, ...]
     role_overrides: tuple[RoleOverride, ...]
     ignore_patterns: tuple[str, ...]
@@ -27,12 +28,23 @@ class AuditConfig:
 
 
 @dataclass(frozen=True, slots=True)
+class TaskRetentionConfig:
+    active_task_limit: int
+    recent_completed_task_limit: int
+    rollup_by: str
+
+
+@dataclass(frozen=True, slots=True)
 class ConfigError:
     message: str
 
 
 def empty_config() -> AuditConfig:
-    return AuditConfig((), (), (), (), (), (), (), None, None)
+    return AuditConfig((), (), (), (), default_task_retention(), (), (), (), None, None)
+
+
+def default_task_retention() -> TaskRetentionConfig:
+    return TaskRetentionConfig(active_task_limit=3, recent_completed_task_limit=3, rollup_by="version-or-milestone")
 
 
 def load_config(root: Path, explicit_path: Path | None) -> AuditConfig | ConfigError:
@@ -52,6 +64,7 @@ def load_config(root: Path, explicit_path: Path | None) -> AuditConfig | ConfigE
         required_read_documents=_string_tuple(parsed.get("requiredReadDocuments")),
         excluded_historical_records=_string_tuple(parsed.get("excludedHistoricalRecords")),
         excluded_non_sot_references=_string_tuple(parsed.get("excludedNonSotReferences")),
+        task_retention=_task_retention(parsed.get("taskRetention")),
         section_hints=_section_hints(parsed.get("sectionHints")),
         role_overrides=_role_overrides(parsed.get("roleOverrides")),
         ignore_patterns=_string_tuple(parsed.get("ignore")),
@@ -85,6 +98,26 @@ def _optional_string(value: JsonValue | None) -> str | None:
     if isinstance(value, str) and value:
         return value
     return None
+
+
+def _task_retention(value: JsonValue | None) -> TaskRetentionConfig:
+    default = default_task_retention()
+    if not isinstance(value, dict):
+        return default
+    return TaskRetentionConfig(
+        active_task_limit=_positive_int(value.get("activeTaskLimit"), default.active_task_limit),
+        recent_completed_task_limit=_positive_int(
+            value.get("recentCompletedTaskLimit"),
+            default.recent_completed_task_limit,
+        ),
+        rollup_by=_optional_string(value.get("rollupBy")) or default.rollup_by,
+    )
+
+
+def _positive_int(value: JsonValue | None, default: int) -> int:
+    if isinstance(value, int) and value > 0:
+        return value
+    return default
 
 
 def _role_overrides(value: JsonValue | None) -> tuple[RoleOverride, ...]:

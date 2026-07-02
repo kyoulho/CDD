@@ -11,7 +11,7 @@ from cdd_audit.checks import (
     oversized_hot_path,
     sot_entrypoint_too_detailed,
 )
-from cdd_audit.config import AuditConfig
+from cdd_audit.config import AuditConfig, TaskRetentionConfig
 from cdd_audit.documents import read_documents
 from cdd_audit.model import (
     ACCUMULATED_LINES,
@@ -25,6 +25,7 @@ from cdd_audit.model import (
 from cdd_audit.pointer import missing_pointer_fields, pointer_details
 from cdd_audit.section_hints import located_section_hint
 from cdd_audit.skill_health import skill_health, skill_health_findings
+from cdd_audit.task_retention_findings import task_retention_findings
 
 SECTION_HINT_LIMIT: Final[int] = 4
 COMMON_SECTION_KEYWORDS: Final[tuple[str, ...]] = (
@@ -58,6 +59,7 @@ class FindingContext:
     missing_fields: tuple[str, ...]
     excluded_history: tuple[str, ...]
     excluded_non_sot: tuple[str, ...]
+    task_retention: TaskRetentionConfig
 
 
 def audit(root: Path, config: AuditConfig) -> AuditResult:
@@ -69,8 +71,8 @@ def audit(root: Path, config: AuditConfig) -> AuditResult:
     excluded_history = _excluded_history(config, details.excluded_historical_records)
     excluded_non_sot = _excluded_non_sot(config, details.excluded_non_sot_references)
     section_hints = _section_hints(docs, required, config, details.section_hints)
-    finding_context = FindingContext(pointer, missing, excluded_history, excluded_non_sot)
-    checks = checks_json(root, docs)
+    finding_context = FindingContext(pointer, missing, excluded_history, excluded_non_sot, config.task_retention)
+    checks = checks_json(root, docs, config.task_retention)
     health = skill_health(root)
     oversized_count = len(oversized_hot_path(docs))
     findings = tuple(
@@ -199,6 +201,7 @@ def _findings(
     findings.extend(_section_hint_findings(section_hints))
     findings.extend(health_findings)
     findings.extend(_size_and_mix_findings(docs, oversized, mixed))
+    findings.extend(task_retention_findings(docs, context.task_retention))
     findings.extend(_classification_findings(docs, context.excluded_history, context.excluded_non_sot))
     if findings:
         findings.append(_finding("README_INDEX_UPDATE_REQUIRED", "info", None, "문서 배치나 읽기 경로 변경 시 README/index 갱신 여부 확인이 필요합니다.", "audit produced document-structure findings", "수정 전 보고에 README/index 갱신 필요 여부를 포함합니다.", "autoModifyReadmeOrIndexWithoutApproval"))

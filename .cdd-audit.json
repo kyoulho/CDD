@@ -31,6 +31,11 @@
       "## Core Checks"
     ]
   },
+  "taskRetention": {
+    "activeTaskLimit": 3,
+    "recentCompletedTaskLimit": 3,
+    "rollupBy": "version-or-milestone"
+  },
   "roleOverrides": {
     "readme.md": "active-index",
     "skill.md": "active-index",

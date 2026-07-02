@@ -128,10 +128,12 @@ def _role(parsed: ParsedDocument, config: AuditConfig, cdd_skill_root: bool) -> 
             return cdd_role
     if any(signal in parsed.path for signal in NON_SOT_SIGNALS) or "role: non-sot-reference" in parsed.text:
         return "non-sot-reference"
+    if any(signal in parsed.path for signal in HISTORY_SIGNALS) or "role: history" in parsed.text:
+        return "history"
+    if any(token in parsed.path for token in ("task-contract", "implementation-task-contract")):
+        return "task-contract"
     if (
-        any(signal in parsed.path for signal in HISTORY_SIGNALS)
-        or "role: history" in parsed.text
-        or parsed.status in {"COMPLETE", "SUPERSEDED"}
+        parsed.status in {"COMPLETE", "SUPERSEDED"}
     ):
         return "history"
     if "current-work" in parsed.path:

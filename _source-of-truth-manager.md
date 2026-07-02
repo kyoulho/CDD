@@ -163,6 +163,24 @@ Source of Truth Manager는 대상 프로젝트의 기존 문서 구조를 존중
 
 분리는 파일 수를 늘리는 목적이 아니라 기본 읽기 경로를 줄이고 현재 기준이 과거 기록에 오염되지 않게 하는 목적일 때만 제안한다.
 
+## TASK Rollup / Prune 기준
+
+완료 TASK 전문을 active 작업 기준서나 현재 작업 포인터에 계속 누적 보존하지 않는다. CDD의 목적은 모든 TASK 역사를 기본 읽기 경로에 보존하는 것이 아니라, 현재 기준과 후속 작업에 필요한 근거만 빠르게 확인하게 하는 것이다.
+
+version, milestone, release, 일정 수 이상의 완료 TASK가 쌓이는 시점에는 완료 TASK, old prompt, verification, completion 산출물을 다음 중 하나로 분류한다.
+
+- 현재 기준으로 승격: 앞으로도 제품/설계 기준으로 쓰이는 결정이다. Product/Engineering 기준 문서, active 작업 기준서, decision log, document registry 같은 현재 기준 위치로 옮긴다.
+- 버전 요약으로 압축: 완료 사실, 핵심 변경, 검증 결과, 후속 영향만 남기고 전문은 기본 읽기 경로에서 제거한다.
+- 후속 의존성 때문에 최소 보존: migration, 데이터 삭제/보존, public API 제거, 보안/권한 변경, 후속 TASK dependency 근거처럼 추적이 필요한 내용만 남긴다.
+- 삭제 후보: 현재 기준에 흡수됐고 후속 의존성이나 감사 근거로도 필요하지 않은 산출물이다.
+- 보류: 판단 근거가 부족해 바로 정리할 수 없는 산출물이다.
+
+과거 TASK 안의 정책 문구는 그 시점의 기록이지 현재 기준이 아니다. 현재 기준으로 쓰려면 active 기준 문서나 승인된 작업 기준서에 명시적으로 승격되어야 한다. 승격 기록이 없으면 과거 TASK 문서를 근거로 table, column, API, status, UI/UX, 권한, 성능, 보안 정책을 결정하지 않는다.
+
+active 문서에는 현재 작업, 다음 작업, 최근 완료 요약, 후속 의존성 요약만 남기는 것을 기본 추천으로 둔다. 모든 완료 TASK 전문을 보존해야 한다면 프로젝트 보존 정책으로 명시하고, 기본 읽기 경로에서 제외할 history 위치와 README/index 갱신 여부를 함께 정한다.
+
+`cdd-audit`가 `TASK_ROLLUP_DUE`, `COMPLETED_TASK_IN_HOT_PATH`, `TASK_ARTIFACT_PRUNE_CANDIDATE`를 보고하면 warning/info라도 무시하지 않는다. 해결, 보류, 진행 사유 중 하나로 분류해 사용자 보고에 포함한다. `LEGACY_POLICY_IN_TASK_HISTORY`가 나오면 과거 정책이 현재 기준처럼 읽히는 차단 항목이므로 다음 작업으로 넘어가기 전에 현재 기준 승격, history 제외, 삭제 후보, 보류 중 하나를 사용자에게 확인한다.
+
 ## Archive / Superseded 처리
 
 Archive/superseded 문서는 historical record다.

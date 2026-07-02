@@ -17,6 +17,7 @@ from cdd_audit.model import (
 )
 from cdd_audit.root import detect_project_root
 from cdd_audit.scanner import audit
+from cdd_audit.task_retention_report import brief_task_cleanup_lines, task_cleanup_lines
 
 VERSION = "0.8.0"
 USAGE = "\n".join(
@@ -126,6 +127,9 @@ def _format_text(result: AuditResult, exit_code: int, guide: EntrypointGuide | N
         "분리 후보:",
         *_split_recommendation_lines(result),
         "",
+        "TASK 정리 후보:",
+        *task_cleanup_lines(result),
+        "",
         "주의 항목 처리:",
         *_warning_handling_lines(result),
         "",
@@ -159,6 +163,7 @@ def _format_brief(result: AuditResult, exit_code: int, guide: EntrypointGuide | 
             f"- 차단 항목: {blocking}",
             f"- 주의 항목: {warning}",
             f"- exit code: {exit_code}",
+            *brief_task_cleanup_lines(result),
             "",
             "다음에 할 일:",
             _brief_next_step_line(blocking, warning),
@@ -263,15 +268,11 @@ def _warning_handling_lines(result: AuditResult) -> list[str]:
 
 
 def _judgement_line(blocking: int) -> str:
-    if blocking:
-        return "- 문서 기준과 읽기 경로를 정리하기 전에는 다음 작업 판단으로 넘어가면 안 됩니다."
-    return "- 차단 항목은 없습니다. 주의 항목은 사용자 보고에 포함하고 다음 단계로 진행할 수 있습니다."
+    return "- 문서 기준과 읽기 경로를 정리하기 전에는 다음 작업 판단으로 넘어가면 안 됩니다." if blocking else "- 차단 항목은 없습니다. 주의 항목은 사용자 보고에 포함하고 다음 단계로 진행할 수 있습니다."
 
 
 def _next_step_line(blocking: int) -> str:
-    if blocking:
-        return "- 현재 작업 포인터, 기본 읽기 경로, active/history 분리 중 필요한 선택지를 사용자에게 제시합니다."
-    return "- 사용자 선택이 필요한 차단 항목은 없습니다. 요청 범위 안에서 다음 작업으로 이어갈 수 있습니다."
+    return "- 현재 작업 포인터, 기본 읽기 경로, active/history 분리 중 필요한 선택지를 사용자에게 제시합니다." if blocking else "- 사용자 선택이 필요한 차단 항목은 없습니다. 요청 범위 안에서 다음 작업으로 이어갈 수 있습니다."
 
 
 def _brief_next_step_line(blocking: int, warning: int) -> str:

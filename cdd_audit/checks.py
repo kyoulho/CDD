@@ -11,7 +11,14 @@ from cdd_audit.model import (
     DocumentInfo,
     JsonObject,
 )
+from cdd_audit.config import TaskRetentionConfig
 from cdd_audit.skill_health import skill_health
+from cdd_audit.task_retention import (
+    completed_task_hot_path_candidates,
+    legacy_policy_history_candidates,
+    task_artifact_prune_candidates,
+    task_rollup_candidates,
+)
 
 
 def has_active_history_mix(item: DocumentInfo) -> bool:
@@ -97,7 +104,7 @@ def decision_log_unpartitioned(item: DocumentInfo) -> bool:
     return not partitioned and (item.lines > HOT_PATH_LINES or any(signal in HISTORY_SIGNALS for signal in item.signals))
 
 
-def checks_json(root: Path, docs: tuple[DocumentInfo, ...]) -> JsonObject:
+def checks_json(root: Path, docs: tuple[DocumentInfo, ...], retention: TaskRetentionConfig) -> JsonObject:
     split_candidates = split_recommendations(docs)
     return {
         "readCost": {
@@ -139,6 +146,17 @@ def checks_json(root: Path, docs: tuple[DocumentInfo, ...]) -> JsonObject:
         },
         "documentStructure": {
             "splitCandidates": split_candidates,
+        },
+        "taskRetention": {
+            "policy": {
+                "activeTaskLimit": retention.active_task_limit,
+                "recentCompletedTaskLimit": retention.recent_completed_task_limit,
+                "rollupBy": retention.rollup_by,
+            },
+            "rollupCandidates": task_rollup_candidates(docs, retention),
+            "completedTaskHotPath": completed_task_hot_path_candidates(docs),
+            "legacyPolicyInTaskHistory": legacy_policy_history_candidates(docs),
+            "pruneCandidates": task_artifact_prune_candidates(docs),
         },
         "indexMaintenance": {
             "readmeOrIndexUpdatesRequired": [str(item["path"]) for item in split_candidates],
